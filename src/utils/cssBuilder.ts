@@ -136,6 +136,23 @@ export function buildPdfBreakRules(): string {
 }
 
 /**
+ * Generate PDF-specific image styling for proper page layout
+ */
+export function buildPdfImageStyles(): string[] {
+    return [
+        '/* PDF-specific image constraints */',
+        'img { max-height: 85vh !important; object-fit: contain; break-inside: avoid; page-break-inside: avoid; }',
+        '/* Ensure images don\'t overflow page width with margins */',
+        'img { max-width: calc(100% - 2em) !important; }',
+        '/* Image containers should not split across pages */',
+        'figure, .image-container, div:has(> img) { break-inside: avoid; page-break-inside: avoid; }',
+        '/* Add spacing before/after images for better layout */',
+        'p + figure, p + img { margin-top: 1.5em; }',
+        'figure + p, img + p { margin-top: 1.5em; }'
+    ];
+}
+
+/**
  * Hide Pandoc title block for PDF
  */
 export function buildPdfTitleBlockHide(): string {

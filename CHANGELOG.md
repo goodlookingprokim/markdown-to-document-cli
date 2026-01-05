@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - iframe 임베드 숨김 처리 (오프라인 EPUB 호환성)
   - 모든 이미지가 e-reader 화면 크기에 맞게 자동 조절
 
+- **PDF 페이지 레이아웃 이미지 스타일링**:
+  - `max-height: 85vh` 제한으로 이미지가 페이지 높이 초과 방지
+  - `break-inside: avoid`로 이미지가 페이지 중간에 잘리지 않음
+  - 이미지 컨테이너에 페이지 분할 방지 규칙 적용
+  - 이미지 전후 적절한 여백 자동 추가
+
 ## [1.2.3] - 2026-01-06
 
 ### Changed

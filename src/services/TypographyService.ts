@@ -14,6 +14,7 @@ import {
   buildHeadingStyles,
   buildPdfPageRules,
   buildPdfTitleBlockHide,
+  buildPdfImageStyles,
   buildCommonElementStyles,
   type HeadingScale,
   type PageMargins
@@ -685,6 +686,12 @@ export class TypographyService {
     // PDF page rules
     if (format === 'pdf' && options.includePageBreaks !== false) {
       css.push(...buildPdfPageRules(settings.pageMargins));
+      css.push('');
+    }
+
+    // PDF-specific image styling for proper page layout
+    if (format === 'pdf') {
+      css.push(...buildPdfImageStyles());
       css.push('');
     }
 
