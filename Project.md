@@ -30,7 +30,7 @@
 - **WeasyPrint**: PDF 생성 엔진 (선택사항)
 
 ### 유틸리티
-- **fontkit**: 폰트 처리
+- **fontkit**: 폰트 처리 및 서브세팅
 - **glob**: 파일 패턴 매칭
 - **yaml**: YAML 파싱
 
@@ -50,6 +50,8 @@ src/
 │   └── common.ts      # 공통 유틸리티 (Logger, etc.)
 ├── services/          # 핵심 서비스
 │   ├── PandocService.ts       # Pandoc 변환 엔진
+│   ├── TypographyService.ts   # 타이포그래피 프리셋 관리
+│   ├── FontSubsetter.ts       # 폰트 서브세팅
 │   ├── MarkdownPreprocessor.ts  # 마크다운 전처리
 │   └── ContentValidator.ts    # 8개 검증 모듈
 ├── index.ts           # 메인 API (MarkdownToDocument 클래스)
@@ -68,16 +70,44 @@ src/
 - **역할**: Pandoc을 통한 EPUB/PDF 변환
 - **주요 메서드**:
   - `checkPandocAvailable()`: Pandoc 설치 확인
-  - `toEpub()`: EPUB 변환
-  - `toPdf()`: PDF 변환
+  - `toEpub()`: EPUB 변환 (타이포그래피 CSS 포함)
+  - `toPdf()`: PDF 변환 (타이포그래피 CSS 포함)
+  - `generateTypographyCSS()`: 동적 CSS 생성
+- **통합 서비스**:
+  - TypographyService: 타이포그래피 프리셋 적용
+  - FontSubsetter: 폰트 서브세팅
 
-#### 3. MarkdownPreprocessor
+#### 3. TypographyService
+- **역할**: 타이포그래피 프리셋 관리 및 CSS 생성
+- **프리셋**: novel, presentation, review, ebook
+- **주요 메서드**:
+  - `getPreset()`: 프리셋 조회
+  - `generatePresetCSS()`: 프리셋 기반 CSS 생성
+- **기능**:
+  - 한국어 폰트 스택 (Noto Sans CJK KR, Noto Serif CJK KR)
+  - 페이지 마진 설정
+  - 제목 스케일 계산
+  - 하이픈 처리
+
+#### 4. FontSubsetter
+- **역할**: 폰트 서브세팅으로 파일 크기 최적화
+- **주요 메서드**:
+  - `analyzeFont()`: 폰트 분석
+  - `subsetFont()`: 폰트 서브셋 생성
+  - `subsetFontsInDirectory()`: 디렉토리 내 모든 폰트 서브세팅
+- **기능**:
+  - 99% 크기 감소
+  - 캐싱 메커니즘
+  - WOFF2, TTF, OTF 지원
+  - 문자 추출 및 분석
+
+#### 5. MarkdownPreprocessor
 - **역할**: 마크다운 전처리 (Obsidian 문법 변환, 이미지 경로 해결)
 - **주요 메서드**:
   - `preprocess()`: 전처리 파이프라인 실행
   - `generateCleanMarkdown()`: YAML frontmatter 포함 마크다운 생성
 
-#### 4. ContentValidator
+#### 6. ContentValidator
 - **역할**: 8개 검증 모듈 실행
 - **검증 모듈**:
   1. Frontmatter 검증
@@ -106,15 +136,25 @@ src/
    - 이미지 경로 해결
    - YAML frontmatter 생성
    ↓
-5. 임시 파일 생성
+5. 타이포그래피 CSS 생성
+   - TypographyService로 프리셋 적용
+   - 동적 CSS 생성
+   - 폰트 스택 설정
    ↓
-6. Pandoc 변환
+6. 폰트 서브세팅 (선택사항)
+   - FontSubsetter로 문자 추출
+   - 폰트 서브셋 생성
+   - 파일 크기 최적화
+   ↓
+7. 임시 파일 생성
+   ↓
+8. Pandoc 변환
    - EPUB 변환 (선택)
    - PDF 변환 (선택)
    ↓
-7. 출력 파일 생성
+9. 출력 파일 생성
    ↓
-8. 임시 파일 정리
+10. 임시 파일 정리
 ```
 
 ## 타이포그래피 프리셋

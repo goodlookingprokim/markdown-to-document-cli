@@ -9,8 +9,10 @@
 3. [변환 문제](#변환-문제)
 4. [이미지 문제](#이미지-문제)
 5. [PDF 관련 문제](#pdf-관련-문제)
-6. [성능 문제](#성능-문제)
-7. [기타 문제](#기타-문제)
+6. [타이포그래피 관련 문제](#타이포그래피-관련-문제)
+7. [폰트 서브세팅 관련 문제](#폰트-서브세팅-관련-문제)
+8. [성능 문제](#성능-문제)
+9. [기타 문제](#기타-문제)
 
 ---
 
@@ -522,6 +524,209 @@ m2d document.md --format pdf --paper-size letter
   size: A4;
   margin: 2cm;
 }
+```
+
+---
+
+## 타이포그래피 관련 문제
+
+### 문제: "Typography preset not found"
+
+**증상**:
+```bash
+Error: Typography preset not found: custom
+```
+
+**원인**:
+- 존재하지 않는 타이포그래피 프리셋 지정
+
+**해결 방법**:
+
+1. 사용 가능한 프리셋 확인:
+```bash
+m2d list-presets
+```
+
+2. 올바른 프리셋 사용:
+```bash
+# 올바른 프리셋
+m2d document.md --typography novel
+m2d document.md --typography presentation
+m2d document.md --typography review
+m2d document.md --typography ebook
+```
+
+### 문제: 폰트가 올바르게 적용되지 않음
+
+**증상**:
+```
+변환된 문서에서 폰트가 기본 폰트로 표시됨
+```
+
+**원인**:
+- 시스템에 해당 폰트가 설치되지 않음
+- CSS가 올바르게 적용되지 않음
+
+**해결 방법**:
+
+1. 한국어 폰트 설치 확인:
+```bash
+# macOS
+fc-list | grep -i "noto"
+
+# Linux
+fc-list | grep -i "noto"
+```
+
+2. 커스텀 CSS 사용:
+```bash
+m2d document.md --css custom.css
+```
+
+`custom.css` 예시:
+```css
+@font-face {
+  font-family: 'Noto Sans CJK KR';
+  src: url('NotoSansCJKKR-Regular.woff2') format('woff2');
+}
+
+body {
+  font-family: 'Noto Sans CJK KR', sans-serif;
+}
+```
+
+3. 시스템 폰트 사용:
+```css
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+```
+
+### 문제: 페이지 여백이 올바르지 않음
+
+**증상**:
+```
+PDF에서 여백이 너무 넓거나 좁음
+```
+
+**원인**:
+- 타이포그래피 프리셋의 여백 설정이 적합하지 않음
+
+**해결 방법**:
+
+1. 다른 프리셋 시도:
+```bash
+# 넓은 여백이 필요한 경우
+m2d document.md --typography presentation
+
+# 좁은 여백이 필요한 경우
+m2d document.md --typography review
+```
+
+2. 커스텀 CSS로 여백 조정:
+```css
+@page {
+  margin-top: 20mm;
+  margin-bottom: 20mm;
+  margin-left: 15mm;
+  margin-right: 15mm;
+}
+```
+
+---
+
+## 폰트 서브세팅 관련 문제
+
+### 문제: "Font not found"
+
+**증상**:
+```bash
+Error: Input font not found: /path/to/font.ttf
+```
+
+**원인**:
+- 폰트 파일 경로가 올바르지 않음
+- 폰트 파일이 존재하지 않음
+
+**해결 방법**:
+
+1. 폰트 파일 경로 확인:
+```bash
+ls -la /path/to/font.ttf
+```
+
+2. 상대 경로 사용:
+```bash
+# 프로젝트 내 fonts 폴더
+m2d document.md --font-subsetting
+```
+
+3. 절대 경로 사용:
+```bash
+m2d document.md --font-subsetting --font-path /absolute/path/to/font.ttf
+```
+
+### 문제: 폰트 서브세팅이 작동하지 않음
+
+**증상**:
+```
+폰트 서브세팅 옵션을 사용해도 파일 크기가 감소하지 않음
+```
+
+**원인**:
+- fontkit이 설치되지 않음
+- 폰트 형식이 지원되지 않음
+
+**해결 방법**:
+
+1. fontkit 설치 확인:
+```bash
+npm list fontkit
+```
+
+2. fontkit 재설치:
+```bash
+npm uninstall fontkit
+npm install fontkit
+```
+
+3. 지원되는 폰트 형식 확인:
+```bash
+# 지원되는 형식: TTF, OTF, WOFF, WOFF2
+file font.ttf
+```
+
+4. 폰트 형식 변환:
+```bash
+# TTF을 WOFF2로 변환 (예시)
+pip install fonttools
+pyftsubset font.ttf --output-file=font.woff2 --flavor=woff2
+```
+
+### 문제: 캐시 문제
+
+**증상**:
+```
+폰트 캐시가 오래된 폰트를 사용함
+```
+
+**원인**:
+- 폰트 캐시가 갱신되지 않음
+
+**해결 방법**:
+
+1. 캐시 삭제:
+```bash
+# 프로젝트 내 캐시 삭제
+rm -rf .font-cache
+
+# 시스템 임시 캐시 삭제
+rm -rf /tmp/markdown-to-document-pandoc/font-cache
+```
+
+2. 캐시 비활성화 후 재시도:
+```bash
+m2d document.md --no-cache
 ```
 
 ---

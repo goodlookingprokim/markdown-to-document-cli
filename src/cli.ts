@@ -185,38 +185,46 @@ program
     .alias('i')
     .description('Interactive mode with guided prompts')
     .action(async () => {
-        console.log(chalk.cyan.bold('\n📚 Markdown to Document - Interactive Mode\n'));
+        console.log(chalk.cyan.bold('\n╔════════════════════════════════════════════════════════════╗'));
+        console.log(chalk.cyan.bold('║  📚 Markdown to Document - Interactive Mode               ║'));
+        console.log(chalk.cyan.bold('╚════════════════════════════════════════════════════════════╝\n'));
 
         const answers = await inquirer.prompt([
             {
                 type: 'input',
                 name: 'inputPath',
-                message: 'Input markdown file path:',
+                message: chalk.yellow('📄 Input markdown file path:'),
                 validate: (input: string) => {
-                    const resolvedPath = path.resolve(input);
+                    // 자동으로 따옴표 제거
+                    const cleanedInput = input.trim().replace(/^['"]|['"]$/g, '');
+                    const resolvedPath = path.resolve(cleanedInput);
                     if (!fs.existsSync(resolvedPath)) {
-                        return 'File not found. Please enter a valid path.';
+                        return chalk.red('✗ File not found. Please enter a valid path.');
                     }
                     return true;
+                },
+                transformer: (input: string) => {
+                    // 입력값 표시 시에도 따옴표 제거
+                    return input.trim().replace(/^['"]|['"]$/g, '');
                 },
             },
             {
                 type: 'list',
                 name: 'format',
-                message: 'Output format:',
+                message: chalk.yellow('📤 Output format:'),
                 choices: [
-                    { name: 'EPUB only', value: 'epub' },
-                    { name: 'PDF only', value: 'pdf' },
-                    { name: 'Both EPUB and PDF', value: 'both' },
+                    { name: chalk.green('📖 EPUB only'), value: 'epub' },
+                    { name: chalk.blue('📄 PDF only'), value: 'pdf' },
+                    { name: chalk.magenta('📚 Both EPUB and PDF'), value: 'both' },
                 ],
                 default: 'epub',
             },
             {
                 type: 'list',
                 name: 'typographyPreset',
-                message: 'Typography preset:',
+                message: chalk.yellow('🎨 Typography preset:'),
                 choices: Object.values(TYPOGRAPHY_PRESETS).map(preset => ({
-                    name: `${preset.name} - ${preset.description}`,
+                    name: `${chalk.cyan(preset.name)} - ${chalk.gray(preset.description)}`,
                     value: preset.id,
                 })),
                 default: 'ebook',
@@ -224,11 +232,11 @@ program
             {
                 type: 'list',
                 name: 'coverTheme',
-                message: 'Cover theme (optional):',
+                message: chalk.yellow('🖼️  Cover theme (optional):'),
                 choices: [
-                    { name: 'None', value: null },
+                    { name: chalk.gray('None'), value: null },
                     ...Object.values(COVER_THEMES).map(theme => ({
-                        name: `${theme.name} - ${theme.description}`,
+                        name: `${chalk.cyan(theme.name)} - ${chalk.gray(theme.description)}`,
                         value: theme.id,
                     })),
                 ],
@@ -237,39 +245,48 @@ program
             {
                 type: 'confirm',
                 name: 'validateContent',
-                message: 'Enable content validation?',
+                message: chalk.yellow('🔍 Enable content validation?'),
                 default: true,
             },
             {
                 type: 'confirm',
                 name: 'autoFix',
-                message: 'Enable auto-fix for detected issues?',
+                message: chalk.yellow('🔧 Enable auto-fix for detected issues?'),
                 default: true,
             },
             {
                 type: 'input',
                 name: 'outputPath',
-                message: 'Output directory (leave empty for same as input):',
+                message: chalk.yellow('📁 Output directory (leave empty for same as input):'),
                 default: '',
             },
         ]);
 
         try {
-            const spinner = ora('Initializing...').start();
+            console.log(chalk.gray('\n' + '─'.repeat(60) + '\n'));
+
+            const spinner = ora({
+                text: chalk.cyan('⚙️  Initializing...'),
+                spinner: 'dots',
+            }).start();
+
             const converter = new MarkdownToDocument();
 
             const initResult = await converter.initialize();
             if (!initResult.success) {
-                spinner.fail('Initialization failed');
+                spinner.fail(chalk.red('❌ Initialization failed'));
                 console.error(chalk.red(`❌ ${initResult.error}`));
                 console.log(chalk.yellow('\n' + MarkdownToDocument.getInstallInstructions()));
                 process.exit(1);
             }
 
-            spinner.succeed('Initialized successfully');
+            spinner.succeed(chalk.green('✅ Initialized successfully'));
+
+            // 따옴표 제거 후 경로 해결
+            const cleanedInputPath = answers.inputPath.trim().replace(/^['"]|['"]$/g, '');
 
             const conversionOptions = {
-                inputPath: path.resolve(answers.inputPath),
+                inputPath: path.resolve(cleanedInputPath),
                 outputPath: answers.outputPath ? path.resolve(answers.outputPath) : undefined,
                 format: answers.format as 'epub' | 'pdf' | 'both',
                 typographyPreset: answers.typographyPreset as any,
@@ -280,25 +297,35 @@ program
                 includeToc: true,
             };
 
-            const convertSpinner = ora('Converting document...').start();
+            const convertSpinner = ora({
+                text: chalk.cyan('🔄 Converting document...'),
+                spinner: 'dots',
+            }).start();
+
             const result = await converter.convert(conversionOptions);
 
             if (result.success) {
-                convertSpinner.succeed('Conversion completed!');
-                console.log(chalk.green('\n✅ Output files:'));
+                convertSpinner.succeed(chalk.green('✅ Conversion completed!'));
+
+                console.log(chalk.gray('\n' + '─'.repeat(60)));
+                console.log(chalk.green.bold('\n📦 Output Files:\n'));
+
                 if (result.epubPath) {
                     console.log(chalk.green(`  📖 EPUB:  ${result.epubPath}`));
                 }
                 if (result.pdfPath) {
-                    console.log(chalk.green(`  📄 PDF:   ${result.pdfPath}`));
+                    console.log(chalk.blue(`  📄 PDF:   ${result.pdfPath}`));
                 }
-                console.log(chalk.green('\n🎉 Conversion successful!\n'));
+
+                console.log(chalk.gray('\n' + '─'.repeat(60)));
+                console.log(chalk.green.bold('\n🎉 Conversion successful!\n'));
             } else {
-                convertSpinner.fail('Conversion failed');
+                convertSpinner.fail(chalk.red('❌ Conversion failed'));
                 console.log(chalk.red('\n❌ Errors:'));
                 result.errors.forEach(error => {
                     console.log(chalk.red(`  • ${error}`));
                 });
+                console.log(chalk.red('\n❌ Conversion failed!\n'));
                 process.exit(1);
             }
         } catch (error) {

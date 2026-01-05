@@ -5,6 +5,26 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-01-05
+
+### Added
+- **Interactive Mode Improvements**: Enhanced user experience with better visual design
+  - Box-style header with decorative borders
+  - Color-coded prompts with emojis
+  - Improved spinner animations
+  - Better output formatting with separators
+
+### Changed
+- **Automatic Quote Removal**: File paths in interactive mode now automatically remove surrounding quotes
+  - No need for users to manually remove quotes from copied paths
+  - Applied to both validation and path resolution
+  - Improved user experience for terminal users
+
+### Fixed
+- File path validation in interactive mode now handles quoted paths correctly
+
+---
+
 ## [1.1.0] - 2026-01-05
 
 ### Added
