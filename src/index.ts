@@ -52,6 +52,11 @@ export class MarkdownToDocument {
         const warnings: string[] = [];
 
         try {
+            Logger.info('Pipeline started', {
+                format: options.format,
+                inputPath: options.inputPath,
+            });
+
             // Validate input
             if (!fs.existsSync(options.inputPath)) {
                 return {
@@ -67,6 +72,7 @@ export class MarkdownToDocument {
             // Step 1: Validate content
             let validationReport;
             if (options.validateContent !== false) {
+                Logger.info('Step 1/6: Validate', { autoFix: options.autoFix !== false });
                 validationReport = await this.validator.validate(content, options.inputPath);
 
                 if (validationReport.errors > 0) {
@@ -79,12 +85,14 @@ export class MarkdownToDocument {
 
                 // Auto-fix if enabled
                 if (options.autoFix !== false && validationReport.fixedIssues > 0) {
+                    Logger.info('Step 2/6: Auto-fix', { fixed: validationReport.fixedIssues });
                     content = this.validator.autoFix(content, validationReport);
                     warnings.push(`${validationReport.fixedIssues}개 문제 자동 수정됨`);
                 }
             }
 
             // Step 2: Preprocess markdown
+            Logger.info('Step 3/6: Preprocess');
             const preprocessResult = await this.preprocessor.preprocess(
                 content,
                 options.inputPath,
@@ -94,6 +102,7 @@ export class MarkdownToDocument {
             warnings.push(...preprocessResult.warnings);
 
             // Step 3: Generate clean markdown with frontmatter
+            Logger.info('Step 4/6: Assemble');
             const cleanMarkdown = this.preprocessor.generateCleanMarkdown(
                 preprocessResult,
                 options.format === 'pdf' ? 'pdf' : 'epub',
@@ -120,6 +129,7 @@ export class MarkdownToDocument {
 
             // Step 6: Convert to EPUB
             if (options.format === 'epub' || options.format === 'both') {
+                Logger.info('Step 5/6: Convert (EPUB)');
                 const epubResult = await this.pandocService.toEpub({
                     inputPath: tempMarkdownPath,
                     outputPath: epubPath,
@@ -142,6 +152,7 @@ export class MarkdownToDocument {
 
             // Step 7: Convert to PDF
             if (options.format === 'pdf' || options.format === 'both') {
+                Logger.info('Step 5/6: Convert (PDF)');
                 const pdfResult = await this.pandocService.toPdf({
                     inputPath: tempMarkdownPath,
                     outputPath: pdfPath,
@@ -172,6 +183,12 @@ export class MarkdownToDocument {
             } catch {
                 // Ignore cleanup errors
             }
+
+            Logger.info('Step 6/6: Finalize', {
+                success: errors.length === 0,
+                warnings: warnings.length,
+                errors: errors.length,
+            });
 
             // Return result
             const success = errors.length === 0;

@@ -25,6 +25,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 이미지 컨테이너에 페이지 분할 방지 규칙 적용
   - 이미지 전후 적절한 여백 자동 추가
 
+## [1.2.5] - 2026-01-06
+
+### Changed
+- **변환 파이프라인 단순화**:
+  - 출판용 마크다운 파일 저장 단계를 제거하고, 변환 과정 내부에서 자동 최적화/전처리 후 바로 EPUB/PDF 생성
+  - Interactive 모드에서 `_preprocessed.md` 파일을 생성하지 않음
+
+- **단계형 로그 고도화**:
+  - Validate → Auto-fix → Preprocess → Assemble → Convert → Finalize 순서로 단계가 이어지도록 로그 정리
+
 ## [1.2.3] - 2026-01-06
 
 ### Changed
@@ -33,7 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **3가지 변환 모드 제공**:
     - ⚡ **빠른 변환**: 스마트 기본값으로 출력 형식만 선택 (권장)
     - ⚙️ **상세 설정**: 프리셋, 테마, 제목/저자 직접 선택
-    - 📝 **전처리만**: Obsidian 최적화 후 파일 저장 (변환 안함)
   - **스마트 기본값**: 문서 분석 결과 기반 프리셋/테마 자동 선택
   - **자동 전처리**: Obsidian 문법 감지 시 자동 최적화 적용
   - **간소화된 선택지**: 프리셋/테마 상위 6개만 표시, "더 보기" 옵션 제공

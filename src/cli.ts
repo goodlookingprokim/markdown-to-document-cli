@@ -23,7 +23,7 @@ import * as fs from 'fs';
 
 // ============ Type Definitions ============
 
-type InteractiveMode = 'quick' | 'custom' | 'preprocess_only';
+type InteractiveMode = 'quick' | 'custom';
 type OutputFormat = 'epub' | 'pdf' | 'both';
 
 const program = new Command();
@@ -201,7 +201,7 @@ function displayAnalysisResult(result: MarkdownAnalysisResult): void {
     // Recommendation
     console.log(chalk.bold('\n💡 권장 사항:'));
     if (result.recommendPreprocess) {
-        console.log(chalk.green('  → 전처리(출력 최적화) 후 변환을 권장합니다.'));
+        console.log(chalk.green('  → 문서 최적화가 필요하지만, 변환 과정에서 자동으로 적용됩니다.'));
     } else {
         console.log(chalk.blue('  → 바로 변환해도 안정적입니다.'));
     }
@@ -427,55 +427,6 @@ program
         }
     });
 
-// ============ Preprocessing Helper ============
-
-/**
- * Preprocess markdown content (Obsidian syntax conversion)
- */
-function preprocessContent(content: string, options: {
-    convertObsidianImages: boolean;
-    convertObsidianLinks: boolean;
-    convertHighlights: boolean;
-    convertCallouts: boolean;
-}): string {
-    let processed = content;
-
-    // Obsidian 이미지 변환: ![[image]] → ![](image)
-    if (options.convertObsidianImages) {
-        processed = processed.replace(
-            /!\[\[([^\]|]+)(?:\|([^\]]*))?\]\]/g,
-            (_, filename, alt) => `![${alt || filename}](${filename})`
-        );
-    }
-
-    // Obsidian 내부 링크 변환: [[link]] → "link"
-    if (options.convertObsidianLinks) {
-        processed = processed.replace(
-            /(?<!!)\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|([^\]]*))?\]\]/g,
-            (_, target, display) => display || target
-        );
-    }
-
-    // 하이라이트 변환: ==text== → **text**
-    if (options.convertHighlights) {
-        processed = processed.replace(/==([^=]+)==/g, '**$1**');
-    }
-
-    // 콜아웃 최적화
-    if (options.convertCallouts) {
-        processed = processed.replace(
-            />\s*\[!(\w+)\]([^\n]*)\n((?:>.*\n?)*)/g,
-            (_, type, title, content) => {
-                const cleanTitle = title.trim() || type.toUpperCase();
-                const cleanContent = content.replace(/^>\s?/gm, '').trim();
-                return `> **${cleanTitle}**\n>\n> ${cleanContent}\n`;
-            }
-        );
-    }
-
-    return processed;
-}
-
 /**
  * Extract metadata from frontmatter
  */
@@ -608,10 +559,6 @@ program
                         name: chalk.blue('⚙️  상세 설정') + chalk.gray(' - 모든 옵션을 직접 선택'),
                         value: 'custom',
                     },
-                    {
-                        name: chalk.yellow('📝 전처리만') + chalk.gray(' - Obsidian 최적화 후 파일 저장 (변환 안함)'),
-                        value: 'preprocess_only',
-                    },
                 ],
                 default: 'quick',
             },
@@ -741,29 +688,6 @@ program
                 customAuthor = metaAnswers.customAuthor;
             }
 
-        } else if (mode === 'preprocess_only') {
-            // 전처리만 모드
-            const spinner = ora(chalk.cyan('🔄 Obsidian 문법 최적화 중...')).start();
-
-            const processedContent = preprocessContent(fileContent, {
-                convertObsidianImages: true,
-                convertObsidianLinks: true,
-                convertHighlights: true,
-                convertCallouts: true,
-            });
-
-            const tempDir = path.dirname(resolvedInputPath);
-            const baseName = path.basename(resolvedInputPath, '.md');
-            const preprocessedPath = path.join(tempDir, `${baseName}_preprocessed.md`);
-
-            fs.writeFileSync(preprocessedPath, processedContent, 'utf-8');
-            spinner.succeed(chalk.green('✅ 전처리 완료'));
-
-            console.log(chalk.green('\n📄 저장된 파일:'));
-            console.log(chalk.cyan(`   ${preprocessedPath}`));
-            console.log(chalk.gray('\n💡 이 파일로 변환하려면:'));
-            console.log(chalk.gray(`   npx markdown-to-document-cli "${preprocessedPath}"\n`));
-            process.exit(0);
         }
 
         // ============ STEP 3: 변환 실행 ============
@@ -783,32 +707,11 @@ program
                 process.exit(1);
             }
 
-            // 전처리 (필요시 자동 적용)
-            let finalInputPath = resolvedInputPath;
-
-            if (analysisResult.recommendPreprocess) {
-                spinner.text = chalk.cyan('🔄 Obsidian 문법 최적화 중...');
-
-                const processedContent = preprocessContent(fileContent, {
-                    convertObsidianImages: analysisResult.hasObsidianImages,
-                    convertObsidianLinks: analysisResult.hasObsidianLinks,
-                    convertHighlights: analysisResult.hasHighlights,
-                    convertCallouts: analysisResult.hasCallouts,
-                });
-
-                const tempDir = path.dirname(resolvedInputPath);
-                const baseName = path.basename(resolvedInputPath, '.md');
-                const preprocessedPath = path.join(tempDir, `${baseName}_preprocessed.md`);
-
-                fs.writeFileSync(preprocessedPath, processedContent, 'utf-8');
-                finalInputPath = preprocessedPath;
-            }
-
             // 변환 실행
             spinner.text = chalk.cyan('🔄 문서 변환 중...');
 
             const conversionOptions = {
-                inputPath: finalInputPath,
+                inputPath: resolvedInputPath,
                 outputPath: outputPath ? path.resolve(outputPath) : undefined,
                 format: format,
                 typographyPreset: typographyPreset as any,
