@@ -275,6 +275,8 @@ program
     .description('Professional-grade EPUB/PDF conversion tool for Markdown files')
     .version('1.0.0')
     .argument('<input>', 'Input markdown file path')
+    .requiredOption('--title <title>', 'Book title (required)')
+    .requiredOption('--author <author>', 'Author name (required)')
     .option('-o, --output <path>', 'Output directory')
     .option('-f, --format <format>', 'Output format (epub, pdf, both)', 'epub')
     .option('-t, --typography <preset>', 'Typography preset (novel, presentation, review, ebook)', 'ebook')
@@ -342,6 +344,8 @@ program
                 paperSize: options.paperSize as any,
                 enableFontSubsetting: options.fontSubsetting,
                 cssPath: options.css ? path.resolve(options.css) : undefined,
+                customTitle: (options.title as string).trim(),
+                customAuthor: (options.author as string).trim(),
             };
 
             // Show conversion info
@@ -520,6 +524,26 @@ program
         const analysisResult = analyzeMarkdownContent(fileContent);
         const metadata = extractMetadata(fileContent);
 
+        // 제목/저자: 반드시 사용자 입력을 받으며, 입력값을 항상 변환에 반영
+        const metaAnswers = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'customTitle',
+                message: chalk.yellow('📖 책 제목 (필수):'),
+                default: metadata.title || path.basename(resolvedInputPath, '.md'),
+                validate: (input: string) => (input.trim().length > 0 ? true : chalk.red('책 제목은 필수입니다.')),
+                transformer: (input: string) => input,
+            },
+            {
+                type: 'input',
+                name: 'customAuthor',
+                message: chalk.yellow('✍️  저자 (필수):'),
+                default: metadata.author || '',
+                validate: (input: string) => (input.trim().length > 0 ? true : chalk.red('저자명은 필수입니다.')),
+                transformer: (input: string) => input,
+            },
+        ]);
+
         // ============ STEP 2: 모드 선택 및 설정 ============
         console.log(chalk.gray('\n' + '─'.repeat(60)));
         console.log(chalk.gray('  Step 2/3: 변환 설정\n'));
@@ -570,8 +594,8 @@ program
         let format: OutputFormat = 'both';
         let typographyPreset = analysisResult.recommendedPreset;
         let coverTheme = 'apple';
-        let customTitle = metadata.title || '';
-        let customAuthor = metadata.author || '';
+        let customTitle = (metaAnswers.customTitle as string).trim();
+        let customAuthor = (metaAnswers.customAuthor as string).trim();
         let outputPath = '';
 
         if (mode === 'quick') {
@@ -666,26 +690,6 @@ program
                     },
                 ]);
                 coverTheme = moreThemeAnswer.coverTheme;
-            }
-
-            // 제목/저자 (자동 감지된 경우 확인만)
-            if (!metadata.title || !metadata.author) {
-                const metaAnswers = await inquirer.prompt([
-                    {
-                        type: 'input',
-                        name: 'customTitle',
-                        message: chalk.yellow('📖 책 제목:'),
-                        default: metadata.title || path.basename(resolvedInputPath, '.md'),
-                    },
-                    {
-                        type: 'input',
-                        name: 'customAuthor',
-                        message: chalk.yellow('✍️  저자:'),
-                        default: metadata.author || '',
-                    },
-                ]);
-                customTitle = metaAnswers.customTitle;
-                customAuthor = metaAnswers.customAuthor;
             }
 
         }

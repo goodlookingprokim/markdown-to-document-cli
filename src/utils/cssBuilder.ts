@@ -34,11 +34,12 @@ export function buildBoxSizingReset(): string {
 export function buildImageStyles(): string[] {
     return [
         '/* Responsive image styling - override inline styles */',
-        'img { max-width: 100% !important; width: auto !important; height: auto !important; display: block; margin: 1em auto; }',
+        // Keep aspect ratio and avoid over-constraining layout (prevents big blank gaps)
+        'img { max-width: 100% !important; max-height: 70vh !important; width: auto !important; height: auto !important; object-fit: contain; display: block; margin: 0.6em auto; }',
         '/* Override fixed-width containers for e-reader compatibility */',
         'div[style*="width:"], div[style*="width :"] { max-width: 100% !important; width: auto !important; }',
         '/* Image containers should be fluid */',
-        'figure { margin: 1.5em 0; text-align: center; max-width: 100%; }',
+        'figure { margin: 0.8em 0; text-align: center; max-width: 100%; }',
         'figcaption { font-size: 0.9em; color: #666; margin-top: 0.5em; font-style: italic; }',
         '/* Hide iframe embeds that don\'t work in EPUB */',
         'iframe { display: none !important; }',
@@ -52,9 +53,14 @@ export function buildImageStyles(): string[] {
  */
 export function buildTableStyles(): string[] {
     return [
-        'table { width: 100%; border-collapse: collapse; margin: 1.5em 0; }',
+        'table { width: 100%; border-collapse: collapse; margin: 1.2em 0; }',
         'th, td { border: 1px solid #ddd; padding: 0.5em; text-align: left; }',
-        'th { background-color: #f9f9f9; }'
+        'th { background-color: #f9f9f9; }',
+        '/* Table pagination: allow table to split across pages with repeated header */',
+        'thead { display: table-header-group; }',
+        'tfoot { display: table-footer-group; }',
+        'tr { break-inside: avoid; page-break-inside: avoid; }',
+        'table { break-inside: auto; page-break-inside: auto; }'
     ];
 }
 
@@ -132,7 +138,8 @@ export function buildPdfBodyExtras(): string[] {
  * Generate PDF break-inside rules
  */
 export function buildPdfBreakRules(): string {
-    return 'blockquote, pre, table, figure { break-inside: avoid; }';
+    // Avoid breaking inside blockquotes/pre, but allow tables/images to flow across pages to prevent large blank gaps
+    return 'blockquote, pre { break-inside: avoid; }';
 }
 
 /**
@@ -141,14 +148,15 @@ export function buildPdfBreakRules(): string {
 export function buildPdfImageStyles(): string[] {
     return [
         '/* PDF-specific image constraints */',
-        'img { max-height: 85vh !important; object-fit: contain; break-inside: avoid; page-break-inside: avoid; }',
+        // Allow images to be placed naturally with text; constrain height to avoid overflow
+        'img { max-height: 70vh !important; object-fit: contain; }',
         '/* Ensure images don\'t overflow page width with margins */',
         'img { max-width: calc(100% - 2em) !important; }',
-        '/* Image containers should not split across pages */',
-        'figure, .image-container, div:has(> img) { break-inside: avoid; page-break-inside: avoid; }',
+        '/* Image containers should be fluid */',
+        'figure { max-width: 100%; }',
         '/* Add spacing before/after images for better layout */',
-        'p + figure, p + img { margin-top: 1.5em; }',
-        'figure + p, img + p { margin-top: 1.5em; }'
+        'p + figure, p + img { margin-top: 0.8em; }',
+        'figure + p, img + p { margin-top: 0.8em; }'
     ];
 }
 

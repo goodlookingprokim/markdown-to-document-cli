@@ -35,6 +35,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **단계형 로그 고도화**:
   - Validate → Auto-fix → Preprocess → Assemble → Convert → Finalize 순서로 단계가 이어지도록 로그 정리
 
+## [1.2.6] - 2026-01-06
+
+### Changed
+- **제목/저자 입력 강제 (자동 생성 방지)**:
+  - Interactive 모드에서 책 제목/저자명을 변환 시작 전에 필수로 입력
+  - CLI 변환 시 `--title`, `--author`를 필수 옵션으로 요구하고 입력값을 frontmatter에 항상 반영
+
+- **레이아웃 품질 개선 (공백 최소화)**:
+  - 이미지: 비율 유지 + 최대 높이 제한 + 여백 조정으로 페이지 내 자연스러운 배치
+  - 테이블: 헤더 반복(`thead`) 및 행 단위 분할 방지(`tr break-inside: avoid`)로 여러 페이지에 자연스럽게 이어지도록 개선
+
 ## [1.2.3] - 2026-01-06
 
 ### Changed
