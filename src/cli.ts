@@ -225,11 +225,11 @@ program
                 name: 'format',
                 message: chalk.yellow('📤 Output format:'),
                 choices: [
-                    { name: chalk.green('📖 EPUB only'), value: 'epub' },
-                    { name: chalk.blue('📄 PDF only'), value: 'pdf' },
                     { name: chalk.magenta('📚 Both EPUB and PDF'), value: 'both' },
+                    { name: chalk.blue('📄 PDF only'), value: 'pdf' },
+                    { name: chalk.green('📖 EPUB only'), value: 'epub' },
                 ],
-                default: 'epub',
+                default: 'both',
             },
             {
                 type: 'list',

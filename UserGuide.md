@@ -338,17 +338,20 @@ m2d i
 - 🎨 **색상 코딩된 프롬프트**: 각 질문에 이모지와 색상으로 시각적 개선
 - 📊 **개선된 스피너**: 변환 진행 상황을 더 명확하게 표시
 - 📦 **더 나은 출력 포맷팅**: 결과를 구분선으로 구분하여 가독성 향상
+- 📖 **책 제목/저자명 직접 입력**: 자동 감지된 메타데이터 대신 직접 입력 가능
 
 ### 사용 예시
 
 단계별 질문에 답하면 됩니다:
 
 ```
-╔════════════════════════════════════════════════════════════╗
-║  📚 Markdown to Document - Interactive Mode               ║
-╚════════════════════════════════════════════════════════════╝
+────────────────────────────────────────────────────────────
+  Markdown to Document - Interactive Mode
+────────────────────────────────────────────────────────────
 
 ? 📄 Input markdown file path: ./my-document.md
+? 📖 Book title (leave empty to use auto-detected): My Custom Title
+? ✍️  Author name (leave empty to use auto-detected): John Doe
 ? 📤 Output format: 📖 EPUB only
 ? 🎨 Typography preset: Ebook - 일반 전자책
 ? 🖼️  Cover theme (optional): None
@@ -368,7 +371,7 @@ m2d i
 
 📦 Output Files:
 
-  📖 EPUB:  ./output/my-document.epub
+  📖 EPUB:  ./output/My Custom Title.epub
 
 ────────────────────────────────────────────────────────────
 
@@ -379,6 +382,8 @@ m2d i
 
 - 파일 경로를 복사할 때 따옴표가 포함되어도 자동으로 처리됩니다
 - 터미널에서 파일을 드래그 앤 드롭하여 경로를 입력할 수 있습니다
+- 책 제목과 저자명을 직접 입력하면 자동 감지된 값을 대체합니다
+- 빈 값으로 두면 자동 감지된 메타데이터를 사용합니다
 - 모든 질문에 기본값이 제공되므로 Enter 키만 눌러도 됩니다
 
 ## YAML Frontmatter
