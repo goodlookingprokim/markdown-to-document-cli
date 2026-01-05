@@ -101,7 +101,11 @@ export class MarkdownPreprocessor {
         // Step 8: Convert highlights
         processedContent = convertHighlights(processedContent);
 
-        // Step 9: Escape pipe characters for EPUB
+        // Step 9: Replace '---' horizontal rules with '***' to avoid YAML confusion
+        // Pandoc interprets '---' as YAML frontmatter delimiter
+        processedContent = processedContent.replace(/^---$/gm, '***');
+
+        // Step 10: Escape pipe characters for EPUB
         if (outputFormat === 'epub') {
             processedContent = escapePipeCharacters(processedContent);
         }
@@ -202,18 +206,12 @@ export class MarkdownPreprocessor {
     }
 
     /**
-     * Escape YAML string value - properly handle special characters
+     * Escape YAML string value using single quotes - simpler and more robust
+     * Single quotes in YAML only need single quotes doubled, no other escaping needed
      */
     private escapeYamlString(value: string): string {
-        // Replace backslashes first to avoid double-escaping
-        let escaped = value.replace(/\\/g, '\\\\');
-        // Escape double quotes
-        escaped = escaped.replace(/"/g, '\\"');
-        // Escape newlines
-        escaped = escaped.replace(/\n/g, '\\n');
-        // Escape carriage returns
-        escaped = escaped.replace(/\r/g, '\\r');
-        return escaped;
+        // In single-quoted YAML strings, only single quotes need escaping (by doubling them)
+        return value.replace(/'/g, "''");
     }
 
     /**
@@ -226,20 +224,20 @@ export class MarkdownPreprocessor {
     ): string {
         const { content, metadata } = preprocessResult;
 
-        // Build YAML frontmatter
+        // Build YAML frontmatter using single quotes (safer for special characters)
         const yamlLines: string[] = ['---'];
 
         const finalTitle = overrides?.title || metadata.title;
         const finalAuthor = overrides?.author || metadata.author;
 
-        if (finalTitle) yamlLines.push(`title: "${this.escapeYamlString(finalTitle)}"`);
-        if (metadata.subtitle) yamlLines.push(`subtitle: "${this.escapeYamlString(metadata.subtitle)}"`);
-        if (finalAuthor) yamlLines.push(`author: "${this.escapeYamlString(finalAuthor)}"`);
+        if (finalTitle) yamlLines.push(`title: '${this.escapeYamlString(finalTitle)}'`);
+        if (metadata.subtitle) yamlLines.push(`subtitle: '${this.escapeYamlString(metadata.subtitle)}'`);
+        if (finalAuthor) yamlLines.push(`author: '${this.escapeYamlString(finalAuthor)}'`);
         if (metadata.language) yamlLines.push(`language: ${metadata.language}`);
         if (metadata.date) yamlLines.push(`date: ${metadata.date}`);
-        if (metadata.description) yamlLines.push(`description: "${this.escapeYamlString(metadata.description)}"`);
+        if (metadata.description) yamlLines.push(`description: '${this.escapeYamlString(metadata.description)}'`);
         if (metadata.isbn) yamlLines.push(`isbn: ${metadata.isbn}`);
-        if (metadata.publisher) yamlLines.push(`publisher: "${this.escapeYamlString(metadata.publisher)}"`);
+        if (metadata.publisher) yamlLines.push(`publisher: '${this.escapeYamlString(metadata.publisher)}'`);
 
         yamlLines.push('---');
         yamlLines.push('');

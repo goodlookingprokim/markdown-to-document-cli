@@ -8,9 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.4] - 2026-01-06
 
 ### Fixed
-- **YAML 파싱 에러 수정**: 메타데이터 필드(title, subtitle, author, description, publisher)에 특수문자(따옴표, 줄바꿈, 백슬래시 등)가 포함될 경우 Pandoc YAML 파싱 실패 문제 해결
-  - `escapeYamlString()` 메서드 추가로 YAML 문자열 값 안전하게 이스케이프 처리
+- **YAML 파싱 에러 수정**: 
+  - 콘텐츠 내 `---` 수평선이 YAML frontmatter로 오인되는 문제 해결 (`---` → `***` 변환)
+  - YAML 문자열에 단일 따옴표 사용으로 특수문자 안전 처리
   - "YAML parse exception: did not find expected comment or line break" 오류 해결
+
+- **EPUB 반응형 이미지 스타일링**:
+  - `!important` 규칙으로 인라인 스타일 오버라이드
+  - 고정 너비 컨테이너(`width: 600px` 등) 자동 조절
+  - iframe 임베드 숨김 처리 (오프라인 EPUB 호환성)
+  - 모든 이미지가 e-reader 화면 크기에 맞게 자동 조절
 
 ## [1.2.3] - 2026-01-06
 

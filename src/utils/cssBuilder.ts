@@ -28,13 +28,22 @@ export function buildBoxSizingReset(): string {
 }
 
 /**
- * Generate image styling CSS
+ * Generate image styling CSS with responsive sizing for EPUB
+ * Uses !important to override inline styles from markdown source
  */
 export function buildImageStyles(): string[] {
     return [
-        'img { max-width: 100%; height: auto; display: block; margin: 1em auto; }',
-        'figure { margin: 1.5em 0; text-align: center; }',
-        'figcaption { font-size: 0.9em; color: #666; margin-top: 0.5em; font-style: italic; }'
+        '/* Responsive image styling - override inline styles */',
+        'img { max-width: 100% !important; width: auto !important; height: auto !important; display: block; margin: 1em auto; }',
+        '/* Override fixed-width containers for e-reader compatibility */',
+        'div[style*="width:"], div[style*="width :"] { max-width: 100% !important; width: auto !important; }',
+        '/* Image containers should be fluid */',
+        'figure { margin: 1.5em 0; text-align: center; max-width: 100%; }',
+        'figcaption { font-size: 0.9em; color: #666; margin-top: 0.5em; font-style: italic; }',
+        '/* Hide iframe embeds that don\'t work in EPUB */',
+        'iframe { display: none !important; }',
+        '/* Center images in anchor links */',
+        'a > img { display: block; margin: 0 auto; }'
     ];
 }
 

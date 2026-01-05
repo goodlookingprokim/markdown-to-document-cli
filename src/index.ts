@@ -105,6 +105,9 @@ export class MarkdownToDocument {
             const tempMarkdownPath = path.join(tempDir, 'temp.md');
             fs.writeFileSync(tempMarkdownPath, cleanMarkdown, 'utf-8');
 
+            // Debug: Log first 50 lines of generated markdown
+            Logger.info('Generated temp.md (first 50 lines):\n' + cleanMarkdown.split('\n').slice(0, 50).join('\n'));
+
             // Step 5: Determine output paths
             const title = options.customTitle || preprocessResult.metadata.title || 'Untitled';
             const author = options.customAuthor || preprocessResult.metadata.author;
