@@ -139,7 +139,7 @@ npm list typescript
 
 **출력 예시**:
 ```
-markdown-to-document-cli@1.1.5
+markdown-to-document-cli@1.2.7
 └── typescript@5.3.3  ✅
 ```
 
@@ -186,7 +186,7 @@ npm run build
 
 **출력 예시**:
 ```
-> markdown-to-document-cli@1.1.5 build
+> markdown-to-document-cli@1.2.7 build
 > tsc
 
 ✅ 빌드 성공!
@@ -636,7 +636,6 @@ Options:
   -h, --help           display help for command
 
 Commands:
-  convert              Convert markdown to EPUB/PDF
   interactive          Interactive mode
   list-presets         List available typography presets
   list-themes          List available cover themes
@@ -672,14 +671,15 @@ npx markdown-to-document-cli test.md
 ✅ All dependencies are installed!
 
 📄 Input: /Users/username/test.md
-📤 Format: EPUB
-🎨 Typography: Ebook - 일반 전자책
+📤 Format: BOTH
+🎨 Typography: 균형 레이아웃
 
 🔄 Converting document...
 ✅ Conversion completed!
 
 ✅ Output files:
   📖 EPUB:  /Users/username/test.epub
+  📄 PDF:   /Users/username/test.pdf
 
 🎉 Conversion successful!
 ```
@@ -709,7 +709,7 @@ npx markdown-to-document-cli test.md
 npx markdown-to-document-cli --help  # 도움말이 보이나요? ✅
 
 # 실제 변환
-npx markdown-to-document-cli test.md  # EPUB 파일이 생성되나요? ✅
+npx markdown-to-document-cli test.md  # EPUB/PDF 파일이 생성되나요? ✅
 ```
 
 ---
@@ -941,7 +941,7 @@ npm view markdown-to-document-cli version  # 새 버전이 보이나요? ✅
 ---
 
 **작성자**: 잘생김프로쌤  
-**마지막 업데이트**: 2026-01-06 (v1.2.3)
+**마지막 업데이트**: 2026-01-06 (v1.2.7)
 
 ---
 

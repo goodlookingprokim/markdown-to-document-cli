@@ -5,6 +5,46 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.7] - 2026-01-06
+
+### Changed
+- **비대화형 CLI 기본값을 '최고품질 쉬운 모드'로 개선**:
+  - 기본 출력 형식: `both` (EPUB + PDF 동시 생성)
+  - 기본 타이포그래피: `auto` (문서 분석 기반 추천 프리셋 자동 적용)
+  - PDF 엔진: `auto` (WeasyPrint 우선, 미설치 시 XeLaTeX로 fallback)
+
+- **title/author 입력 UX 개선**:
+  - 비대화형 CLI: `--title`, `--author` 없이도 frontmatter/파일명 기반으로 자동 추론
+  - Interactive: 입력은 받되 Enter로 자동값 사용
+
+### Fixed
+- **EPUB에서 `--no-toc` 옵션이 무시되던 문제 수정**: EPUB 변환에서도 `includeToc` 설정이 반영되도록 수정
+- **CLI 버전 표시 정합성 개선**: `package.json` 버전을 읽어 `m2d --version`에 표시
+
+### Docs
+- README/UserGuide/MarkdownGuide/BEGINNER_GUIDE/TroubleShooting/INSTALL 문서 내용을 현재 기본값/워크플로우에 맞게 정리
+
+## [1.2.6] - 2026-01-06
+
+### Changed
+- **제목/저자 입력 강제 (자동 생성 방지)**:
+  - Interactive 모드에서 책 제목/저자명을 변환 시작 전에 필수로 입력
+  - CLI 변환 시 `--title`, `--author`를 필수 옵션으로 요구하고 입력값을 frontmatter에 항상 반영
+
+- **레이아웃 품질 개선 (공백 최소화)**:
+  - 이미지: 비율 유지 + 최대 높이 제한 + 여백 조정으로 페이지 내 자연스러운 배치
+  - 테이블: 헤더 반복(`thead`) 및 행 단위 분할 방지(`tr break-inside: avoid`)로 여러 페이지에 자연스럽게 이어지도록 개선
+
+## [1.2.5] - 2026-01-06
+
+### Changed
+- **변환 파이프라인 단순화**:
+  - 출판용 마크다운 파일 저장 단계를 제거하고, 변환 과정 내부에서 자동 최적화/전처리 후 바로 EPUB/PDF 생성
+  - Interactive 모드에서 `_preprocessed.md` 파일을 생성하지 않음
+
+- **단계형 로그 고도화**:
+  - Validate → Auto-fix → Preprocess → Assemble → Convert → Finalize 순서로 단계가 이어지도록 로그 정리
+
 ## [1.2.4] - 2026-01-06
 
 ### Fixed
@@ -24,27 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `break-inside: avoid`로 이미지가 페이지 중간에 잘리지 않음
   - 이미지 컨테이너에 페이지 분할 방지 규칙 적용
   - 이미지 전후 적절한 여백 자동 추가
-
-## [1.2.5] - 2026-01-06
-
-### Changed
-- **변환 파이프라인 단순화**:
-  - 출판용 마크다운 파일 저장 단계를 제거하고, 변환 과정 내부에서 자동 최적화/전처리 후 바로 EPUB/PDF 생성
-  - Interactive 모드에서 `_preprocessed.md` 파일을 생성하지 않음
-
-- **단계형 로그 고도화**:
-  - Validate → Auto-fix → Preprocess → Assemble → Convert → Finalize 순서로 단계가 이어지도록 로그 정리
-
-## [1.2.6] - 2026-01-06
-
-### Changed
-- **제목/저자 입력 강제 (자동 생성 방지)**:
-  - Interactive 모드에서 책 제목/저자명을 변환 시작 전에 필수로 입력
-  - CLI 변환 시 `--title`, `--author`를 필수 옵션으로 요구하고 입력값을 frontmatter에 항상 반영
-
-- **레이아웃 품질 개선 (공백 최소화)**:
-  - 이미지: 비율 유지 + 최대 높이 제한 + 여백 조정으로 페이지 내 자연스러운 배치
-  - 테이블: 헤더 반복(`thead`) 및 행 단위 분할 방지(`tr break-inside: avoid`)로 여러 페이지에 자연스럽게 이어지도록 개선
 
 ## [1.2.3] - 2026-01-06
 

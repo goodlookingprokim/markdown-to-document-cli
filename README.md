@@ -90,7 +90,7 @@ npx markdown-to-document-cli interactive
 m2d i
 ```
 
-**간소화된 3단계 워크플로우** (v1.2.3):
+**간소화된 3단계 워크플로우**:
 
 | Step | 내용 |
 |------|------|
@@ -98,10 +98,9 @@ m2d i
 | **Step 2** | 🚀 변환 모드 선택 + 자동 문서 분석 |
 | **Step 3** | ⚡ 변환 실행 |
 
-**3가지 변환 모드**:
+**2가지 변환 모드**:
 - **⚡ 빠른 변환** - 출력 형식만 선택, 스마트 기본값 자동 적용 (권장)
 - **⚙️ 상세 설정** - 프리셋, 테마, 제목/저자 직접 선택
-- **📝 전처리만** - Obsidian 최적화 후 파일 저장 (변환 안함)
 
 **스마트 기능**:
 - 문서 분석 기반 프리셋 자동 추천
@@ -111,7 +110,7 @@ m2d i
 ### 기본 사용법
 
 ```bash
-# EPUB 변환
+# 기본 변환 (권장: EPUB + PDF)
 npx markdown-to-document-cli document.md
 
 # PDF 변환
@@ -131,8 +130,10 @@ m2d document.md [options]
 
 옵션:
   -o, --output <path>          출력 디렉토리
-  -f, --format <format>        출력 형식 (epub, pdf, both) [기본값: epub]
-  -t, --typography <preset>    타이포그래피 프리셋 [기본값: ebook]
+  --title <title>              책 제목 (frontmatter title 또는 파일명 기본값)
+  --author <author>            저자명 (frontmatter author 기본값)
+  -f, --format <format>        출력 형식 (epub, pdf, both) [기본값: both]
+  -t, --typography <preset>    타이포그래피 프리셋 (auto 포함) [기본값: auto]
                                Basic: novel, presentation, review, ebook
                                Content: text_heavy, table_heavy, image_heavy, balanced
                                Document: report, manual, magazine
@@ -145,7 +146,7 @@ m2d document.md [options]
   --no-auto-fix                자동 수정 비활성화
   --toc-depth <number>         목차 깊이 [기본값: 2]
   --no-toc                     목차 비활성화
-  --pdf-engine <engine>        PDF 엔진 (pdflatex, xelatex, weasyprint) [기본값: weasyprint]
+  --pdf-engine <engine>        PDF 엔진 (auto, pdflatex, xelatex, weasyprint) [기본값: auto]
   --paper-size <size>          용지 크기 (a4, letter) [기본값: a4]
   --font-subsetting            폰트 서브세팅 활성화
   --css <path>                 커스텀 CSS 파일 경로

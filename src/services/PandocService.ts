@@ -34,6 +34,7 @@ export interface EpubConversionOptions {
     cssPath?: string;
     typographyPreset?: TypographyPresetId;
     tocDepth?: number;
+    includeToc?: boolean;
     epubVersion?: '2' | '3';
     metadata?: Record<string, string>;
     enableFontSubsetting?: boolean;
@@ -48,7 +49,7 @@ export interface PdfConversionOptions {
     language?: string;
     cssPath?: string;
     typographyPreset?: TypographyPresetId;
-    pdfEngine?: 'pdflatex' | 'xelatex' | 'weasyprint';
+    pdfEngine?: 'pdflatex' | 'xelatex' | 'weasyprint' | 'auto';
     paperSize?: string;
     marginTop?: string;
     marginBottom?: string;
@@ -288,13 +289,31 @@ export class PandocService {
         }
 
         // Table of contents
-        args.push('--toc');
-        args.push('--toc-depth', String(options.tocDepth || 2));
+        if (options.includeToc !== false) {
+            args.push('--toc');
+            args.push('--toc-depth', String(options.tocDepth || 2));
+        }
 
         // Standalone
         args.push('--standalone');
 
         return args;
+    }
+
+    private resolvePdfEngine(engine: 'pdflatex' | 'xelatex' | 'weasyprint' | 'auto'): {
+        engine: 'pdflatex' | 'xelatex' | 'weasyprint';
+        path: string;
+    } {
+        if (engine === 'auto') {
+            const weasyprintPath = this.findPdfEnginePath('weasyprint');
+            if (weasyprintPath !== 'weasyprint') {
+                return { engine: 'weasyprint', path: weasyprintPath };
+            }
+            // Best fallback for Korean + typography when WeasyPrint is not installed
+            return { engine: 'xelatex', path: 'xelatex' };
+        }
+
+        return { engine, path: this.findPdfEnginePath(engine) };
     }
 
     /**
@@ -323,9 +342,9 @@ export class PandocService {
         args.push('-o', options.outputPath);
 
         // PDF engine
-        const engine = options.pdfEngine || 'weasyprint';
-        const enginePath = this.findPdfEnginePath(engine);
-        args.push(`--pdf-engine=${enginePath}`);
+        const requestedEngine = options.pdfEngine || 'auto';
+        const resolvedEngine = this.resolvePdfEngine(requestedEngine);
+        args.push(`--pdf-engine=${resolvedEngine.path}`);
 
         // Metadata: Author
         if (options.author) {
@@ -358,7 +377,7 @@ export class PandocService {
         }
 
         // Page settings for non-weasyprint engines
-        if (engine !== 'weasyprint') {
+        if (resolvedEngine.engine !== 'weasyprint') {
             args.push('-V', `papersize:${options.paperSize || 'a4'}`);
             if (options.marginTop) args.push('-V', `margin-top:${options.marginTop}`);
             if (options.marginBottom) args.push('-V', `margin-bottom:${options.marginBottom}`);

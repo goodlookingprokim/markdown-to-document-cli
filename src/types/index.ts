@@ -43,7 +43,7 @@ export interface ConversionOptions {
     tocDepth?: number;
     includeToc?: boolean;
     paperSize?: 'a4' | 'letter';
-    pdfEngine?: 'pdflatex' | 'xelatex' | 'weasyprint';
+    pdfEngine?: 'pdflatex' | 'xelatex' | 'weasyprint' | 'auto';
     validateContent?: boolean;
     autoFix?: boolean;
     generateCover?: boolean;

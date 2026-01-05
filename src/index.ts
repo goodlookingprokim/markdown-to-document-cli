@@ -138,6 +138,7 @@ export class MarkdownToDocument {
                     language: preprocessResult.metadata.language,
                     typographyPreset: options.typographyPreset,
                     tocDepth: options.tocDepth,
+                    includeToc: options.includeToc,
                     enableFontSubsetting: options.enableFontSubsetting,
                     content: cleanMarkdown,
                     metadata: {

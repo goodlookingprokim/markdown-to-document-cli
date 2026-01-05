@@ -20,6 +20,7 @@ import { DEFAULT_CONFIG, TYPOGRAPHY_PRESETS, COVER_THEMES } from './utils/consta
 import { Logger } from './utils/common.js';
 import * as path from 'path';
 import * as fs from 'fs';
+import { fileURLToPath } from 'url';
 
 // ============ Type Definitions ============
 
@@ -27,6 +28,20 @@ type InteractiveMode = 'quick' | 'custom';
 type OutputFormat = 'epub' | 'pdf' | 'both';
 
 const program = new Command();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const getCliVersion = (): string => {
+    try {
+        const packageJsonPath = path.resolve(__dirname, '..', 'package.json');
+        const raw = fs.readFileSync(packageJsonPath, 'utf-8');
+        const parsed = JSON.parse(raw) as { version?: string };
+        return parsed.version || '0.0.0';
+    } catch {
+        return '0.0.0';
+    }
+};
 
 // ============ Helper Functions for Interactive Mode ============
 
@@ -273,19 +288,19 @@ program
     .name('markdown-to-document')
     .alias('m2d')
     .description('Professional-grade EPUB/PDF conversion tool for Markdown files')
-    .version('1.0.0')
+    .version(getCliVersion())
     .argument('<input>', 'Input markdown file path')
-    .requiredOption('--title <title>', 'Book title (required)')
-    .requiredOption('--author <author>', 'Author name (required)')
+    .option('--title <title>', 'Book title (defaults to frontmatter title or filename)')
+    .option('--author <author>', 'Author name (defaults to frontmatter author)')
     .option('-o, --output <path>', 'Output directory')
-    .option('-f, --format <format>', 'Output format (epub, pdf, both)', 'epub')
-    .option('-t, --typography <preset>', 'Typography preset (novel, presentation, review, ebook)', 'ebook')
+    .option('-f, --format <format>', 'Output format (epub, pdf, both)', 'both')
+    .option('-t, --typography <preset>', 'Typography preset (auto, novel, presentation, review, ebook, text_heavy, table_heavy, image_heavy, balanced, report, manual, magazine)', 'auto')
     .option('-c, --cover <theme>', 'Cover theme')
     .option('--no-validate', 'Skip content validation')
     .option('--no-auto-fix', 'Disable auto-fix')
     .option('--toc-depth <number>', 'Table of contents depth', '2')
     .option('--no-toc', 'Disable table of contents')
-    .option('--pdf-engine <engine>', 'PDF engine (pdflatex, xelatex, weasyprint)', 'weasyprint')
+    .option('--pdf-engine <engine>', 'PDF engine (auto, pdflatex, xelatex, weasyprint)', 'auto')
     .option('--paper-size <size>', 'Paper size (a4, letter)', 'a4')
     .option('--font-subsetting', 'Enable font subsetting')
     .option('--css <path>', 'Custom CSS file path')
@@ -313,6 +328,18 @@ program
                 console.error(chalk.yellow('⚠️  Warning: Input file does not have .md extension'));
             }
 
+            const fileContent = fs.readFileSync(inputPath, 'utf-8');
+            const analysisResult = analyzeMarkdownContent(fileContent);
+            const metadata = extractMetadata(fileContent);
+
+            const inferredTitle = metadata.title || path.basename(inputPath, '.md');
+            const inferredAuthor = metadata.author || '';
+            const customTitle = ((options.title as string | undefined) || inferredTitle).trim();
+            const customAuthor = ((options.author as string | undefined) || inferredAuthor).trim();
+
+            const typographyOption = String(options.typography || 'auto');
+            const typographyPreset = typographyOption === 'auto' ? analysisResult.recommendedPreset : typographyOption;
+
             console.log(chalk.cyan.bold('\n📚 Markdown to Document CLI\n'));
 
             // Initialize converter
@@ -334,7 +361,7 @@ program
                 inputPath,
                 outputPath: options.output ? path.resolve(options.output) : undefined,
                 format: options.format as 'epub' | 'pdf' | 'both',
-                typographyPreset: options.typography as any,
+                typographyPreset: typographyPreset as any,
                 coverTheme: options.cover,
                 validateContent: options.validate !== false,
                 autoFix: options.autoFix !== false,
@@ -344,8 +371,8 @@ program
                 paperSize: options.paperSize as any,
                 enableFontSubsetting: options.fontSubsetting,
                 cssPath: options.css ? path.resolve(options.css) : undefined,
-                customTitle: (options.title as string).trim(),
-                customAuthor: (options.author as string).trim(),
+                customTitle,
+                customAuthor: customAuthor || undefined,
             };
 
             // Show conversion info
@@ -353,6 +380,8 @@ program
             console.log(chalk.bold('📄 Input:'), chalk.cyan(inputPath));
             console.log(chalk.bold('📤 Format:'), chalk.cyan(conversionOptions.format.toUpperCase()));
             console.log(chalk.bold('🎨 Typography:'), chalk.cyan(TYPOGRAPHY_PRESETS[conversionOptions.typographyPreset]?.name || conversionOptions.typographyPreset));
+            console.log(chalk.bold('📖 Title:'), chalk.cyan(customTitle));
+            if (customAuthor) console.log(chalk.bold('✍️  Author:'), chalk.cyan(customAuthor));
             if (conversionOptions.coverTheme) {
                 console.log(chalk.bold('🖼️  Cover:'), chalk.cyan(COVER_THEMES[conversionOptions.coverTheme]?.name || conversionOptions.coverTheme));
             }
@@ -529,17 +558,17 @@ program
             {
                 type: 'input',
                 name: 'customTitle',
-                message: chalk.yellow('📖 책 제목 (필수):'),
+                message: chalk.yellow('📖 책 제목 (Enter=자동):'),
                 default: metadata.title || path.basename(resolvedInputPath, '.md'),
-                validate: (input: string) => (input.trim().length > 0 ? true : chalk.red('책 제목은 필수입니다.')),
+                validate: () => true,
                 transformer: (input: string) => input,
             },
             {
                 type: 'input',
                 name: 'customAuthor',
-                message: chalk.yellow('✍️  저자 (필수):'),
+                message: chalk.yellow('✍️  저자 (Enter=자동):'),
                 default: metadata.author || '',
-                validate: (input: string) => (input.trim().length > 0 ? true : chalk.red('저자명은 필수입니다.')),
+                validate: () => true,
                 transformer: (input: string) => input,
             },
         ]);
@@ -594,8 +623,10 @@ program
         let format: OutputFormat = 'both';
         let typographyPreset = analysisResult.recommendedPreset;
         let coverTheme = 'apple';
-        let customTitle = (metaAnswers.customTitle as string).trim();
-        let customAuthor = (metaAnswers.customAuthor as string).trim();
+        const inferredTitle = metadata.title || path.basename(resolvedInputPath, '.md');
+        const inferredAuthor = metadata.author || '';
+        let customTitle = (metaAnswers.customTitle as string).trim() || inferredTitle;
+        let customAuthor = (metaAnswers.customAuthor as string).trim() || inferredAuthor;
         let outputPath = '';
 
         if (mode === 'quick') {

@@ -92,7 +92,7 @@ npx markdown-to-document-cli interactive
 m2d i
 ```
 
-### 워크플로우 (v1.2.3 개선)
+### 워크플로우
 
 Interactive Mode는 **간소화된 3단계 워크플로우**로 구성됩니다:
 
@@ -102,13 +102,12 @@ Interactive Mode는 **간소화된 3단계 워크플로우**로 구성됩니다:
 | **Step 2** | 🚀 모드 선택 | 변환 모드 선택 + 자동 문서 분석 |
 | **Step 3** | ⚡ 변환 실행 | 자동 전처리 + 변환 |
 
-### 3가지 변환 모드
+### 2가지 변환 모드
 
 | 모드 | 설명 | 사용 시기 |
 |------|------|----------|
 | **⚡ 빠른 변환** | 출력 형식만 선택, 나머지 스마트 기본값 | 대부분의 경우 (권장) |
 | **⚙️ 상세 설정** | 프리셋, 테마, 제목/저자 직접 선택 | 세부 조정이 필요할 때 |
-| **📝 전처리만** | Obsidian 최적화 후 파일 저장 | 변환 없이 정리만 할 때 |
 
 ### 스마트 기능
 
@@ -272,7 +271,7 @@ m2d my-document.md
 1. `my-document.md` 파일을 읽습니다
 2. 콘텐츠를 검증하고 자동 수정합니다
 3. 타이포그래피 프리셋 CSS를 생성합니다
-4. EPUB 파일을 생성합니다 (`my-document.epub`)
+4. EPUB + PDF 파일을 생성합니다 (`my-document.epub`, `my-document.pdf`)
 
 ### PDF 변환
 
@@ -305,10 +304,11 @@ m2d document.md --output ./dist
 ### 타이포그래피 프리셋 (`-t, --typography`)
 
 ```bash
+m2d document.md --typography auto          # 자동 추천 (기본값)
 m2d document.md --typography novel         # 소설
 m2d document.md --typography presentation  # 발표
 m2d document.md --typography review        # 리뷰
-m2d document.md --typography ebook         # 전자책 (기본값)
+m2d document.md --typography ebook         # 전자책
 ```
 
 ### 표지 테마 (`-c, --cover`)
@@ -354,6 +354,7 @@ m2d document.md --no-toc
 
 ```bash
 # PDF 엔진 선택
+m2d document.md --format pdf --pdf-engine auto
 m2d document.md --format pdf --pdf-engine weasyprint
 m2d document.md --format pdf --pdf-engine pdflatex
 m2d document.md --format pdf --pdf-engine xelatex
@@ -407,10 +408,10 @@ m2d i
 ────────────────────────────────────────────────────────────
 
 ? 📄 Input markdown file path: ./my-document.md
-? 📖 Book title (leave empty to use auto-detected): My Custom Title
-? ✍️  Author name (leave empty to use auto-detected): John Doe
+? 📖 책 제목 (Enter=자동): My Custom Title
+? ✍️  저자 (Enter=자동): John Doe
 ? 📤 Output format: � Both EPUB and PDF
-? 🎨 Typography preset: Ebook - 일반 전자책
+? 🎨 Typography preset: Balanced - 균형 레이아웃
 ? 🖼️  Cover theme (optional): None
 ? 🔍 Enable content validation? Yes
 ? 🔧 Enable auto-fix for detected issues? Yes
@@ -626,8 +627,8 @@ if (!initResult.success) {
 const result = await converter.convert({
   inputPath: './document.md',
   outputPath: './output',
-  format: 'epub',
-  typographyPreset: 'ebook',
+  format: 'both',
+  typographyPreset: 'balanced',
   validateContent: true,
   autoFix: true,
 });
@@ -780,4 +781,4 @@ m2d --help
 
 ---
 
-**마지막 업데이트**: 2026-01-06 (v1.2.3)
+**마지막 업데이트**: 2026-01-06 (v1.2.7)

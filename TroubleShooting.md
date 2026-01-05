@@ -280,7 +280,7 @@ m2d document.md --verbose
 
 2. 자동 수정 활성화:
 ```bash
-m2d document.md --auto-fix
+m2d document.md
 ```
 
 3. 검증 건너뛰기:
@@ -333,7 +333,7 @@ author: 저자명
 
 1. 자동 수정 확인:
 ```bash
-m2d document.md --auto-fix
+m2d document.md
 ```
 
 2. 수동 변환:
@@ -933,4 +933,4 @@ A: 현재는 단일 파일만 지원합니다. 배치 처리는 향후 계획에
 
 ---
 
-**마지막 업데이트**: 2026-01-06 (v1.2.3)
+**마지막 업데이트**: 2026-01-06 (v1.2.7)
