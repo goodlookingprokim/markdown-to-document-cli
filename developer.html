@@ -179,6 +179,34 @@
         }
         .flow-arrow { width: 2px; height: 30px; background: #444; }
 
+        /* Navigation CTA */
+        .nav-cta {
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+            padding: 60px;
+            text-align: center;
+            border: 4px solid #fff;
+            margin: 80px 0;
+        }
+        .nav-cta h2 { color: #000; margin-bottom: 20px; font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; text-transform: uppercase; }
+        .nav-cta .btn {
+            display: inline-block;
+            background: #000;
+            color: var(--accent-cyan);
+            padding: 20px 40px;
+            text-decoration: none;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            border: 4px solid #000;
+            transition: all 0.2s ease;
+        }
+        .nav-cta .btn:hover {
+            background: transparent;
+            color: #000;
+            transform: scale(1.05);
+            border-color: #000;
+        }
+
         /* Footer */
         footer {
             padding: 100px 0;
@@ -196,13 +224,16 @@
             h1 { font-size: 3rem; }
             .card-grid { grid-template-columns: 1fr; }
             .nav-bar { padding: 15px 20px; }
+            .nav-cta { padding: 40px 20px; }
+            .nav-cta h2 { font-size: 1.8rem; }
+            .nav-cta .btn { font-size: 1.2rem; padding: 15px 30px; }
         }
     </style>
 </head>
 <body>
     <nav class="nav-bar">
         <a href="index.html" class="nav-brand">NPXMAGICDOC // DEV</a>
-        <a href="index.html" class="nav-link" style="background: var(--accent-cyan); color: var(--bg); font-weight: 800;">← BACK TO USER GUIDE</a>
+        <a href="index.html" class="nav-link">← BACK TO USER GUIDE</a>
     </nav>
     <div class="container">
         <header>
@@ -307,6 +338,12 @@ npm run build</code></pre>
                 <p style="margin-top: 20px;">새로운 테마 기여 시 <code>/src/themes</code> 디렉토리에 CSS와 템플릿 파일을 추가하고 <code>themes.json</code>에 메타데이터를 등록하십시오.</p>
             </div>
         </section>
+
+        <!-- NAVIGATION CTA -->
+        <div class="nav-cta">
+            <h2>Ready to write your masterpiece?</h2>
+            <a href="index.html" class="btn">GO TO USER GUIDE →</a>
+        </div>
 
         <footer>
             <div>&copy; 2024 GOODLOOKINGPROKIM</div>
