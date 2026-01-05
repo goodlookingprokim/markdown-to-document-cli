@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NpxMagicDoc | 작가를 위한 완벽 마법서</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;800&family=Plus+Jakarta+Sans:wght@400;600;800&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #000000;
+            --accent-lime: #c3ff00;
+            --accent-pink: #ff90e8;
+            --accent-blue: #05acff;
+            --accent-yellow: #ffda2d;
+            --border: 4px solid #000;
+            --shadow: 12px 12px 0px #000;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
+            line-height: 1.8;
+            padding: 0;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 100px 20px; }
+
+        /* Sophisticated Neo Brutalism Header */
+        header { margin-bottom: 150px; text-align: left; }
+        .nav-badge {
+            display: inline-block;
+            background: var(--fg);
+            color: #fff;
+            padding: 8px 20px;
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 6px 6px 0px var(--accent-lime);
+        }
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(4rem, 18vw, 9rem);
+            font-weight: 800;
+            line-height: 0.75;
+            letter-spacing: -6px;
+            margin-bottom: 50px;
+        }
+        .intro-text { 
+            font-size: 1.8rem; 
+            font-weight: 600; 
+            max-width: 850px; 
+            line-height: 1.3;
+            background: var(--accent-yellow);
+            padding: 30px;
+            border: var(--border);
+            box-shadow: 8px 8px 0px #000;
+            transform: rotate(-1deg);
+        }
+
+        /* Section Styling */
+        section { margin-bottom: 180px; }
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3rem, 10vw, 5rem);
+            margin-bottom: 80px;
+            position: relative;
+            display: inline-block;
+            line-height: 1;
+        }
+        .section-title::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 110%;
+            height: 35%;
+            background: var(--accent-lime);
+            z-index: -1;
+            transform: rotate(-2deg) translateX(-5%);
+        }
+
+        /* Feynman Story Box */
+        .feynman-card {
+            background: #fff;
+            border: var(--border);
+            box-shadow: var(--shadow);
+            padding: 60px;
+            margin: 60px 0;
+            position: relative;
+        }
+        .feynman-card::before {
+            content: "CONCEPT STORY";
+            position: absolute;
+            top: -20px;
+            left: 40px;
+            background: var(--accent-pink);
+            padding: 6px 20px;
+            border: var(--border);
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        /* Detailed Steps */
+        .step-block { 
+            background: #fff;
+            border: var(--border);
+            padding: 50px;
+            margin-bottom: 60px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .step-block:hover { transform: translate(-8px, -8px); box-shadow: 20px 20px 0px #000; }
+        .step-num {
+            position: absolute;
+            top: -40px;
+            right: -20px;
+            font-size: 8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            color: transparent;
+            -webkit-text-stroke: 3px #000;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        /* Modern Code Design */
+        .code-wrap { position: relative; margin: 40px 0; z-index: 1; }
+        .code-box {
+            background: #000;
+            color: #00ff41;
+            padding: 40px;
+            border: var(--border);
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            font-size: 1.2rem;
+            box-shadow: 10px 10px 0px var(--accent-pink);
+        }
+        .copy-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-pink);
+            border: 3px solid #000;
+            padding: 10px 20px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #000;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.1s;
+        }
+        .copy-btn:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px #000; }
+
+        /* Comparison Grid */
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 50px; margin: 60px 0; }
+        .grid-card { border: var(--border); padding: 50px; background: #fff; box-shadow: var(--shadow); position: relative; }
+        .grid-card h4 { font-size: 1.8rem; margin-bottom: 20px; text-transform: uppercase; border-bottom: 4px solid #000; display: inline-block; }
+
+        /* UI Elements */
+        .highlight { background: var(--accent-lime); font-weight: 800; padding: 0 8px; }
+        .badge { display: inline-block; padding: 6px 16px; background: var(--fg); color: #fff; font-weight: 800; font-size: 0.9rem; margin-bottom: 20px; }
+        
+        .check-list { list-style: none; margin: 30px 0; }
+        .check-list li { margin-bottom: 15px; padding-left: 40px; position: relative; font-weight: 600; }
+        .check-list li::before { content: "✔"; position: absolute; left: 0; background: var(--accent-lime); width: 25px; height: 25px; border: 2px solid #000; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+
+        footer {
+            border-top: var(--border);
+            padding: 120px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 60px;
+        }
+        .footer-brand { font-family: 'Space Grotesk', sans-serif; font-size: 4rem; font-weight: 800; line-height: 1; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 4.5rem; letter-spacing: -3px; }
+            .section-title { font-size: 3rem; }
+            .container { padding: 60px 20px; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .feynman-card { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="nav-badge">MASTER GUIDE v1.2.3</div>
+            <h1>WRITE ONCE.<br>BECOME AN AUTHOR.</h1>
+            <p class="intro-text">마크다운을 출판용 전자책으로 바꾸는 여정은 어렵지 않습니다. 셰프가 주방을 차리듯, 당신만의 완벽한 출판 환경을 구축해 보세요.</p>
+        </header>
+
+        <!-- CONCEPT: THE KITCHEN ANALOGY -->
+        <section id="concept">
+            <h2 class="section-title">0. 마법의 원리</h2>
+            <div class="feynman-card">
+                <h3>기술을 '요리'로 이해하기</h3>
+                <p>
+                    많은 사람들이 "코딩은 어렵다"고 하지만, 사실 요리와 똑같습니다. <br><br>
+                    1. <strong>마크다운 파일</strong>: 당신이 정성껏 준비한 <span class="highlight">최고급 식재료</span>입니다.<br>
+                    2. <strong>Node.js</strong>: 요리를 할 수 있게 불을 피우고 가스를 공급하는 <span class="highlight">주방 시스템</span>입니다.<br>
+                    3. <strong>Pandoc</strong>: 재료를 썰고, 익히고, 플레이팅하는 <span class="highlight">만능 조리 기구</span>입니다.<br><br>
+                    NpxMagicDoc은 이 모든 것을 총괄하여, 클릭 한 번에 당신의 재료를 <span class="highlight">5성급 호텔 요리(전자책)</span>로 변환해주는 수석 셰프입니다.
+                </p>
+            </div>
+        </section>
+
+        <!-- STEP 1: PREPARATION -->
+        <section id="preparation">
+            <h2 class="section-title">1. 주방 기초 공사</h2>
+            <p>전문적인 출판을 위해 컴퓨터에 딱 두 가지만 설치해 주세요. 이 과정은 한 번만 하면 됩니다.</p>
+
+            <div class="step-block">
+                <span class="step-num">01</span>
+                <span class="badge">REQUIRED ENGINE</span>
+                <h3>Node.js 설치</h3>
+                <p>NpxMagicDoc이 살아 움직이는 토대입니다. 공식 사이트(<a href="https://nodejs.org" target="_blank">nodejs.org</a>)에서 <strong>LTS(추천) 버전</strong>을 다운로드하여 설치하세요. 설치 후 아래 명령어로 잘 설치되었는지 확인해 봅니다.</p>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box"><pre>node --version # v18.0.0 이상이면 합격!</pre></div>
+                </div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-num">02</span>
+                <span class="badge">CONVERSION ENGINE</span>
+                <h3>Pandoc 설치</h3>
+                <p>문서를 재조립하는 실제 엔진입니다. 운영체제에 따라 아래 명령어를 복사하여 터미널에 붙여넣으세요.</p>
+                <div class="grid-2">
+                    <div class="grid-card" style="background: var(--accent-blue); color: #fff;">
+                        <h4>macOS</h4>
+                        <p>터미널(Terminal)을 열고 입력:</p>
+                        <code style="background: #000; padding: 15px; display: block; margin-top: 15px;">brew install pandoc</code>
+                    </div>
+                    <div class="grid-card" style="background: var(--accent-yellow);">
+                        <h4>Windows</h4>
+                        <p>명령 프롬프트(CMD)를 열고 입력:</p>
+                        <code style="background: #000; color: #fff; padding: 8px 15px; display: block; margin-top: 15px;">winget install --id JohnMacFarlane.Pandoc</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 2: ACCESS METHODS -->
+        <section id="access">
+            <h2 class="section-title">2. 셰프를 부르는 두 가지 주문</h2>
+            <p>프로그램을 실행하는 방법은 크게 두 가지입니다. 당신의 성향에 맞는 방식을 골라보세요.</p>
+
+            <div class="grid-2">
+                <div class="grid-card">
+                    <span class="badge" style="background: var(--accent-pink); color: #000;">방법 A: NPX (즉시 소환)</span>
+                    <p>컴퓨터에 도구를 영구적으로 남기지 않고, 필요할 때만 구름(클라우드)에서 불러와서 씁니다.</p>
+                    <ul class="check-list">
+                        <li>컴퓨터 용량 절약</li>
+                        <li>항상 최신 버전 자동 사용</li>
+                        <li>초보자에게 <strong>강력 추천</strong></li>
+                    </ul>
+                    <div class="code-wrap">
+                        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                        <div class="code-box"><pre>npx markdown-to-document-cli interactive</pre></div>
+                    </div>
+                </div>
+                <div class="grid-card">
+                    <span class="badge">방법 B: NPM Global (내 도구로 등록)</span>
+                    <p>도구를 내 컴퓨터 가방에 영구적으로 넣고 다닙니다. 한 번 설치하면 인터넷 없이도 주문을 내릴 수 있습니다.</p>
+                    <ul class="check-list">
+                        <li>인터넷 연결 없이 즉시 실행</li>
+                        <li>명령어 단축 가능 (m2d)</li>
+                        <li>자주 사용하는 헤비 유저용</li>
+                    </ul>
+                    <div class="code-wrap">
+                        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                        <div class="code-box"><pre>npm install -g markdown-to-document-cli
+# 이제 아래처럼 짧게 부르세요!
+m2d interactive</pre></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: MASTER WORKFLOW -->
+        <section id="workflow">
+            <h2 class="section-title">3. 변환 마스터 여정</h2>
+            <p>셰프와 대화하며 책을 완성하는 가장 쉽고 세련된 과정입니다.</p>
+
+            <div class="step-block">
+                <span class="step-num">01</span>
+                <h3>원고 전달하기</h3>
+                <p>변환할 마크다운 파일(.md)의 경로를 입력하세요. <br><span class="highlight">꿀팁:</span> 파일을 터미널 창으로 <strong>드래그 앤 드롭</strong>하면 경로가 마법처럼 자동 입력됩니다.</p>
+            </div>
+
+            <div class="step-block" style="background: var(--accent-lime);">
+                <span class="step-num">02</span>
+                <h3>셰프의 추천 확인</h3>
+                <p>마법사가 당신의 원고를 순식간에 읽고 분석합니다. "이미지가 많으니 이 스타일을 쓰세요!"라고 추천해 주면, <strong>⚡ 빠른 변환</strong>을 눌러 즉시 작업을 끝내거나 <strong>⚙️ 상세 설정</strong>에서 15가지 표지와 11가지 스타일을 직접 고를 수 있습니다.</p>
+            </div>
+
+            <div class="step-block">
+                <span class="step-num">03</span>
+                <h3>책 출고 완료</h3>
+                <p>잠시만 기다리면 원고와 같은 폴더에 <span class="highlight">.epub</span>(태블릿/폰용) 또는 <span class="highlight">.pdf</span>(출력/PC용) 파일이 생성됩니다. 당신의 첫 번째 책이 탄생한 순간입니다!</p>
+            </div>
+        </section>
+
+        <!-- STEP 4: PRO TIPS -->
+        <section id="tips">
+            <h2 class="section-title">4. 프로 작가를 위한 팁</h2>
+            <p>결과물을 더 완벽하게 만드는 작가들의 비밀 도구입니다.</p>
+            
+            <div class="grid-2">
+                <div class="grid-card">
+                    <h4>Frontmatter 활용</h4>
+                    <p>원고 맨 위에 아래 내용을 적어두면 마법사가 제목과 저자를 자동으로 인식합니다.</p>
+                    <div class="code-box" style="box-shadow: 4px 4px 0px #000; font-size: 0.9rem; color: #fff;">
+                        <pre>---
+title: "나의 멋진 책"
+author: "이름"
+coverTheme: "apple"
+---</pre>
+                    </div>
+                </div>
+                <div class="grid-card">
+                    <h4>Obsidian 사용자라면?</h4>
+                    <p>옵시디언의 <code>![[이미지]]</code>나 <code>[[내부링크]]</code> 문법도 걱정 마세요. 셰프가 변환 과정에서 표준 마크다운으로 <span class="highlight">자동 교정</span>해 드립니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-brand">NpxMagicDoc</div>
+            <div style="text-align: right;">
+                <p>Designed for Writers, Engineered for Excellence.</p>
+                <p style="font-weight: 800; margin-top: 10px;">v1.2.3 | BY GOODLOOKINGPROKIM</p>
+                <a href="https://github.com/goodlookingprokim/markdown-to-document-cli" class="nav-badge" style="margin-top: 20px; cursor: pointer; text-decoration: none; border: 3px solid #000; box-shadow: 4px 4px 0px var(--accent-pink);">GITHUB REPO</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function copyCode(btn) {
+            const pre = btn.nextElementSibling.querySelector('pre');
+            const code = pre.innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "COPIED!";
+                btn.style.backgroundColor = "var(--accent-lime)";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = "var(--accent-pink)";
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
