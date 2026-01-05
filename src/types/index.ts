@@ -2,6 +2,37 @@
  * Type Definitions for Markdown to Document CLI
  */
 
+// ============ Enums for Type Safety ============
+
+export enum CoverThemeCategory {
+    Basic = 'basic',
+    Professional = 'professional',
+    Creative = 'creative',
+    Seasonal = 'seasonal',
+    Extended = 'extended'
+}
+
+export enum CoverThemeStyle {
+    Minimal = 'minimal',
+    Gradient = 'gradient',
+    Dark = 'dark',
+    Modern = 'modern'
+}
+
+export enum TypographyPresetCategory {
+    Basic = 'basic',
+    ContentFocused = 'content',
+    DocumentType = 'document'
+}
+
+export enum OutputFormat {
+    Epub = 'epub',
+    Pdf = 'pdf',
+    Both = 'both'
+}
+
+// ============ Interfaces ============
+
 export interface ConversionOptions {
     inputPath: string;
     outputPath?: string;
@@ -72,7 +103,10 @@ export interface ResolvedImage {
     height?: number;
 }
 
-export type TypographyPresetId = 'novel' | 'presentation' | 'review' | 'ebook';
+export type TypographyPresetId =
+    | 'novel' | 'presentation' | 'review' | 'ebook'  // Basic
+    | 'text_heavy' | 'table_heavy' | 'image_heavy' | 'balanced'  // Content-focused
+    | 'report' | 'manual' | 'magazine';  // Document type
 
 export interface TypographyPreset {
     id: TypographyPresetId;
@@ -101,17 +135,24 @@ export interface PreprocessResult {
     warnings: string[];
 }
 
+export interface CoverThemeColors {
+    primary: string;
+    secondary: string;
+    accent: string;
+    background: string;
+    text: string;
+}
+
 export interface CoverTheme {
     id: string;
     name: string;
-    category: 'basic' | 'extended';
+    category: CoverThemeCategory | 'basic' | 'professional' | 'creative' | 'seasonal' | 'extended';
     description: string;
-    colors: {
-        primary: string;
-        secondary: string;
-        accent: string;
-        background: string;
-        text: string;
-    };
-    style: 'minimal' | 'gradient' | 'dark' | 'modern';
+    colors: CoverThemeColors;
+    style: CoverThemeStyle | 'minimal' | 'gradient' | 'dark' | 'modern';
 }
+
+// ============ Utility Types ============
+
+export type CoverThemeId = string;
+export type PresetCategory = 'basic' | 'content' | 'document';

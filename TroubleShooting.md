@@ -504,27 +504,27 @@ body {
 
 **증상**:
 ```
-PDF에서 여백이나 페이지 크기가 이상함
+PDF에서 여백이나 페이지 크기가 이상함, 또는 레이아웃이 완전히 엉망으로 표시됨
 ```
 
 **원인**:
-- 용지 크기나 여백 설정 문제
+- 구 버전(v1.1.4 이하): 표지 생성 시 전체 HTML 구조 중복으로 인한 레이아웃 붕괴
+- `box-sizing` 설정 미비로 인한 여백 계산 오류
+- 한글 텍스트의 부자연스러운 줄바꿈
 
 **해결 방법**:
 
-1. 용지 크기 변경:
-```bash
-m2d document.md --format pdf --paper-size a4
-m2d document.md --format pdf --paper-size letter
-```
+1. **최신 버전 업데이트 (권장)**:
+   v1.1.5부터는 HTML Fragment 방식을 사용하여 레이아웃 붕괴 문제를 완전히 해결했습니다.
+   ```bash
+   npx markdown-to-document-cli@latest interactive
+   ```
 
-2. 커스텀 CSS 사용:
-```css
-@page {
-  size: A4;
-  margin: 2cm;
-}
-```
+2. **커스텀 CSS 조정**:
+   여백 문제가 지속된다면 `box-sizing: border-box`가 적용되어 있는지 확인하세요.
+
+3. **한글 가독성 설정**:
+   v1.1.5+ 에서는 `word-break: keep-all`이 기본 적용되어 단어 단위로 줄바꿈이 일어납니다.
 
 ---
 
@@ -632,6 +632,27 @@ m2d document.md --typography review
   margin-right: 15mm;
 }
 ```
+
+### 문제: EPUB에서 한글 폰트가 깨지거나 기본 서체로 보임
+
+**증상**:
+```
+전자책 리더기에서 한글이 명조/고딕이 아닌 시스템 기본 서체로 표시됨
+```
+
+**원인**:
+- EPUB 파일 내부에 폰트가 직접 포함(Embedding)되지 않음
+
+**해결 방법**:
+
+1. **자동 임베딩 사용 (v1.1.4+)**:
+   최신 버전은 macOS 시스템의 Noto Sans/Serif KR 폰트를 자동으로 찾아 EPUB에 포함시킵니다. 별도의 설정 없이 변환하세요.
+
+2. **폰트 서브세팅 활성화**:
+   파일 용량을 줄이면서 폰트를 확실히 포함하려면 `--font-subsetting` 옵션을 사용하세요.
+   ```bash
+   m2d document.md --font-subsetting
+   ```
 
 ---
 
@@ -889,7 +910,7 @@ m2d document.md --verbose > debug.log 2>&1
    - 디버그 로그와 오류 메시지 포함
 
 3. **Email**:
-   - bluelion79@gmail.com
+   - edulovesai@gmail.com
 
 ---
 
@@ -912,4 +933,4 @@ A: 현재는 단일 파일만 지원합니다. 배치 처리는 향후 계획에
 
 ---
 
-**마지막 업데이트**: 2025-01-05
+**마지막 업데이트**: 2026-01-06 (v1.2.3)

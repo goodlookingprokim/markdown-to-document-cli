@@ -82,11 +82,62 @@ pandoc --version
 pip install weasyprint
 ```
 
+## Interactive Mode (대화형 모드)
+
+### 실행 방법
+
+```bash
+npx markdown-to-document-cli interactive
+# 또는
+m2d i
+```
+
+### 워크플로우 (v1.2.3 개선)
+
+Interactive Mode는 **간소화된 3단계 워크플로우**로 구성됩니다:
+
+| Step | 내용 | 설명 |
+|------|------|------|
+| **Step 1** | 📄 파일 선택 | 마크다운 파일 경로 입력 |
+| **Step 2** | 🚀 모드 선택 | 변환 모드 선택 + 자동 문서 분석 |
+| **Step 3** | ⚡ 변환 실행 | 자동 전처리 + 변환 |
+
+### 3가지 변환 모드
+
+| 모드 | 설명 | 사용 시기 |
+|------|------|----------|
+| **⚡ 빠른 변환** | 출력 형식만 선택, 나머지 스마트 기본값 | 대부분의 경우 (권장) |
+| **⚙️ 상세 설정** | 프리셋, 테마, 제목/저자 직접 선택 | 세부 조정이 필요할 때 |
+| **📝 전처리만** | Obsidian 최적화 후 파일 저장 | 변환 없이 정리만 할 때 |
+
+### 스마트 기능
+
+- **자동 문서 분석**: Obsidian 문법, 이미지/표/코드 블록 자동 감지
+- **스마트 기본값**: 분석 결과 기반 프리셋/테마 자동 추천
+- **메타데이터 추출**: frontmatter에서 title/author 자동 감지
+- **자동 전처리**: Obsidian 문법 감지 시 자동 최적화 적용
+
+### 스마트 프리셋 추천
+
+문서 분석 결과에 따라 최적의 Typography Preset을 자동으로 추천합니다:
+
+| 문서 특성 | 추천 프리셋 |
+|----------|------------|
+| 이미지 10개 초과 | `image_heavy` |
+| 표 5개 초과 | `table_heavy` |
+| 코드 블록 10개 초과 | `manual` |
+| 단어 10,000개 초과 | `text_heavy` |
+| 기본 | `balanced` |
+
+---
+
 ## 타이포그래피 프리셋
 
 ### 프리셋 개요
 
-4가지 타이포그래피 프리셋을 제공하여 다양한 용도에 최적화된 출력을 생성합니다:
+11가지 타이포그래피 프리셋을 제공하여 다양한 용도에 최적화된 출력을 생성합니다:
+
+#### Basic 프리셋
 
 | 프리셋 | 용도 | 폰트 크기 | 줄 간격 | 정렬 |
 |--------|------|-----------|---------|------|
@@ -262,11 +313,17 @@ m2d document.md --typography ebook         # 전자책 (기본값)
 
 ### 표지 테마 (`-c, --cover`)
 
+자동으로 전문적인 책 표지를 생성합니다:
+
 ```bash
-m2d document.md --cover apple
-m2d document.md --cover modern_gradient
-m2d document.md --cover dark_tech
+m2d document.md --cover apple            # Apple 스타일 (깔끔함)
+m2d document.md --cover modern_gradient  # 현대적인 그라데이션
+m2d document.md --cover dark_tech        # 어두운 테크 스타일
+m2d document.md --cover nature           # 자연 친화적 디자인
 ```
+
+- **EPUB**: 고품질 SVG 이미지가 표지로 삽입됩니다.
+- **PDF**: 문서의 가장 첫 페이지에 전면 HTML 표지가 생성됩니다.
 
 사용 가능한 테마 목록:
 ```bash
@@ -723,4 +780,4 @@ m2d --help
 
 ---
 
-**마지막 업데이트**: 2025-01-05
+**마지막 업데이트**: 2026-01-06 (v1.2.3)

@@ -70,12 +70,13 @@ src/
 - **역할**: Pandoc을 통한 EPUB/PDF 변환
 - **주요 메서드**:
   - `checkPandocAvailable()`: Pandoc 설치 확인
-  - `toEpub()`: EPUB 변환 (타이포그래피 CSS 포함)
-  - `toPdf()`: PDF 변환 (타이포그래피 CSS 포함)
+  - `toEpub()`: EPUB 변환 (폰트 임베딩 및 표지 포함)
+  - `toPdf()`: PDF 변환 (HTML Fragment 표지 및 통합 CSS 적용)
   - `generateTypographyCSS()`: 동적 CSS 생성
 - **통합 서비스**:
   - TypographyService: 타이포그래피 프리셋 적용
   - FontSubsetter: 폰트 서브세팅
+  - CoverService: 자동 표지 생성
 
 #### 3. TypographyService
 - **역할**: 타이포그래피 프리셋 관리 및 CSS 생성
@@ -122,7 +123,14 @@ src/
   - `validate()`: 전체 검증 실행
   - `autoFix()`: 자동 수정 적용
 
-## 변환 프로세스
+#### 7. CoverService
+- **역할**: EPUB/PDF용 표지 생성
+- **주요 메서드**:
+  - `generateEpubCover()`: SVG 기반 표지 이미지 생성
+  - `generatePdfCoverData()`: HTML Fragment 및 통합 CSS 생성
+- **기능**:
+  - 테마별 색상 및 레이아웃 자동 적용
+  - 텍스트 래핑 및 XML 이스케이프 처리
 
 ```
 1. 입력 파일 검증
@@ -134,27 +142,30 @@ src/
 4. 마크다운 전처리
    - Obsidian 문법 변환
    - 이미지 경로 해결
-   - YAML frontmatter 생성
+   - YAML frontmatter 생성 (제목/저자명 명시적 반영)
    ↓
-5. 타이포그래피 CSS 생성
+5. 표지 생성 (CoverService)
+   - EPUB용 SVG 또는 PDF용 HTML Fragment 생성
+   ↓
+6. 타이포그래피 CSS 생성
    - TypographyService로 프리셋 적용
-   - 동적 CSS 생성
-   - 폰트 스택 설정
+   - 표지 CSS 통합 (PDF의 경우)
+   - 폰트 스택 및 한글 가독성 설정
    ↓
-6. 폰트 서브세팅 (선택사항)
+7. 폰트 서브세팅 (선택사항)
    - FontSubsetter로 문자 추출
    - 폰트 서브셋 생성
    - 파일 크기 최적화
    ↓
-7. 임시 파일 생성
+8. 임시 파일 생성
    ↓
-8. Pandoc 변환
-   - EPUB 변환 (선택)
-   - PDF 변환 (선택)
+9. Pandoc 변환
+   - EPUB 변환 (폰트 임베딩 포함)
+   - PDF 변환 (--include-before-body 사용)
    ↓
-9. 출력 파일 생성
+10. 출력 파일 생성
    ↓
-10. 임시 파일 정리
+11. 임시 파일 정리
 ```
 
 ## 타이포그래피 프리셋
@@ -171,12 +182,42 @@ src/
 
 ### 리뷰 (Review)
 - **용도**: 검토용 문서
-- **특징**: 11pt, 촘촘한 레이아웃, 1.4 줄 간격
+- **특징**: 15pt, 촘촘한 레이아웃, 1.4 줄 간격
 - **폰트**: Noto Sans CJK KR
 
 ### 전자책 (Ebook)
 - **용도**: 일반 전자책
 - **특징**: 14pt, 균형잡힌 레이아웃, 1.6 줄 간격
+- **폰트**: Noto Sans CJK KR
+
+### 학술 (Academic)
+- **용도**: 학술 논문
+- **특징**: 12pt, 두껍고 가는 글씨, 1.2 줄 간격
+- **폰트**: Noto Serif CJK KR
+
+### 신문 (Newspaper)
+- **용도**: 신문 기사
+- **특징**: 10pt, 가는 글씨, 1.1 줄 간격
+- **폰트**: Noto Sans CJK KR
+
+### 블로그 (Blog)
+- **용도**: 블로그 포스트
+- **특징**: 14pt, 가는 글씨, 1.4 줄 간격
+- **폰트**: Noto Sans CJK KR
+
+### 서신 (Letter)
+- **용도**: 편지
+- **특징**: 12pt, 가는 글씨, 1.2 줄 간격
+- **폰트**: Noto Serif CJK KR
+
+### 보고서 (Report)
+- **용도**: 보고서
+- **특징**: 11pt, 가는 글씨, 1.1 줄 간격
+- **폰트**: Noto Sans CJK KR
+
+### 프레젠테이션 (Slide)
+- **용도**: 프레젠테이션 슬라이드
+- **특징**: 24pt, 큰 글씨, 넓은 여백, 1.6 줄 간격
 - **폰트**: Noto Sans CJK KR
 
 ## 검증 모듈 상세
@@ -320,9 +361,10 @@ npm publish
 ## 향후 계획
 
 ### 단기 (v1.1)
-- [ ] 단위 테스트 추가
-- [ ] 폰트 서브세팅 기능 완성
-- [ ] 표지 생성 기능 구현
+- [x] 단위 테스트 환경 구축
+- [x] 폰트 서브세팅 및 임베딩 기능 완성
+- [x] 자동 표지 생성 기능 구현 (CoverService)
+- [x] PDF 레이아웃 엔진 최적화
 
 ### 중기 (v1.5)
 - [ ] 커스텀 CSS 템플릿
@@ -342,8 +384,8 @@ MIT License
 
 - **GitHub**: [@goodlookingprokim](https://github.com/goodlookingprokim)
 - **Repository**: https://github.com/goodlookingprokim/markdown-to-document-cli
-- **Email**: bluelion79@gmail.com
+- **Email**: edulovesai@gmail.com
 
 ---
 
-**마지막 업데이트**: 2025-01-05
+**마지막 업데이트**: 2026-01-06 (v1.2.3)

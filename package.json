@@ -1,6 +1,6 @@
 {
     "name": "markdown-to-document-cli",
-    "version": "1.1.5",
+    "version": "1.2.3",
     "description": "Professional-grade EPUB/PDF conversion tool for Markdown files. 8 validation modules, auto-fix, typography presets, font subsetting (99% size reduction), ISBN validation, copyright page generation.",
     "main": "dist/index.js",
     "bin": {
@@ -30,7 +30,7 @@
         "cli",
         "npx"
     ],
-    "author": "잘생김프로쌤 <bluelion79@gmail.com>",
+    "author": "잘생김프로쌤 <edulovesai@gmail.com>",
     "license": "MIT",
     "repository": {
         "type": "git",

@@ -5,6 +5,151 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2026-01-06
+
+### Changed
+- **Interactive Mode UX 대폭 개선**:
+  - **3단계 간소화된 워크플로우**: 파일 선택 → 모드 선택 → 변환 (기존 6단계 이상에서 축소)
+  - **3가지 변환 모드 제공**:
+    - ⚡ **빠른 변환**: 스마트 기본값으로 출력 형식만 선택 (권장)
+    - ⚙️ **상세 설정**: 프리셋, 테마, 제목/저자 직접 선택
+    - 📝 **전처리만**: Obsidian 최적화 후 파일 저장 (변환 안함)
+  - **스마트 기본값**: 문서 분석 결과 기반 프리셋/테마 자동 선택
+  - **자동 전처리**: Obsidian 문법 감지 시 자동 최적화 적용
+  - **간소화된 선택지**: 프리셋/테마 상위 6개만 표시, "더 보기" 옵션 제공
+  - **메타데이터 자동 감지**: frontmatter에서 title/author 추출, 없을 때만 질문
+
+- **EPUB 표지 제목 레이아웃 개선**:
+  - 제목 길이에 따른 동적 폰트 크기 조절 (80px~160px)
+  - 한글 문자 너비 고려 (한글은 1.5배 너비로 계산)
+  - 멀티라인 제목의 수직 중앙 정렬
+  - 구분선 위치 동적 배치
+
+### Refactored
+- `cli.ts` 코드 구조 개선:
+  - `preprocessContent()`: 전처리 로직 함수로 분리
+  - `extractMetadata()`: frontmatter 메타데이터 추출 함수
+  - `getSimplifiedPresetChoices()`, `getSimplifiedThemeChoices()`: 간소화된 선택지 생성
+- `CoverService` 개선:
+  - `calculateTitleLayout()`: 제목 레이아웃 계산 로직
+  - `splitTitleIntoLinesSvg()`: SVG용 제목 줄바꿈
+  - `generateTitleTspans()`: SVG tspan 요소 생성
+
+---
+
+## [1.2.2] - 2026-01-06
+
+### Added
+- **전처리 완료 후 확인 단계 추가**:
+  - 바로 PDF/EPUB로 변환
+  - 전처리된 파일만 저장하고 종료
+  - 전처리된 파일 미리보기 후 결정
+- 전처리된 파일 미리보기 기능 (처음 50줄)
+- 전처리 후 나중에 변환할 수 있도록 명령어 안내
+
+---
+
+## [1.2.1] - 2026-01-06
+
+### Added
+- **Interactive Mode 워크플로우 개선**:
+  - **문서 분석 기능**: Obsidian 문법, 이미지/표/코드 블록 수, 잠재적 이슈 자동 감지
+  - **워크플로우 선택**: 전처리(출력 최적화) 후 변환 vs 바로 변환 선택 가능
+  - **전처리 옵션**:
+    - Obsidian 이미지 문법 변환 (`![[image]]` → `![](image)`)
+    - Obsidian 내부 링크 변환 (`[[link]]` → 텍스트)
+    - 하이라이트 변환 (`==text==` → `**text**`)
+    - 콜아웃 최적화 (`> [!note]` 등)
+  - **스마트 프리셋 추천**: 문서 분석 결과 기반 Typography Preset 자동 권장
+  - **카테고리별 선택 UI**: 테마/프리셋을 카테고리별로 그룹화하여 표시
+
+- **MarkdownGuide.md 추가**:
+  - PDF/EPUB 출력 최적화를 위한 Markdown 작성 가이드
+  - 일반 Markdown + Obsidian 문법 호환 가이드
+  - Interactive Mode 워크플로우 의사결정 기준 제공
+  - 프리셋/테마 선택 가이드 및 체크리스트
+
+### Improved
+- Interactive Mode에서 문서 분석 결과 기반 권장 사항 표시
+- Typography Preset 선택 시 권장 프리셋 하이라이트
+- Cover Theme 선택 UI 카테고리별 그룹화
+
+---
+
+## [1.2.0] - 2026-01-06
+
+### Refactored
+- **코드 구조 개선**: 모듈화 및 책임 분리를 통한 유지보수성 향상
+  - `src/utils/cssBuilder.ts`: CSS 생성 로직 중앙화
+    - `buildFontImport()`, `buildBodyStyles()`, `buildHeadingStyles()` 등 재사용 가능한 빌더 함수
+    - `buildPdfPageRules()`: PDF 페이지 규칙 (@page, :first, :blank) 통합
+    - `buildCommonElementStyles()`: 공통 요소(이미지/표/코드) 스타일 추출
+  - `src/utils/themeUtils.ts`: 테마/프리셋 유틸리티 함수 추가
+    - `getCoverThemesByCategory()`, `getTypographyPresetsByCategory()`: 카테고리별 필터링
+    - `isValidCoverTheme()`, `isValidTypographyPreset()`: 검증 함수
+    - `generateCoverThemeHelpText()`, `generateTypographyPresetHelpText()`: CLI 도움말 자동 생성
+  - `src/types/index.ts`: 타입 안전성 강화
+    - `CoverThemeCategory`, `CoverThemeStyle`, `TypographyPresetCategory` enum 추가
+    - `CoverThemeColors` 인터페이스 분리
+  - `TypographyService.generatePresetCSS()`: CSS 빌더 사용으로 리팩토링
+    - 중복 코드 제거, 테스트 용이성 향상
+    - `FONT_STACKS` 중앙화 (cssBuilder.ts)
+
+### Changed
+- 폰트 스택 정의를 `cssBuilder.ts`로 이동하여 단일 소스 유지
+- CSS 생성 로직을 모듈화하여 PDF/EPUB 별 확장 용이
+
+---
+
+## [1.1.7] - 2026-01-06
+
+### Added
+- **15개 Cover Theme 추가** (총 15개):
+  - **Professional**: Corporate Blue, Academic, Magazine
+  - **Creative**: Sunset, Ocean, Aurora, Rose Gold
+  - **Seasonal**: Spring, Autumn, Winter
+- **7개 Typography Preset 추가** (총 11개):
+  - **Content-focused**: Text Heavy, Table Heavy, Image Heavy, Balanced
+  - **Document Type**: Report, Manual, Magazine
+
+### Improved
+- **콘텐츠 유형별 레이아웃 최적화**:
+  - `text_heavy`: 긴 글 위주 문서 - 좁은 여백, 촘촘한 줄간격
+  - `table_heavy`: 표 중심 문서 - 넓은 표 영역, 작은 폰트
+  - `image_heavy`: 이미지 중심 문서 - 이미지 최대화, 캡션 강조
+  - `balanced`: 균형 레이아웃 - 텍스트/테이블/이미지 균형 배치
+- **문서 유형별 전문 프리셋**:
+  - `report`: 비즈니스 보고서 - 공식적, 구조화된 레이아웃
+  - `manual`: 기술 매뉴얼 - 코드 블록, 단계별 설명 강조
+  - `magazine`: 잡지 스타일 - 드롭캡, 시각적 강조
+
+---
+
+## [1.1.6] - 2026-01-06
+
+### Added
+- **PDF Page Numbers**: Automatic page numbering at the bottom center of each page
+  - Uses CSS `@bottom-center { content: counter(page); }` for WeasyPrint
+  - Page numbers hidden on cover and blank pages
+
+### Improved
+- **Full-Bleed Cover Page**: 
+  - Added `@page :first { margin: 0; }` CSS rule for true full-bleed covers
+  - Cover page now uses fixed A4 dimensions (210mm × 297mm) instead of relative units
+  - Improved cover reliability across different PDF rendering scenarios
+- **Smart Title Line Breaking**:
+  - Implemented intelligent title wrapping for long titles (similar to Obsidian plugin's TitleOptimizer)
+  - Automatic font size adjustment based on title length (48pt → 42pt → 36pt)
+  - Korean-optimized character count per line (14 characters)
+- **Figure/Image Styling**:
+  - Added dedicated `figure` and `figcaption` CSS rules
+  - Improved image presentation with centered captions
+
+### Changed
+- Cover author field now displays empty instead of "Unknown Author" when not specified
+
+---
+
 ## [1.1.5] - 2026-01-05
 
 ### Fixed

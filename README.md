@@ -8,9 +8,11 @@
 
 ### 📚 핵심 변환 기능
 - **EPUB 3.3 / PDF** 형식 지원
+- **자동 표지 생성**: 테마별 고해상도 SVG(EPUB) 및 HTML(PDF) 표지 자동 삽입
 - **4가지 타이포그래피 프리셋** (소설, 발표, 리뷰, 전자책)
 - **자동 목차 생성** (계층형 네비게이션)
 - **챕터별 파일 분리** (H1 기준)
+- **한글 최적화**: Noto Sans/Serif KR 임베딩 및 가독성 높은 레이아웃
 
 ### 🔍 8개 검증 모듈 (자동 수정)
 1. **Frontmatter 검증**: YAML 구문 오류 자동 수정
@@ -34,13 +36,19 @@
 ### 🔧 고급 기능
 
 #### TypographyService
+- **11개 프리셋 지원**: Basic(4), Content-focused(4), Document Type(3) 카테고리별 레이아웃 최적화
 - **동적 CSS 생성**: 타이포그래피 프리셋 기반 자동 스타일링
+- **한국어 최적화**: `word-break: keep-all`, `orphans/widows` 제어 등 전문 출판 수준의 가독성
 - **한국어 폰트 스택**: Noto Sans CJK KR, Noto Serif CJK KR 지원
 - **페이지 마진 설정**: 각 프리셋별 최적화된 여백
 - **제목 스케일**: H1-H6 비율 자동 계산
 - **하이픈 처리**: 단어 끊기 옵션 지원
 
-#### FontSubsetter
+#### CoverService
+- **15개 테마 지원**: Basic(6), Professional(3), Creative(4), Seasonal(3) 카테고리별 다양한 디자인
+- **EPUB 최적화**: 고해상도 벡터 SVG 표지 생성 및 임베딩
+- **PDF 최적화**: HTML Fragment 기술을 이용한 전면 페이지 레이아웃 구현
+- **메타데이터 연동**: 입력된 제목과 저자명을 표지에 자동 반영
 - **99% 크기 감소**: 사용된 문자만 포함하여 폰트 최적화
 - **캐싱 메커니즘**: 재사용을 위한 폰트 캐시
 - **다양한 형식**: WOFF2, TTF, OTF 지원
@@ -73,6 +81,33 @@ npm install markdown-to-document-cli
 
 ## 🚀 사용법
 
+### Interactive Mode (권장)
+
+```bash
+# 대화형 모드로 실행
+npx markdown-to-document-cli interactive
+# 또는
+m2d i
+```
+
+**간소화된 3단계 워크플로우** (v1.2.3):
+
+| Step | 내용 |
+|------|------|
+| **Step 1** | 📄 파일 선택 |
+| **Step 2** | 🚀 변환 모드 선택 + 자동 문서 분석 |
+| **Step 3** | ⚡ 변환 실행 |
+
+**3가지 변환 모드**:
+- **⚡ 빠른 변환** - 출력 형식만 선택, 스마트 기본값 자동 적용 (권장)
+- **⚙️ 상세 설정** - 프리셋, 테마, 제목/저자 직접 선택
+- **📝 전처리만** - Obsidian 최적화 후 파일 저장 (변환 안함)
+
+**스마트 기능**:
+- 문서 분석 기반 프리셋 자동 추천
+- frontmatter에서 title/author 자동 추출
+- Obsidian 문법 감지 시 자동 전처리
+
 ### 기본 사용법
 
 ```bash
@@ -97,8 +132,15 @@ m2d document.md [options]
 옵션:
   -o, --output <path>          출력 디렉토리
   -f, --format <format>        출력 형식 (epub, pdf, both) [기본값: epub]
-  -t, --typography <preset>    타이포그래피 프리셋 (novel, presentation, review, ebook) [기본값: ebook]
+  -t, --typography <preset>    타이포그래피 프리셋 [기본값: ebook]
+                               Basic: novel, presentation, review, ebook
+                               Content: text_heavy, table_heavy, image_heavy, balanced
+                               Document: report, manual, magazine
   -c, --cover <theme>          표지 테마
+                               Basic: apple, modern_gradient, dark_tech, nature, classic_book, minimalist
+                               Professional: corporate, academic, magazine
+                               Creative: sunset, ocean, aurora, rose_gold
+                               Seasonal: spring, autumn, winter
   --no-validate                콘텐츠 검증 건너뛰기
   --no-auto-fix                자동 수정 비활성화
   --toc-depth <number>         목차 깊이 [기본값: 2]
@@ -305,7 +347,7 @@ MIT License - [LICENSE](LICENSE) 파일 참조
 
 - **GitHub**: [@goodlookingprokim](https://github.com/goodlookingprokim)
 - **Repository**: https://github.com/goodlookingprokim/markdown-to-document-cli
-- **Email**: bluelion79@gmail.com
+- **Email**: edulovesai@gmail.com
 
 ---
 

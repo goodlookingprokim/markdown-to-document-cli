@@ -3,9 +3,12 @@
 /**
  * Markdown to Document CLI
  * 
+ * Refactored for improved UX with streamlined Interactive Mode
+ * 
  * Usage:
  *   npx markdown-to-document-cli <input.md>
  *   m2d <input.md> [options]
+ *   m2d interactive (or m2d i)
  */
 
 import { Command } from 'commander';
@@ -18,7 +21,252 @@ import { Logger } from './utils/common.js';
 import * as path from 'path';
 import * as fs from 'fs';
 
+// ============ Type Definitions ============
+
+type InteractiveMode = 'quick' | 'custom' | 'preprocess_only';
+type OutputFormat = 'epub' | 'pdf' | 'both';
+
 const program = new Command();
+
+// ============ Helper Functions for Interactive Mode ============
+
+interface MarkdownAnalysisResult {
+    hasObsidianImages: boolean;
+    hasObsidianLinks: boolean;
+    hasHighlights: boolean;
+    hasCallouts: boolean;
+    hasLongCodeLines: boolean;
+    hasComplexTables: boolean;
+    hasMultipleH1: boolean;
+    hasFrontmatter: boolean;
+    imageCount: number;
+    tableCount: number;
+    codeBlockCount: number;
+    wordCount: number;
+    recommendPreprocess: boolean;
+    recommendedPreset: string;
+    issues: string[];
+}
+
+/**
+ * Analyze markdown content for Obsidian syntax and output optimization needs
+ */
+function analyzeMarkdownContent(content: string): MarkdownAnalysisResult {
+    const result: MarkdownAnalysisResult = {
+        hasObsidianImages: false,
+        hasObsidianLinks: false,
+        hasHighlights: false,
+        hasCallouts: false,
+        hasLongCodeLines: false,
+        hasComplexTables: false,
+        hasMultipleH1: false,
+        hasFrontmatter: false,
+        imageCount: 0,
+        tableCount: 0,
+        codeBlockCount: 0,
+        wordCount: 0,
+        recommendPreprocess: false,
+        recommendedPreset: 'ebook',
+        issues: [],
+    };
+
+    // Check for YAML frontmatter
+    result.hasFrontmatter = /^---\n[\s\S]*?\n---/.test(content);
+
+    // Check for Obsidian image syntax: ![[image]]
+    const obsidianImageMatches = content.match(/!\[\[([^\]]+)\]\]/g);
+    result.hasObsidianImages = !!obsidianImageMatches;
+    if (obsidianImageMatches) {
+        result.issues.push(`Obsidian 이미지 문법 ${obsidianImageMatches.length}개 발견`);
+    }
+
+    // Check for Obsidian internal links: [[link]]
+    const obsidianLinkMatches = content.match(/(?<!!)\[\[([^\]]+)\]\]/g);
+    result.hasObsidianLinks = !!obsidianLinkMatches;
+    if (obsidianLinkMatches) {
+        result.issues.push(`Obsidian 내부 링크 ${obsidianLinkMatches.length}개 발견`);
+    }
+
+    // Check for highlights: ==text==
+    const highlightMatches = content.match(/==([^=]+)==/g);
+    result.hasHighlights = !!highlightMatches;
+    if (highlightMatches) {
+        result.issues.push(`하이라이트 문법 ${highlightMatches.length}개 발견`);
+    }
+
+    // Check for callouts: > [!type]
+    const calloutMatches = content.match(/>\s*\[!(\w+)\]/g);
+    result.hasCallouts = !!calloutMatches;
+    if (calloutMatches) {
+        result.issues.push(`콜아웃 ${calloutMatches.length}개 발견`);
+    }
+
+    // Count images (standard markdown)
+    const standardImageMatches = content.match(/!\[([^\]]*)\]\([^)]+\)/g);
+    result.imageCount = (obsidianImageMatches?.length || 0) + (standardImageMatches?.length || 0);
+
+    // Count tables
+    const tableMatches = content.match(/\|.*\|.*\n\|[-:| ]+\|/g);
+    result.tableCount = tableMatches?.length || 0;
+
+    // Check for complex tables (>5 columns or very long cells)
+    if (tableMatches) {
+        for (const table of tableMatches) {
+            const columns = (table.match(/\|/g)?.length || 0) - 1;
+            if (columns > 5) {
+                result.hasComplexTables = true;
+                result.issues.push('5열 초과 복잡한 표 발견');
+                break;
+            }
+        }
+    }
+
+    // Count code blocks and check for long lines
+    const codeBlockMatches = content.match(/```[\s\S]*?```/g);
+    result.codeBlockCount = codeBlockMatches?.length || 0;
+    if (codeBlockMatches) {
+        for (const block of codeBlockMatches) {
+            const lines = block.split('\n');
+            for (const line of lines) {
+                if (line.length > 100) {
+                    result.hasLongCodeLines = true;
+                    result.issues.push('100자 초과 코드 라인 발견 (PDF 잘림 위험)');
+                    break;
+                }
+            }
+            if (result.hasLongCodeLines) break;
+        }
+    }
+
+    // Check for multiple H1
+    const h1Matches = content.match(/^#\s+[^\n]+/gm);
+    result.hasMultipleH1 = (h1Matches?.length || 0) > 1;
+    if (result.hasMultipleH1) {
+        result.issues.push(`H1 제목 ${h1Matches?.length}개 발견 (1개 권장)`);
+    }
+
+    // Word count (rough estimate)
+    const textOnly = content.replace(/```[\s\S]*?```/g, '').replace(/[#*`\[\]()]/g, '');
+    result.wordCount = textOnly.split(/\s+/).filter(w => w.length > 0).length;
+
+    // Determine if preprocessing is recommended
+    result.recommendPreprocess =
+        result.hasObsidianImages ||
+        result.hasObsidianLinks ||
+        result.hasHighlights ||
+        result.hasCallouts ||
+        result.hasLongCodeLines ||
+        result.hasComplexTables ||
+        result.hasMultipleH1;
+
+    // Recommend typography preset based on content analysis
+    if (result.imageCount > 10) {
+        result.recommendedPreset = 'image_heavy';
+    } else if (result.tableCount > 5) {
+        result.recommendedPreset = 'table_heavy';
+    } else if (result.codeBlockCount > 10) {
+        result.recommendedPreset = 'manual';
+    } else if (result.wordCount > 10000) {
+        result.recommendedPreset = 'text_heavy';
+    } else {
+        result.recommendedPreset = 'balanced';
+    }
+
+    return result;
+}
+
+/**
+ * Display analysis result to console
+ */
+function displayAnalysisResult(result: MarkdownAnalysisResult): void {
+    console.log(chalk.bold('📊 문서 분석 결과:\n'));
+
+    // Statistics
+    console.log(chalk.gray('  📝 단어 수:'), chalk.cyan(`약 ${result.wordCount.toLocaleString()}개`));
+    console.log(chalk.gray('  🖼️  이미지:'), chalk.cyan(`${result.imageCount}개`));
+    console.log(chalk.gray('  📊 표:'), chalk.cyan(`${result.tableCount}개`));
+    console.log(chalk.gray('  💻 코드 블록:'), chalk.cyan(`${result.codeBlockCount}개`));
+    console.log(chalk.gray('  📋 Frontmatter:'), result.hasFrontmatter ? chalk.green('있음') : chalk.yellow('없음'));
+
+    // Issues found
+    if (result.issues.length > 0) {
+        console.log(chalk.yellow('\n⚠️  발견된 이슈:'));
+        result.issues.forEach(issue => {
+            console.log(chalk.yellow(`  • ${issue}`));
+        });
+    } else {
+        console.log(chalk.green('\n✅ 특별한 이슈 없음 - 표준 Markdown'));
+    }
+
+    // Recommendation
+    console.log(chalk.bold('\n💡 권장 사항:'));
+    if (result.recommendPreprocess) {
+        console.log(chalk.green('  → 전처리(출력 최적화) 후 변환을 권장합니다.'));
+    } else {
+        console.log(chalk.blue('  → 바로 변환해도 안정적입니다.'));
+    }
+    console.log(chalk.gray(`  → 추천 프리셋: ${result.recommendedPreset}`));
+}
+
+/**
+ * Get typography preset choices with recommended preset highlighted
+ */
+function getTypographyPresetChoices(analysisResult: MarkdownAnalysisResult) {
+    const presetCategories = {
+        'Basic': ['novel', 'presentation', 'review', 'ebook'],
+        'Content-focused': ['text_heavy', 'table_heavy', 'image_heavy', 'balanced'],
+        'Document Type': ['report', 'manual', 'magazine'],
+    };
+
+    const choices: any[] = [];
+
+    for (const [category, presetIds] of Object.entries(presetCategories)) {
+        choices.push(new inquirer.Separator(chalk.bold(`\n── ${category} ──`)));
+
+        for (const presetId of presetIds) {
+            const preset = TYPOGRAPHY_PRESETS[presetId];
+            if (preset) {
+                const isRecommended = presetId === analysisResult.recommendedPreset;
+                const name = isRecommended
+                    ? chalk.green(`★ ${preset.name}`) + chalk.gray(` - ${preset.description}`) + chalk.green(' (권장)')
+                    : chalk.cyan(preset.name) + chalk.gray(` - ${preset.description}`);
+                choices.push({ name, value: presetId });
+            }
+        }
+    }
+
+    return choices;
+}
+
+/**
+ * Get cover theme choices grouped by category
+ */
+function getCoverThemeChoices() {
+    const themeCategories: Record<string, string[]> = {
+        'Basic': ['apple', 'modern_gradient', 'dark_tech', 'nature', 'classic_book', 'minimalist'],
+        'Professional': ['corporate', 'academic', 'magazine'],
+        'Creative': ['sunset', 'ocean', 'aurora', 'rose_gold'],
+        'Seasonal': ['spring', 'autumn', 'winter'],
+    };
+
+    const choices: any[] = [];
+
+    for (const [category, themeIds] of Object.entries(themeCategories)) {
+        choices.push(new inquirer.Separator(chalk.bold(`\n── ${category} ──`)));
+
+        for (const themeId of themeIds) {
+            const theme = COVER_THEMES[themeId];
+            if (theme) {
+                choices.push({
+                    name: chalk.cyan(theme.name) + chalk.gray(` - ${theme.description}`),
+                    value: themeId,
+                });
+            }
+        }
+    }
+
+    return choices;
+}
 
 // Configure CLI
 program
@@ -179,167 +427,421 @@ program
         }
     });
 
-// Interactive mode
+// ============ Preprocessing Helper ============
+
+/**
+ * Preprocess markdown content (Obsidian syntax conversion)
+ */
+function preprocessContent(content: string, options: {
+    convertObsidianImages: boolean;
+    convertObsidianLinks: boolean;
+    convertHighlights: boolean;
+    convertCallouts: boolean;
+}): string {
+    let processed = content;
+
+    // Obsidian 이미지 변환: ![[image]] → ![](image)
+    if (options.convertObsidianImages) {
+        processed = processed.replace(
+            /!\[\[([^\]|]+)(?:\|([^\]]*))?\]\]/g,
+            (_, filename, alt) => `![${alt || filename}](${filename})`
+        );
+    }
+
+    // Obsidian 내부 링크 변환: [[link]] → "link"
+    if (options.convertObsidianLinks) {
+        processed = processed.replace(
+            /(?<!!)\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|([^\]]*))?\]\]/g,
+            (_, target, display) => display || target
+        );
+    }
+
+    // 하이라이트 변환: ==text== → **text**
+    if (options.convertHighlights) {
+        processed = processed.replace(/==([^=]+)==/g, '**$1**');
+    }
+
+    // 콜아웃 최적화
+    if (options.convertCallouts) {
+        processed = processed.replace(
+            />\s*\[!(\w+)\]([^\n]*)\n((?:>.*\n?)*)/g,
+            (_, type, title, content) => {
+                const cleanTitle = title.trim() || type.toUpperCase();
+                const cleanContent = content.replace(/^>\s?/gm, '').trim();
+                return `> **${cleanTitle}**\n>\n> ${cleanContent}\n`;
+            }
+        );
+    }
+
+    return processed;
+}
+
+/**
+ * Extract metadata from frontmatter
+ */
+function extractMetadata(content: string): { title?: string; author?: string } {
+    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+    if (!frontmatterMatch) return {};
+
+    const frontmatter = frontmatterMatch[1];
+    const titleMatch = frontmatter.match(/^title:\s*["']?(.+?)["']?\s*$/m);
+    const authorMatch = frontmatter.match(/^author:\s*["']?(.+?)["']?\s*$/m);
+
+    return {
+        title: titleMatch?.[1]?.trim(),
+        author: authorMatch?.[1]?.trim(),
+    };
+}
+
+/**
+ * Get simplified preset choices (top 6 most useful)
+ */
+function getSimplifiedPresetChoices(recommendedPreset: string) {
+    const topPresets = ['ebook', 'novel', 'report', 'presentation', 'table_heavy', 'image_heavy'];
+
+    return topPresets.map(presetId => {
+        const preset = TYPOGRAPHY_PRESETS[presetId];
+        if (!preset) return null;
+
+        const isRecommended = presetId === recommendedPreset;
+        const name = isRecommended
+            ? chalk.green(`★ ${preset.name}`) + chalk.gray(` - ${preset.description}`)
+            : chalk.cyan(preset.name) + chalk.gray(` - ${preset.description}`);
+        return { name, value: presetId };
+    }).filter(Boolean);
+}
+
+/**
+ * Get simplified cover theme choices (top 6)
+ */
+function getSimplifiedThemeChoices() {
+    const topThemes = ['apple', 'modern_gradient', 'academic', 'corporate', 'minimalist', 'classic_book'];
+
+    return topThemes.map(themeId => {
+        const theme = COVER_THEMES[themeId];
+        if (!theme) return null;
+        return {
+            name: chalk.cyan(theme.name) + chalk.gray(` - ${theme.description}`),
+            value: themeId,
+        };
+    }).filter(Boolean);
+}
+
+// Interactive mode - Refactored for better UX
 program
     .command('interactive')
     .alias('i')
-    .description('Interactive mode with guided prompts')
+    .description('Interactive mode with streamlined workflow')
     .action(async () => {
-        console.log(chalk.cyan.bold('\n' + '─'.repeat(60)));
-        console.log(chalk.cyan.bold('  Markdown to Document - Interactive Mode'));
-        console.log(chalk.cyan.bold('─'.repeat(60) + '\n'));
+        console.log(chalk.cyan.bold('\n' + '═'.repeat(60)));
+        console.log(chalk.cyan.bold('  📚 Markdown to Document - Interactive Mode'));
+        console.log(chalk.cyan.bold('═'.repeat(60) + '\n'));
 
-        const answers = await inquirer.prompt([
+        // ============ STEP 1: 파일 선택 ============
+        console.log(chalk.gray('  Step 1/3: 파일 선택\n'));
+
+        const fileAnswer = await inquirer.prompt([
             {
                 type: 'input',
                 name: 'inputPath',
-                message: chalk.yellow('📄 Input markdown file path:'),
+                message: chalk.yellow('📄 마크다운 파일 경로:'),
                 validate: (input: string) => {
-                    // 자동으로 따옴표 제거
                     const cleanedInput = input.trim().replace(/^['"]|['"]$/g, '');
+                    if (!cleanedInput) return chalk.red('파일 경로를 입력하세요.');
                     const resolvedPath = path.resolve(cleanedInput);
                     if (!fs.existsSync(resolvedPath)) {
-                        return chalk.red('✗ File not found. Please enter a valid path.');
+                        return chalk.red('파일을 찾을 수 없습니다.');
+                    }
+                    if (!resolvedPath.endsWith('.md')) {
+                        return chalk.yellow('마크다운 파일(.md)을 선택하세요.');
                     }
                     return true;
                 },
-                transformer: (input: string) => {
-                    // 입력값 표시 시에도 따옴표 제거
-                    return input.trim().replace(/^['"]|['"]$/g, '');
-                },
-            },
-            {
-                type: 'input',
-                name: 'customTitle',
-                message: chalk.yellow('📖 Book title (leave empty to use auto-detected):'),
-                default: '',
-            },
-            {
-                type: 'input',
-                name: 'customAuthor',
-                message: chalk.yellow('✍️  Author name (leave empty to use auto-detected):'),
-                default: '',
-            },
-            {
-                type: 'list',
-                name: 'format',
-                message: chalk.yellow('📤 Output format:'),
-                choices: [
-                    { name: chalk.magenta('📚 Both EPUB and PDF'), value: 'both' },
-                    { name: chalk.blue('📄 PDF only'), value: 'pdf' },
-                    { name: chalk.green('📖 EPUB only'), value: 'epub' },
-                ],
-                default: 'both',
-            },
-            {
-                type: 'list',
-                name: 'typographyPreset',
-                message: chalk.yellow('🎨 Typography preset:'),
-                choices: Object.values(TYPOGRAPHY_PRESETS).map(preset => ({
-                    name: `${chalk.cyan(preset.name)} - ${chalk.gray(preset.description)}`,
-                    value: preset.id,
-                })),
-                default: 'ebook',
-            },
-            {
-                type: 'list',
-                name: 'coverTheme',
-                message: chalk.yellow('🖼️  Cover theme (optional):'),
-                choices: [
-                    { name: chalk.gray('None'), value: null },
-                    ...Object.values(COVER_THEMES).map(theme => ({
-                        name: `${chalk.cyan(theme.name)} - ${chalk.gray(theme.description)}`,
-                        value: theme.id,
-                    })),
-                ],
-                default: null,
-            },
-            {
-                type: 'confirm',
-                name: 'validateContent',
-                message: chalk.yellow('🔍 Enable content validation?'),
-                default: true,
-            },
-            {
-                type: 'confirm',
-                name: 'autoFix',
-                message: chalk.yellow('🔧 Enable auto-fix for detected issues?'),
-                default: true,
-            },
-            {
-                type: 'input',
-                name: 'outputPath',
-                message: chalk.yellow('📁 Output directory (leave empty for same as input):'),
-                default: '',
+                transformer: (input: string) => input.trim().replace(/^['"]|['"]$/g, ''),
             },
         ]);
 
-        try {
-            console.log(chalk.gray('\n' + '─'.repeat(60) + '\n'));
+        const cleanedInputPath = fileAnswer.inputPath.trim().replace(/^['"]|['"]$/g, '');
+        const resolvedInputPath = path.resolve(cleanedInputPath);
+        const fileContent = fs.readFileSync(resolvedInputPath, 'utf-8');
 
-            const spinner = ora({
-                text: chalk.cyan('⚙️  Initializing...'),
-                spinner: 'dots',
-            }).start();
+        // 문서 분석 (자동)
+        const analysisResult = analyzeMarkdownContent(fileContent);
+        const metadata = extractMetadata(fileContent);
+
+        // ============ STEP 2: 모드 선택 및 설정 ============
+        console.log(chalk.gray('\n' + '─'.repeat(60)));
+        console.log(chalk.gray('  Step 2/3: 변환 설정\n'));
+
+        // 분석 결과 요약 (간략하게)
+        console.log(chalk.bold('📊 문서 분석:'));
+        const statsLine = [
+            `${analysisResult.wordCount.toLocaleString()}단어`,
+            `이미지 ${analysisResult.imageCount}개`,
+            `표 ${analysisResult.tableCount}개`,
+        ].join(' | ');
+        console.log(chalk.gray(`   ${statsLine}`));
+
+        if (analysisResult.issues.length > 0) {
+            console.log(chalk.yellow(`   ⚠️  ${analysisResult.issues.length}개 이슈 감지 → 자동 최적화 적용됨`));
+        } else {
+            console.log(chalk.green('   ✅ 표준 Markdown - 바로 변환 가능'));
+        }
+
+        if (metadata.title) {
+            console.log(chalk.gray(`   📖 제목: ${metadata.title}`));
+        }
+        console.log();
+
+        // 모드 선택
+        const modeAnswer = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'mode',
+                message: chalk.yellow('🚀 변환 모드 선택:'),
+                choices: [
+                    {
+                        name: chalk.green('⚡ 빠른 변환') + chalk.gray(' - 스마트 기본값으로 바로 변환 (권장)'),
+                        value: 'quick',
+                    },
+                    {
+                        name: chalk.blue('⚙️  상세 설정') + chalk.gray(' - 모든 옵션을 직접 선택'),
+                        value: 'custom',
+                    },
+                    {
+                        name: chalk.yellow('📝 전처리만') + chalk.gray(' - Obsidian 최적화 후 파일 저장 (변환 안함)'),
+                        value: 'preprocess_only',
+                    },
+                ],
+                default: 'quick',
+            },
+        ]);
+
+        const mode: InteractiveMode = modeAnswer.mode;
+
+        // 변환 설정 수집
+        let format: OutputFormat = 'both';
+        let typographyPreset = analysisResult.recommendedPreset;
+        let coverTheme = 'apple';
+        let customTitle = metadata.title || '';
+        let customAuthor = metadata.author || '';
+        let outputPath = '';
+
+        if (mode === 'quick') {
+            // 빠른 모드: 출력 형식만 선택
+            const quickAnswers = await inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'format',
+                    message: chalk.yellow('📤 출력 형식:'),
+                    choices: [
+                        { name: chalk.magenta('📚 EPUB + PDF'), value: 'both' },
+                        { name: chalk.green('📖 EPUB만'), value: 'epub' },
+                        { name: chalk.blue('📄 PDF만'), value: 'pdf' },
+                    ],
+                    default: 'both',
+                },
+            ]);
+            format = quickAnswers.format;
+
+            // 스마트 기본값 적용
+            console.log(chalk.gray('\n   📋 적용될 설정:'));
+            console.log(chalk.gray(`      프리셋: ${TYPOGRAPHY_PRESETS[typographyPreset]?.name || typographyPreset}`));
+            console.log(chalk.gray(`      표지: ${COVER_THEMES[coverTheme]?.name || coverTheme}`));
+            if (analysisResult.recommendPreprocess) {
+                console.log(chalk.gray('      Obsidian 최적화: 자동 적용'));
+            }
+
+        } else if (mode === 'custom') {
+            // 상세 모드: 모든 옵션 선택
+            const customAnswers = await inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'format',
+                    message: chalk.yellow('📤 출력 형식:'),
+                    choices: [
+                        { name: chalk.magenta('📚 EPUB + PDF'), value: 'both' },
+                        { name: chalk.green('📖 EPUB만'), value: 'epub' },
+                        { name: chalk.blue('📄 PDF만'), value: 'pdf' },
+                    ],
+                    default: 'both',
+                },
+                {
+                    type: 'list',
+                    name: 'typographyPreset',
+                    message: chalk.yellow('🎨 타이포그래피 프리셋:'),
+                    choices: [
+                        ...getSimplifiedPresetChoices(analysisResult.recommendedPreset),
+                        new inquirer.Separator(),
+                        { name: chalk.gray('더 많은 프리셋 보기...'), value: '_more' },
+                    ],
+                    default: analysisResult.recommendedPreset,
+                },
+                {
+                    type: 'list',
+                    name: 'coverTheme',
+                    message: chalk.yellow('🖼️  표지 테마:'),
+                    choices: [
+                        ...getSimplifiedThemeChoices(),
+                        new inquirer.Separator(),
+                        { name: chalk.gray('더 많은 테마 보기...'), value: '_more' },
+                    ],
+                    default: 'apple',
+                },
+            ]);
+
+            format = customAnswers.format;
+            typographyPreset = customAnswers.typographyPreset;
+            coverTheme = customAnswers.coverTheme;
+
+            // "더 보기" 선택 시 전체 목록 표시
+            if (typographyPreset === '_more') {
+                const morePresetAnswer = await inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'typographyPreset',
+                        message: chalk.yellow('🎨 타이포그래피 프리셋 (전체):'),
+                        choices: getTypographyPresetChoices(analysisResult),
+                        default: analysisResult.recommendedPreset,
+                    },
+                ]);
+                typographyPreset = morePresetAnswer.typographyPreset;
+            }
+
+            if (coverTheme === '_more') {
+                const moreThemeAnswer = await inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'coverTheme',
+                        message: chalk.yellow('🖼️  표지 테마 (전체):'),
+                        choices: getCoverThemeChoices(),
+                        default: 'apple',
+                    },
+                ]);
+                coverTheme = moreThemeAnswer.coverTheme;
+            }
+
+            // 제목/저자 (자동 감지된 경우 확인만)
+            if (!metadata.title || !metadata.author) {
+                const metaAnswers = await inquirer.prompt([
+                    {
+                        type: 'input',
+                        name: 'customTitle',
+                        message: chalk.yellow('📖 책 제목:'),
+                        default: metadata.title || path.basename(resolvedInputPath, '.md'),
+                    },
+                    {
+                        type: 'input',
+                        name: 'customAuthor',
+                        message: chalk.yellow('✍️  저자:'),
+                        default: metadata.author || '',
+                    },
+                ]);
+                customTitle = metaAnswers.customTitle;
+                customAuthor = metaAnswers.customAuthor;
+            }
+
+        } else if (mode === 'preprocess_only') {
+            // 전처리만 모드
+            const spinner = ora(chalk.cyan('🔄 Obsidian 문법 최적화 중...')).start();
+
+            const processedContent = preprocessContent(fileContent, {
+                convertObsidianImages: true,
+                convertObsidianLinks: true,
+                convertHighlights: true,
+                convertCallouts: true,
+            });
+
+            const tempDir = path.dirname(resolvedInputPath);
+            const baseName = path.basename(resolvedInputPath, '.md');
+            const preprocessedPath = path.join(tempDir, `${baseName}_preprocessed.md`);
+
+            fs.writeFileSync(preprocessedPath, processedContent, 'utf-8');
+            spinner.succeed(chalk.green('✅ 전처리 완료'));
+
+            console.log(chalk.green('\n📄 저장된 파일:'));
+            console.log(chalk.cyan(`   ${preprocessedPath}`));
+            console.log(chalk.gray('\n💡 이 파일로 변환하려면:'));
+            console.log(chalk.gray(`   npx markdown-to-document-cli "${preprocessedPath}"\n`));
+            process.exit(0);
+        }
+
+        // ============ STEP 3: 변환 실행 ============
+        console.log(chalk.gray('\n' + '─'.repeat(60)));
+        console.log(chalk.gray('  Step 3/3: 변환 실행\n'));
+
+        try {
+            const spinner = ora(chalk.cyan('⚙️  초기화 중...')).start();
 
             const converter = new MarkdownToDocument();
-
             const initResult = await converter.initialize();
+
             if (!initResult.success) {
-                spinner.fail(chalk.red('❌ Initialization failed'));
-                console.error(chalk.red(`❌ ${initResult.error}`));
+                spinner.fail(chalk.red('초기화 실패'));
+                console.error(chalk.red(`\n❌ ${initResult.error}`));
                 console.log(chalk.yellow('\n' + MarkdownToDocument.getInstallInstructions()));
                 process.exit(1);
             }
 
-            spinner.succeed(chalk.green('✅ Initialized successfully'));
+            // 전처리 (필요시 자동 적용)
+            let finalInputPath = resolvedInputPath;
 
-            // 따옴표 제거 후 경로 해결
-            const cleanedInputPath = answers.inputPath.trim().replace(/^['"]|['"]$/g, '');
+            if (analysisResult.recommendPreprocess) {
+                spinner.text = chalk.cyan('🔄 Obsidian 문법 최적화 중...');
+
+                const processedContent = preprocessContent(fileContent, {
+                    convertObsidianImages: analysisResult.hasObsidianImages,
+                    convertObsidianLinks: analysisResult.hasObsidianLinks,
+                    convertHighlights: analysisResult.hasHighlights,
+                    convertCallouts: analysisResult.hasCallouts,
+                });
+
+                const tempDir = path.dirname(resolvedInputPath);
+                const baseName = path.basename(resolvedInputPath, '.md');
+                const preprocessedPath = path.join(tempDir, `${baseName}_preprocessed.md`);
+
+                fs.writeFileSync(preprocessedPath, processedContent, 'utf-8');
+                finalInputPath = preprocessedPath;
+            }
+
+            // 변환 실행
+            spinner.text = chalk.cyan('🔄 문서 변환 중...');
 
             const conversionOptions = {
-                inputPath: path.resolve(cleanedInputPath),
-                outputPath: answers.outputPath ? path.resolve(answers.outputPath) : undefined,
-                format: answers.format as 'epub' | 'pdf' | 'both',
-                typographyPreset: answers.typographyPreset as any,
-                coverTheme: answers.coverTheme as string | undefined,
-                validateContent: answers.validateContent,
-                autoFix: answers.autoFix,
+                inputPath: finalInputPath,
+                outputPath: outputPath ? path.resolve(outputPath) : undefined,
+                format: format,
+                typographyPreset: typographyPreset as any,
+                coverTheme: coverTheme,
+                validateContent: true,
+                autoFix: true,
                 tocDepth: 2,
                 includeToc: true,
-                customTitle: answers.customTitle || undefined,
-                customAuthor: answers.customAuthor || undefined,
+                customTitle: customTitle || undefined,
+                customAuthor: customAuthor || undefined,
             };
-
-            const convertSpinner = ora({
-                text: chalk.cyan('🔄 Converting document...'),
-                spinner: 'dots',
-            }).start();
 
             const result = await converter.convert(conversionOptions);
 
             if (result.success) {
-                convertSpinner.succeed(chalk.green('✅ Conversion completed!'));
+                spinner.succeed(chalk.green('변환 완료!'));
 
-                console.log(chalk.gray('\n' + '─'.repeat(60)));
-                console.log(chalk.green.bold('\n📦 Output Files:\n'));
-
+                console.log(chalk.green.bold('\n📦 생성된 파일:\n'));
                 if (result.epubPath) {
-                    console.log(chalk.green(`  📖 EPUB:  ${result.epubPath}`));
+                    console.log(chalk.green(`   📖 ${result.epubPath}`));
                 }
                 if (result.pdfPath) {
-                    console.log(chalk.blue(`  📄 PDF:   ${result.pdfPath}`));
+                    console.log(chalk.blue(`   📄 ${result.pdfPath}`));
                 }
 
-                console.log(chalk.gray('\n' + '─'.repeat(60)));
-                console.log(chalk.green.bold('\n🎉 Conversion successful!\n'));
+                console.log(chalk.gray('\n' + '═'.repeat(60)));
+                console.log(chalk.green.bold('🎉 변환이 완료되었습니다!\n'));
             } else {
-                convertSpinner.fail(chalk.red('❌ Conversion failed'));
-                console.log(chalk.red('\n❌ Errors:'));
+                spinner.fail(chalk.red('변환 실패'));
+                console.log(chalk.red('\n❌ 오류:'));
                 result.errors.forEach(error => {
-                    console.log(chalk.red(`  • ${error}`));
+                    console.log(chalk.red(`   • ${error}`));
                 });
-                console.log(chalk.red('\n❌ Conversion failed!\n'));
                 process.exit(1);
             }
         } catch (error) {

@@ -139,7 +139,7 @@ npm list typescript
 
 **출력 예시**:
 ```
-markdown-to-document-cli@1.0.0
+markdown-to-document-cli@1.1.5
 └── typescript@5.3.3  ✅
 ```
 
@@ -186,7 +186,7 @@ npm run build
 
 **출력 예시**:
 ```
-> markdown-to-document-cli@1.0.0 build
+> markdown-to-document-cli@1.1.5 build
 > tsc
 
 ✅ 빌드 성공!
@@ -342,6 +342,18 @@ m2d review.md --typography review
 m2d ebook.md --typography ebook
 ```
 
+#### 5. 표지 테마 - "마법의 책 커버"
+
+**비유**: 책의 얼굴을 예쁘게 꾸며주는 마법입니다.
+
+- **지원 테마**: Apple, Modern Gradient, Dark Tech, Nature
+- **효과**: EPUB에는 고해상도 SVG 이미지가, PDF에는 전면 HTML 페이지가 자동으로 추가됩니다.
+
+**사용법**:
+```bash
+m2d document.md --cover modern_gradient
+```
+
 ### 🎯 프리셋 선택 가이드
 
 | 문서 종류 | 추천 프리셋 | 이유 |
@@ -488,7 +500,7 @@ cat package.json
 ```json
 {
   "name": "markdown-to-document-cli",  // 패키지 이름
-  "version": "1.0.0",                   // 버전
+  "version": "1.1.5",                   // 버전
   "description": "...",                 // 설명
   "main": "dist/index.js",              // 진입점
   "bin": {
@@ -544,12 +556,13 @@ npm publish
 **출력 예시**:
 ```
 npm notice 
-npm notice 📦  markdown-to-document-cli@1.0.0
+npm notice 📦  markdown-to-document-cli@1.1.5
 npm notice === Tarball Contents === 
 npm notice 1.2kB  dist/types/index.d.ts
 npm notice ...
 npm notice === Tarball Details === 
 npm notice name:          markdown-to-document-cli
+npm notice version:       1.1.5
 npm notice version:       1.0.0
 npm notice ...
 npm notice 
@@ -928,14 +941,14 @@ npm view markdown-to-document-cli version  # 새 버전이 보이나요? ✅
 ---
 
 **작성자**: 잘생김프로쌤  
-**마지막 업데이트**: 2025-01-05
+**마지막 업데이트**: 2026-01-06 (v1.2.3)
 
 ---
 
 ## 📞 도움이 필요하시면?
 
-- **GitHub Issues**: https://github.com/bluelion79/markdown-to-document-cli/issues
-- **Email**: bluelion79@gmail.com
+- **GitHub Issues**: https://github.com/goodlookingprokim/markdown-to-document-cli/issues
+- **Email**: edulovesai@gmail.com
 - **NPM 패키지**: https://www.npmjs.com/package/markdown-to-document-cli
 
 ---
