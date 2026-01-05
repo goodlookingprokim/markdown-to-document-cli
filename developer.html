@@ -25,7 +25,44 @@
             overflow-x: hidden;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 80px 40px; }
+        /* Sticky Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #333;
+            z-index: 1000;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--fg);
+            text-decoration: none;
+        }
+        .nav-link {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid var(--accent-cyan);
+            padding: 8px 16px;
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            background: var(--accent-cyan);
+            color: var(--bg);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 120px 40px 80px; }
 
         /* Tech-Heavy Header */
         header { 
@@ -53,7 +90,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            font-family: 'JetBrains+Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 0.9rem;
             color: #888;
         }
@@ -158,10 +195,15 @@
             .container { padding: 40px 20px; }
             h1 { font-size: 3rem; }
             .card-grid { grid-template-columns: 1fr; }
+            .nav-bar { padding: 15px 20px; }
         }
     </style>
 </head>
 <body>
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-brand">NPXMAGICDOC // DEV</a>
+        <a href="index.html" class="nav-link">← BACK TO USER GUIDE</a>
+    </nav>
     <div class="container">
         <header>
             <span class="version-tag">STABLE v1.2.3 RELEASE</span>
@@ -266,7 +308,10 @@ npm run build</code></pre>
         <footer>
             <div>&copy; 2024 GOODLOOKINGPROKIM</div>
             <div>BUILD: STABLE_X86_64_20240101</div>
-            <div><a href="https://github.com/goodlookingprokim/markdown-to-document-cli" style="color: var(--accent-green); text-decoration: none;">GITHUB_REPO</a></div>
+            <div style="display: flex; gap: 20px;">
+                <a href="index.html" style="color: var(--accent-cyan); text-decoration: none; font-family: 'JetBrains Mono', monospace;">[ USER_GUIDE ]</a>
+                <a href="https://github.com/goodlookingprokim/markdown-to-document-cli" style="color: var(--accent-green); text-decoration: none; font-family: 'JetBrains Mono', monospace;">[ GITHUB_REPO ]</a>
+            </div>
         </footer>
     </div>
 </body>
