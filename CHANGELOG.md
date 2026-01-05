@@ -5,6 +5,21 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-01-05
+
+### Fixed
+- **Interactive Mode Header**: Fixed border rendering issue with box-style header
+  - Changed from box-drawing characters (╔══════╗) to simple double-line borders (════════)
+  - Improved header alignment and visual consistency
+
+### Changed
+- **PDF Font Configuration**: Updated Korean font settings for better readability
+  - Changed from "Apple SD Gothic Neo" to "Noto Sans CJK KR"
+  - Applied to both mainfont and CJKmainfont for LaTeX engines
+  - Improved typography CSS generation for PDF output
+
+---
+
 ## [1.1.1] - 2026-01-05
 
 ### Added

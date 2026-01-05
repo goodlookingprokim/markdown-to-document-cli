@@ -299,9 +299,24 @@ export class PandocService {
         const enginePath = this.findPdfEnginePath(engine);
         args.push(`--pdf-engine=${enginePath}`);
 
-        // CSS styling
-        if (options.cssPath && fs.existsSync(options.cssPath)) {
-            args.push(`--css=${options.cssPath}`);
+        // CSS styling with typography preset
+        let cssPath = options.cssPath;
+
+        // Generate typography CSS if preset is specified
+        if (options.typographyPreset) {
+            cssPath = await this.generateTypographyCSS(
+                options.typographyPreset,
+                'pdf',
+                cssPath,
+                {
+                    content: options.content,
+                    enableFontSubsetting: options.enableFontSubsetting,
+                }
+            );
+        }
+
+        if (cssPath && fs.existsSync(cssPath)) {
+            args.push(`--css=${cssPath}`);
         }
 
         // Table of contents
@@ -318,9 +333,9 @@ export class PandocService {
             if (options.marginLeft) args.push('-V', `margin-left:${options.marginLeft}`);
             if (options.marginRight) args.push('-V', `margin-right:${options.marginRight}`);
 
-            // Korean font support for latex engines
-            args.push('-V', 'mainfont:Apple SD Gothic Neo');
-            args.push('-V', 'CJKmainfont:Apple SD Gothic Neo');
+            // Korean font support for latex engines - use Noto Sans CJK KR
+            args.push('-V', 'mainfont:Noto Sans CJK KR');
+            args.push('-V', 'CJKmainfont:Noto Sans CJK KR');
         }
 
         args.push('--standalone');

@@ -185,9 +185,12 @@ program
     .alias('i')
     .description('Interactive mode with guided prompts')
     .action(async () => {
-        console.log(chalk.cyan.bold('\n╔════════════════════════════════════════════════════════════╗'));
-        console.log(chalk.cyan.bold('║  📚 Markdown to Document - Interactive Mode               ║'));
-        console.log(chalk.cyan.bold('╚════════════════════════════════════════════════════════════╝\n'));
+        const title = '📚 Markdown to Document - Interactive Mode';
+        const width = 60;
+
+        console.log(chalk.cyan.bold('\n' + '═'.repeat(width)));
+        console.log(chalk.cyan.bold('║' + ' '.repeat((width - title.length - 2) / 2) + title + ' '.repeat((width - title.length - 2) / 2) + '║'));
+        console.log(chalk.cyan.bold('═'.repeat(width) + '\n'));
 
         const answers = await inquirer.prompt([
             {
