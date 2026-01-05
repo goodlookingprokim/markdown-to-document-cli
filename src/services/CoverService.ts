@@ -72,97 +72,74 @@ export class CoverService {
     }
 
     /**
-     * Generate an HTML cover for PDF
+     * Generate HTML fragment and CSS for PDF cover
      */
-    async generatePdfCoverHtml(data: CoverData): Promise<string> {
+    async generatePdfCoverData(data: CoverData): Promise<{ html: string; css: string }> {
         const theme = COVER_THEMES[data.themeId] || COVER_THEMES.apple;
-        const tempDir = getTempDir();
-        const coverPath = path.join(tempDir, `cover-${Date.now()}.html`);
+
+        const css = `
+            .pdf-cover-page {
+                page: cover;
+                width: 100%;
+                height: 100%;
+                background: ${theme.style === 'gradient' ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary})` : theme.colors.background};
+                color: ${theme.colors.text};
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                position: relative;
+                break-after: page;
+            }
+            .pdf-cover-frame {
+                width: 80%;
+                height: 90%;
+                border: 1px solid ${theme.colors.accent}66;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: 40px;
+                box-sizing: border-box;
+            }
+            .pdf-cover-title-group h1 {
+                font-size: 48pt;
+                font-weight: 900;
+                margin: 0;
+                color: ${theme.colors.text} !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            .pdf-cover-divider {
+                width: 60px;
+                height: 2px;
+                background: ${theme.colors.accent};
+                margin: 30px auto;
+            }
+            .pdf-cover-author {
+                font-size: 24pt;
+                font-weight: 300;
+                letter-spacing: 0.2em;
+            }
+            @page cover {
+                margin: 0;
+                size: A4;
+            }
+        `;
 
         const html = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700;900&display=swap');
-        @page {
-            size: A4;
-            margin: 0;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            width: 210mm;
-            height: 297mm;
-            background: ${theme.style === 'gradient' ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary})` : theme.colors.background};
-            color: ${theme.colors.text};
-            font-family: 'Noto Sans KR', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .cover-frame {
-            width: 180mm;
-            height: 267mm;
-            border: 1px solid ${theme.colors.accent}66;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 30mm 15mm;
-            box-sizing: border-box;
-            position: relative;
-        }
-        .title-group {
-            text-align: center;
-        }
-        h1 {
-            font-size: 42pt;
-            font-weight: 900;
-            line-height: 1.3;
-            margin: 0;
-            word-break: keep-all;
-            text-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        .divider {
-            width: 40mm;
-            height: 1pt;
-            background: ${theme.colors.accent};
-            margin: 20mm auto;
-        }
-        .author {
-            font-size: 20pt;
-            font-weight: 300;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            text-align: center;
-        }
-        .publisher {
-            position: absolute;
-            bottom: 20mm;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 12pt;
-            opacity: 0.7;
-        }
-    </style>
-</head>
-<body>
-    <div class="cover-frame">
-        <div class="title-group">
-            <h1>${this.escapeXml(data.title)}</h1>
-            <div class="divider"></div>
-        </div>
-        <div class="author">${this.escapeXml(data.author || 'Unknown Author')}</div>
-    </div>
-</body>
-</html>
-        `.trim();
+            <div class="pdf-cover-page">
+                <div class="pdf-cover-frame">
+                    <div class="pdf-cover-title-group">
+                        <h1>${this.escapeXml(data.title)}</h1>
+                        <div class="pdf-cover-divider"></div>
+                    </div>
+                    <div class="pdf-cover-author">${this.escapeXml(data.author || 'Unknown Author')}</div>
+                </div>
+            </div>
+        `;
 
-        fs.writeFileSync(coverPath, html, 'utf-8');
-        Logger.info(`Generated PDF cover (HTML): ${coverPath}`);
-        return coverPath;
+        return { html, css };
     }
 
     private wrapTextSvg(text: string, x: number, y: number, maxWidth: number, lineHeight: number): string {

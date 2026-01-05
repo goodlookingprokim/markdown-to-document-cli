@@ -45,6 +45,7 @@ export interface CSSGenerationOptions {
     includeFonts?: boolean;
     outputFormat?: 'epub' | 'pdf';
     codeTheme?: string;
+    additionalCss?: string;
 }
 
 export class TypographyService {
@@ -254,6 +255,13 @@ export class TypographyService {
         css.push('/* Typography Preset: ' + preset.nameKr + ' */');
         css.push('');
 
+        if (format === 'pdf') {
+            css.push('@import url(\'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Noto+Serif+KR:wght@300;400;700&display=swap\');');
+            css.push('');
+            css.push('* { box-sizing: border-box; }');
+            css.push('');
+        }
+
         // Global styles
         css.push('body {');
         css.push(`  font-family: ${settings.fontFamily};`);
@@ -262,6 +270,12 @@ export class TypographyService {
         css.push(`  text-align: ${settings.justification};`);
         css.push('  color: #333;');
         css.push('  margin: 0;');
+        if (format === 'pdf') {
+            css.push('  word-break: keep-all;');
+            css.push('  overflow-wrap: break-word;');
+            css.push('  orphans: 3;');
+            css.push('  widows: 3;');
+        }
         if (settings.hyphenation) {
             css.push('  hyphens: auto;');
             css.push('  -webkit-hyphens: auto;');
@@ -269,6 +283,11 @@ export class TypographyService {
         }
         css.push('}');
         css.push('');
+
+        if (format === 'pdf') {
+            css.push('#title-block-header { display: none; }');
+            css.push('');
+        }
 
         // PDF specific page settings
         if (format === 'pdf' && options.includePageBreaks !== false) {
@@ -298,8 +317,14 @@ export class TypographyService {
             css.push(`  font-weight: bold;`);
             css.push(`  line-height: 1.2;`);
             css.push(`  color: #1a1a1a;`);
-            if (format === 'pdf' && level <= 'h3') {
-                css.push(`  page-break-after: avoid;`);
+            if (format === 'pdf') {
+                if (level === 'h1') {
+                    css.push('  break-before: page;');
+                }
+                if (level === 'h1' || level === 'h2' || level === 'h3') {
+                    css.push('  page-break-after: avoid;');
+                    css.push('  break-after: avoid;');
+                }
             }
             css.push('}');
             css.push('');
@@ -308,6 +333,9 @@ export class TypographyService {
         // Common elements
         css.push('img { max-width: 100%; height: auto; display: block; margin: 1em auto; }');
         css.push('blockquote { margin: 1.5em 0; padding: 0.5em 1em; border-left: 4px solid #ddd; color: #666; font-style: italic; }');
+        if (format === 'pdf') {
+            css.push('blockquote, pre, table, figure { break-inside: avoid; }');
+        }
         css.push(`code { font-family: ${this.defaultFontStacks.monospace}; background-color: #f4f4f4; padding: 0.2em 0.4em; border-radius: 3px; font-size: 0.9em; }`);
         css.push('pre { background-color: #f4f4f4; padding: 1em; border-radius: 5px; overflow-x: auto; margin: 1.5em 0; }');
         css.push('pre code { background-color: transparent; padding: 0; font-size: 0.85em; }');
@@ -319,6 +347,12 @@ export class TypographyService {
         if (preset.cssRules) {
             css.push('/* Custom styles */');
             css.push(preset.cssRules);
+        }
+
+        if (options.additionalCss) {
+            css.push('');
+            css.push('/* Additional styles (e.g. Cover) */');
+            css.push(options.additionalCss);
         }
 
         return css.join('\n');

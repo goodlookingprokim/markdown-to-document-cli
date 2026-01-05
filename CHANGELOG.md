@@ -5,6 +5,21 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2026-01-05
+
+### Fixed
+- **PDF Layout Reconstruction**: 
+  - Fixed major layout collapse by changing cover generation from full HTML to fragments using `--include-before-body`.
+  - Implemented `box-sizing: border-box` across all elements to prevent layout calculation errors.
+  - Added `#title-block-header { display: none; }` to suppress Pandoc's default title block.
+  - Improved page breaking with `break-before: page` for H1 and `break-inside: avoid` for tables, code blocks, and blockquotes.
+- **Korean Typography Optimization**:
+  - Forced `word-break: keep-all` and `overflow-wrap: break-word` for better Korean text flow.
+  - Integrated Noto Sans KR Google Fonts import into the main PDF stylesheet.
+  - Added widow and orphan control (`orphans: 3`, `widows: 3`) for professional page flow.
+
+---
+
 ## [1.1.4] - 2026-01-05
 
 ### Added

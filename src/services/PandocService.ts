@@ -303,16 +303,22 @@ export class PandocService {
     private async buildPdfArgs(options: PdfConversionOptions): Promise<string[]> {
         const args: string[] = [];
 
-        // Generate and include cover if none provided
+        // Generate cover fragment and CSS
         const themeId = options.metadata?.coverTheme || 'apple';
-        const coverHtmlPath = await this.coverService.generatePdfCoverHtml({
+        const coverData = await this.coverService.generatePdfCoverData({
             title: options.title,
             author: options.author,
             themeId: themeId,
         });
 
-        // Add cover as the first input file (Pandoc merges them)
-        args.push(coverHtmlPath);
+        // Save cover HTML fragment to a temp file
+        const tempDir = getTempDirPath();
+        const coverFragmentPath = path.join(tempDir, `cover-fragment-${Date.now()}.html`);
+        fs.writeFileSync(coverFragmentPath, coverData.html, 'utf-8');
+
+        // Include cover before body
+        args.push('--include-before-body', coverFragmentPath);
+
         args.push(options.inputPath);
         args.push('-o', options.outputPath);
 
@@ -336,6 +342,7 @@ export class PandocService {
                 {
                     content: options.content,
                     enableFontSubsetting: options.enableFontSubsetting,
+                    additionalCss: coverData.css, // Merge cover CSS here
                 }
             );
         }
@@ -361,11 +368,10 @@ export class PandocService {
             // Korean font support for latex engines (xelatex is preferred)
             args.push('-V', 'mainfont:Noto Sans KR');
             args.push('-V', 'CJKmainfont:Noto Sans KR');
-        } else {
-            // For weasyprint, we rely on the CSS font-family
-            // Ensure we use a standalone document to include the CSS properly
-            args.push('--standalone');
         }
+
+        // Standalone document
+        args.push('--standalone');
 
         return args;
     }
@@ -400,6 +406,7 @@ export class PandocService {
         options?: {
             content?: string;
             enableFontSubsetting?: boolean;
+            additionalCss?: string;
         }
     ): Promise<string> {
         const preset = this.typographyService.getPreset(presetId);
@@ -410,6 +417,7 @@ export class PandocService {
         let css = this.typographyService.generatePresetCSS(presetId, {
             outputFormat: format,
             includePageBreaks: true,
+            additionalCss: options?.additionalCss,
         });
 
         // Add custom CSS if provided
