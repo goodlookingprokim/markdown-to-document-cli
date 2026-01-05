@@ -11,6 +11,7 @@ import type { PandocInfo, ConversionOptions, TypographyPresetId } from '../types
 import { getTempDir, Logger } from '../utils/common.js';
 import { TypographyService } from './TypographyService.js';
 import { FontSubsetter } from './FontSubsetter.js';
+import { CoverService } from './CoverService.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -57,6 +58,7 @@ export interface PdfConversionOptions {
     includeToc?: boolean;
     enableFontSubsetting?: boolean;
     content?: string;
+    metadata?: Record<string, string>;
 }
 
 export class PandocService {
@@ -64,11 +66,13 @@ export class PandocService {
     private majorVersion: number = 0;
     private typographyService: TypographyService;
     private fontSubsetter: FontSubsetter;
+    private coverService: CoverService;
 
     constructor(pandocPath: string = '') {
         this.pandocPath = pandocPath;
         this.typographyService = new TypographyService();
         this.fontSubsetter = new FontSubsetter(path.join(getTempDirPath(), 'font-cache'));
+        this.coverService = new CoverService();
     }
 
     /**
@@ -228,9 +232,39 @@ export class PandocService {
         args.push(options.inputPath);
         args.push('-o', options.outputPath);
 
+        // Metadata: Author
+        if (options.author) {
+            args.push('--metadata', `author=${options.author}`);
+        }
+
+        // Font Embedding
+        const fontsToEmbed = [
+            '/System/Library/Fonts/Supplemental/NotoSansKR-Regular.otf',
+            '/System/Library/Fonts/Supplemental/NotoSansKR-Bold.otf',
+            '/System/Library/Fonts/Supplemental/NotoSerifKR-Regular.otf',
+            '/System/Library/Fonts/Supplemental/NotoSerifKR-Bold.otf'
+        ];
+
+        for (const fontPath of fontsToEmbed) {
+            if (fs.existsSync(fontPath)) {
+                args.push('--epub-embed-font', fontPath);
+            }
+        }
+
         // Cover image
-        if (options.coverImagePath && fs.existsSync(options.coverImagePath)) {
-            args.push(`--epub-cover-image=${options.coverImagePath}`);
+        let coverPath = options.coverImagePath;
+        if (!coverPath) {
+            // Generate cover if theme is specified or by default
+            const themeId = options.metadata?.coverTheme || 'apple';
+            coverPath = await this.coverService.generateEpubCover({
+                title: options.title,
+                author: options.author,
+                themeId: themeId,
+            });
+        }
+
+        if (coverPath && fs.existsSync(coverPath)) {
+            args.push(`--epub-cover-image=${coverPath}`);
         }
 
         // CSS styling with typography preset
@@ -257,30 +291,8 @@ export class PandocService {
         args.push('--toc');
         args.push('--toc-depth', String(options.tocDepth || 2));
 
-        // EPUB version (only for Pandoc < 3.0)
-        if (this.majorVersion < 3) {
-            if (options.epubVersion === '2') {
-                args.push('--epub-version=2');
-            } else {
-                args.push('--epub-version=3');
-            }
-        }
-
-        // Chapter level
-        if (this.majorVersion >= 3) {
-            args.push('--split-level=1');
-        } else {
-            args.push('--epub-chapter-level=1');
-        }
-
+        // Standalone
         args.push('--standalone');
-
-        // Additional metadata
-        if (options.metadata) {
-            for (const [key, value] of Object.entries(options.metadata)) {
-                args.push('--metadata', `${key}=${value}`);
-            }
-        }
 
         return args;
     }
@@ -291,6 +303,16 @@ export class PandocService {
     private async buildPdfArgs(options: PdfConversionOptions): Promise<string[]> {
         const args: string[] = [];
 
+        // Generate and include cover if none provided
+        const themeId = options.metadata?.coverTheme || 'apple';
+        const coverHtmlPath = await this.coverService.generatePdfCoverHtml({
+            title: options.title,
+            author: options.author,
+            themeId: themeId,
+        });
+
+        // Add cover as the first input file (Pandoc merges them)
+        args.push(coverHtmlPath);
         args.push(options.inputPath);
         args.push('-o', options.outputPath);
 
@@ -299,9 +321,27 @@ export class PandocService {
         const enginePath = this.findPdfEnginePath(engine);
         args.push(`--pdf-engine=${enginePath}`);
 
-        // CSS styling
-        if (options.cssPath && fs.existsSync(options.cssPath)) {
-            args.push(`--css=${options.cssPath}`);
+        // Metadata: Author
+        if (options.author) {
+            args.push('--metadata', `author=${options.author}`);
+        }
+
+        // CSS styling with typography preset
+        let cssPath = options.cssPath;
+        if (options.typographyPreset) {
+            cssPath = await this.generateTypographyCSS(
+                options.typographyPreset,
+                'pdf',
+                cssPath,
+                {
+                    content: options.content,
+                    enableFontSubsetting: options.enableFontSubsetting,
+                }
+            );
+        }
+
+        if (cssPath && fs.existsSync(cssPath)) {
+            args.push(`--css=${cssPath}`);
         }
 
         // Table of contents
@@ -318,12 +358,14 @@ export class PandocService {
             if (options.marginLeft) args.push('-V', `margin-left:${options.marginLeft}`);
             if (options.marginRight) args.push('-V', `margin-right:${options.marginRight}`);
 
-            // Korean font support for latex engines
-            args.push('-V', 'mainfont:Apple SD Gothic Neo');
-            args.push('-V', 'CJKmainfont:Apple SD Gothic Neo');
+            // Korean font support for latex engines (xelatex is preferred)
+            args.push('-V', 'mainfont:Noto Sans KR');
+            args.push('-V', 'CJKmainfont:Noto Sans KR');
+        } else {
+            // For weasyprint, we rely on the CSS font-family
+            // Ensure we use a standalone document to include the CSS properly
+            args.push('--standalone');
         }
-
-        args.push('--standalone');
 
         return args;
     }

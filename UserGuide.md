@@ -352,7 +352,7 @@ m2d i
 ? 📄 Input markdown file path: ./my-document.md
 ? 📖 Book title (leave empty to use auto-detected): My Custom Title
 ? ✍️  Author name (leave empty to use auto-detected): John Doe
-? 📤 Output format: 📖 EPUB only
+? 📤 Output format: � Both EPUB and PDF
 ? 🎨 Typography preset: Ebook - 일반 전자책
 ? 🖼️  Cover theme (optional): None
 ? 🔍 Enable content validation? Yes

@@ -50,9 +50,9 @@ export interface CSSGenerationOptions {
 export class TypographyService {
     private presets: Map<string, TypographyPreset>;
     private defaultFontStacks = {
-        serif: '"Noto Serif CJK KR", "Noto Serif KR", "Source Han Serif KR", "Batang", "바탕", "AppleMyungjo", serif',
-        sansSerif: '"Noto Sans CJK KR", "Noto Sans KR", "Source Han Sans KR", "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif',
-        monospace: '"Noto Sans Mono CJK KR", "D2Coding", "Source Code Pro", monospace',
+        serif: '"Noto Serif KR", "Noto Serif CJK KR", "Source Han Serif KR", "Batang", "바탕", "AppleMyungjo", serif',
+        sansSerif: '"Noto Sans KR", "Noto Sans CJK KR", "Source Han Sans KR", "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif',
+        monospace: '"Noto Sans Mono KR", "Noto Sans Mono CJK KR", "D2Coding", "Source Code Pro", monospace',
     };
 
     constructor() {
@@ -238,6 +238,9 @@ export class TypographyService {
         return Array.from(this.presets.values());
     }
 
+    /**
+     * Generate CSS for a preset
+     */
     generatePresetCSS(presetId: string, options: CSSGenerationOptions = {}): string {
         const preset = this.presets.get(presetId);
         if (!preset) {
@@ -251,17 +254,14 @@ export class TypographyService {
         css.push('/* Typography Preset: ' + preset.nameKr + ' */');
         css.push('');
 
-        css.push(':root {');
-        css.push(`  font-size: ${settings.fontSize};`);
-        css.push(`  line-height: ${settings.lineHeight};`);
-        css.push('}');
-        css.push('');
-
+        // Global styles
         css.push('body {');
         css.push(`  font-family: ${settings.fontFamily};`);
-        css.push(`  font-size: 1rem;`);
+        css.push(`  font-size: ${settings.fontSize};`);
         css.push(`  line-height: ${settings.lineHeight};`);
         css.push(`  text-align: ${settings.justification};`);
+        css.push('  color: #333;');
+        css.push('  margin: 0;');
         if (settings.hyphenation) {
             css.push('  hyphens: auto;');
             css.push('  -webkit-hyphens: auto;');
@@ -270,18 +270,18 @@ export class TypographyService {
         css.push('}');
         css.push('');
 
+        // PDF specific page settings
         if (format === 'pdf' && options.includePageBreaks !== false) {
             css.push('@page {');
-            css.push(`  margin-top: ${settings.pageMargins.top};`);
-            css.push(`  margin-bottom: ${settings.pageMargins.bottom};`);
-            css.push(`  margin-left: ${settings.pageMargins.left};`);
-            css.push(`  margin-right: ${settings.pageMargins.right};`);
+            css.push(`  size: A4;`);
+            css.push(`  margin: ${settings.pageMargins.top} ${settings.pageMargins.right} ${settings.pageMargins.bottom} ${settings.pageMargins.left};`);
             css.push('}');
             css.push('');
         }
 
+        // Paragraphs
         css.push('p {');
-        css.push(`  margin-top: ${settings.paragraphSpacing};`);
+        css.push(`  margin-top: 0;`);
         css.push(`  margin-bottom: ${settings.paragraphSpacing};`);
         if (settings.textIndent && presetId === 'novel') {
             css.push(`  text-indent: ${settings.textIndent};`);
@@ -289,19 +289,32 @@ export class TypographyService {
         css.push('}');
         css.push('');
 
+        // Headings
         for (const [level, scale] of Object.entries(settings.headingScale)) {
             css.push(`${level} {`);
             css.push(`  font-size: ${scale}em;`);
-            css.push(`  margin-top: ${1 / scale}em;`);
-            css.push(`  margin-bottom: ${0.5 / scale}em;`);
+            css.push(`  margin-top: 1.5em;`);
+            css.push(`  margin-bottom: 0.5em;`);
             css.push(`  font-weight: bold;`);
             css.push(`  line-height: 1.2;`);
+            css.push(`  color: #1a1a1a;`);
             if (format === 'pdf' && level <= 'h3') {
                 css.push(`  page-break-after: avoid;`);
             }
             css.push('}');
             css.push('');
         }
+
+        // Common elements
+        css.push('img { max-width: 100%; height: auto; display: block; margin: 1em auto; }');
+        css.push('blockquote { margin: 1.5em 0; padding: 0.5em 1em; border-left: 4px solid #ddd; color: #666; font-style: italic; }');
+        css.push(`code { font-family: ${this.defaultFontStacks.monospace}; background-color: #f4f4f4; padding: 0.2em 0.4em; border-radius: 3px; font-size: 0.9em; }`);
+        css.push('pre { background-color: #f4f4f4; padding: 1em; border-radius: 5px; overflow-x: auto; margin: 1.5em 0; }');
+        css.push('pre code { background-color: transparent; padding: 0; font-size: 0.85em; }');
+        css.push('table { width: 100%; border-collapse: collapse; margin: 1.5em 0; }');
+        css.push('th, td { border: 1px solid #ddd; padding: 0.5em; text-align: left; }');
+        css.push('th { background-color: #f9f9f9; }');
+        css.push('');
 
         if (preset.cssRules) {
             css.push('/* Custom styles */');

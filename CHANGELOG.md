@@ -5,6 +5,30 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-01-05
+
+### Added
+- **Automatic Cover Generation**: 
+  - Integrated `CoverService` to generate professional book covers for both EPUB and PDF.
+  - EPUB covers are generated as high-quality SVG images.
+  - PDF covers are generated as full-page HTML templates.
+  - Supports all defined themes (Apple, Modern Gradient, Dark Tech, etc.).
+- **EPUB Font Embedding**:
+  - Automatically embeds Noto Sans KR and Noto Serif KR fonts into EPUB files.
+  - Ensures consistent typography across all e-reader devices.
+- **PDF Readability Improvements**:
+  - Enhanced PDF CSS template for better Korean font rendering.
+  - Forced Noto Sans KR as the primary font for PDF generation via WeasyPrint.
+
+### Fixed
+- **Author/Title Recognition**:
+  - Fixed "Unknown Author" issue by correctly prioritizing manual input from interactive mode.
+  - Ensured metadata overrides are correctly written to the temporary Markdown frontmatter.
+- **Conversion Quality**:
+  - Improved CSS base styles for images, blockquotes, tables, and code blocks.
+
+---
+
 ## [1.1.3] - 2026-01-05
 
 ### Changed

@@ -206,16 +206,20 @@ export class MarkdownPreprocessor {
      */
     generateCleanMarkdown(
         preprocessResult: PreprocessResult,
-        outputFormat: 'epub' | 'pdf' = 'epub'
+        outputFormat: 'epub' | 'pdf' = 'epub',
+        overrides?: { title?: string; author?: string }
     ): string {
         const { content, metadata } = preprocessResult;
 
         // Build YAML frontmatter
         const yamlLines: string[] = ['---'];
 
-        if (metadata.title) yamlLines.push(`title: "${metadata.title}"`);
+        const finalTitle = overrides?.title || metadata.title;
+        const finalAuthor = overrides?.author || metadata.author;
+
+        if (finalTitle) yamlLines.push(`title: "${finalTitle}"`);
         if (metadata.subtitle) yamlLines.push(`subtitle: "${metadata.subtitle}"`);
-        if (metadata.author) yamlLines.push(`author: "${metadata.author}"`);
+        if (finalAuthor) yamlLines.push(`author: "${finalAuthor}"`);
         if (metadata.language) yamlLines.push(`language: ${metadata.language}`);
         if (metadata.date) yamlLines.push(`date: ${metadata.date}`);
         if (metadata.description) yamlLines.push(`description: "${metadata.description}"`);

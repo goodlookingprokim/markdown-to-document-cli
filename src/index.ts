@@ -96,7 +96,8 @@ export class MarkdownToDocument {
             // Step 3: Generate clean markdown with frontmatter
             const cleanMarkdown = this.preprocessor.generateCleanMarkdown(
                 preprocessResult,
-                options.format === 'pdf' ? 'pdf' : 'epub'
+                options.format === 'pdf' ? 'pdf' : 'epub',
+                { title: options.customTitle, author: options.customAuthor }
             );
 
             // Step 4: Write temporary markdown file
@@ -122,12 +123,13 @@ export class MarkdownToDocument {
                     title: title,
                     author: author,
                     language: preprocessResult.metadata.language,
-                    coverImagePath: options.coverTheme ? undefined : undefined, // TODO: implement cover generation
-                    cssPath: options.cssPath,
                     typographyPreset: options.typographyPreset,
                     tocDepth: options.tocDepth,
                     enableFontSubsetting: options.enableFontSubsetting,
                     content: cleanMarkdown,
+                    metadata: {
+                        coverTheme: options.coverTheme || DEFAULT_CONFIG.coverTheme,
+                    }
                 });
 
                 if (!epubResult.success) {
@@ -151,6 +153,9 @@ export class MarkdownToDocument {
                     includeToc: options.includeToc,
                     enableFontSubsetting: options.enableFontSubsetting,
                     content: cleanMarkdown,
+                    metadata: {
+                        coverTheme: options.coverTheme || DEFAULT_CONFIG.coverTheme,
+                    }
                 });
 
                 if (!pdfResult.success) {
