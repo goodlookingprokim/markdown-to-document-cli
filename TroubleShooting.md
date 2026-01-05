@@ -680,10 +680,10 @@ m2d document.md --verbose > debug.log 2>&1
 ```
 
 2. **GitHub Issues**:
-   - [새 이슈 생성](https://github.com/bluelion79/markdown-to-document-cli/issues)
+   - [새 이슈 생성](https://github.com/goodlookingprokim/markdown-to-document-cli/issues)
    - 디버그 로그와 오류 메시지 포함
 
-3. **이메일**:
+3. **Email**:
    - bluelion79@gmail.com
 
 ---

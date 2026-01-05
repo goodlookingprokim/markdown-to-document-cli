@@ -5,25 +5,16 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.1] - 2025-01-05
 
 ### Added
-- Initial NPM/NPX package release
-- Core conversion functionality (EPUB/PDF)
-- 8 validation modules with auto-fix
-- 4 typography presets (novel, presentation, review, ebook)
-- Interactive CLI mode
-- Comprehensive documentation (Project.md, UserGuide.md, TroubleShooting.md)
-- TypeScript type definitions
-- CLI commands: `convert`, `interactive`, `list-presets`, `list-themes`, `check`
+- GitHub repository integration
+- Updated repository URL to goodlookingprokim/markdown-to-document-cli
+- Updated homepage and bugs URLs
 
 ### Changed
-- Refactored from Obsidian plugin to standalone CLI tool
-- Removed Obsidian API dependencies
-- Converted to ES Modules
-
-### Fixed
-- Initial release
+- Updated package.json with correct GitHub repository information
+- Updated documentation with new GitHub links
 
 ---
 

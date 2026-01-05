@@ -300,7 +300,8 @@ MIT License
 
 ## 연락처
 
-- **GitHub**: [@bluelion79](https://github.com/bluelion79)
+- **GitHub**: [@goodlookingprokim](https://github.com/goodlookingprokim)
+- **Repository**: https://github.com/goodlookingprokim/markdown-to-document-cli
 - **Email**: bluelion79@gmail.com
 
 ---
