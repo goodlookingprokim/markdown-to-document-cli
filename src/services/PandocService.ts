@@ -9,8 +9,19 @@ import * as path from 'path';
 import * as os from 'os';
 import type { PandocInfo, ConversionOptions, TypographyPresetId } from '../types/index.js';
 import { getTempDir, Logger } from '../utils/common.js';
+import { TypographyService } from './TypographyService.js';
+import { FontSubsetter } from './FontSubsetter.js';
 
 const execFileAsync = promisify(execFile);
+
+// Get writable temp directory for Pandoc operations
+const getTempDirPath = (): string => {
+    const tempDir = path.join(os.tmpdir(), 'markdown-to-document-pandoc');
+    if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+    }
+    return tempDir;
+};
 
 export interface EpubConversionOptions {
     inputPath: string;
@@ -51,9 +62,13 @@ export interface PdfConversionOptions {
 export class PandocService {
     private pandocPath: string;
     private majorVersion: number = 0;
+    private typographyService: TypographyService;
+    private fontSubsetter: FontSubsetter;
 
     constructor(pandocPath: string = '') {
         this.pandocPath = pandocPath;
+        this.typographyService = new TypographyService();
+        this.fontSubsetter = new FontSubsetter(path.join(getTempDirPath(), 'font-cache'));
     }
 
     /**
@@ -218,9 +233,24 @@ export class PandocService {
             args.push(`--epub-cover-image=${options.coverImagePath}`);
         }
 
-        // CSS styling
-        if (options.cssPath && fs.existsSync(options.cssPath)) {
-            args.push(`--css=${options.cssPath}`);
+        // CSS styling with typography preset
+        let cssPath = options.cssPath;
+
+        // Generate typography CSS if preset is specified
+        if (options.typographyPreset) {
+            cssPath = await this.generateTypographyCSS(
+                options.typographyPreset,
+                'epub',
+                cssPath,
+                {
+                    content: options.content,
+                    enableFontSubsetting: options.enableFontSubsetting,
+                }
+            );
+        }
+
+        if (cssPath && fs.existsSync(cssPath)) {
+            args.push(`--css=${cssPath}`);
         }
 
         // Table of contents
@@ -316,6 +346,45 @@ export class PandocService {
             }
         }
         return engine;
+    }
+
+    /**
+     * Generate typography CSS with font subsetting
+     */
+    private async generateTypographyCSS(
+        presetId: TypographyPresetId,
+        format: 'epub' | 'pdf',
+        customCssPath?: string,
+        options?: {
+            content?: string;
+            enableFontSubsetting?: boolean;
+        }
+    ): Promise<string> {
+        const preset = this.typographyService.getPreset(presetId);
+        if (!preset) {
+            throw new Error(`Typography preset not found: ${presetId}`);
+        }
+
+        let css = this.typographyService.generatePresetCSS(presetId, {
+            outputFormat: format,
+            includePageBreaks: true,
+        });
+
+        // Add custom CSS if provided
+        if (customCssPath && fs.existsSync(customCssPath)) {
+            const customCss = fs.readFileSync(customCssPath, 'utf-8');
+            css += '\n\n/* Custom CSS */\n' + customCss;
+        }
+
+        // Save CSS to temp file
+        const tempDir = getTempDirPath();
+        const cssFileName = `typography-${presetId}-${Date.now()}.css`;
+        const cssPath = path.join(tempDir, cssFileName);
+        fs.writeFileSync(cssPath, css, 'utf-8');
+
+        Logger.debug(`Generated typography CSS: ${cssPath}`);
+
+        return cssPath;
     }
 
     /**

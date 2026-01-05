@@ -1,6 +1,6 @@
 {
     "name": "markdown-to-document-cli",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "Professional-grade EPUB/PDF conversion tool for Markdown files. 8 validation modules, auto-fix, typography presets, font subsetting (99% size reduction), ISBN validation, copyright page generation.",
     "main": "dist/index.js",
     "bin": {
@@ -53,6 +53,7 @@
         "yaml": "^2.3.4"
     },
     "devDependencies": {
+        "@types/fontkit": "^2.0.8",
         "@types/glob": "^8.1.0",
         "@types/inquirer": "^9.0.7",
         "@types/node": "^20.19.27",

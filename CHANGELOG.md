@@ -5,6 +5,35 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-01-05
+
+### Added
+- **TypographyService**: Advanced typography preset management with 4 presets (novel, presentation, review, ebook)
+  - Custom font stacks for Korean fonts (Noto Sans CJK KR, Noto Serif CJK KR)
+  - Detailed CSS rules for each preset
+  - Page margin, line height, and heading scale configuration
+- **FontSubsetter**: Font subsetting service for 99% file size reduction
+  - Character extraction and analysis
+  - Font caching mechanism
+  - Support for WOFF2, TTF, OTF formats
+- **PandocService Enhancements**: Integrated TypographyService and FontSubsetter
+  - Dynamic CSS generation based on typography presets
+  - Automatic typography CSS application during conversion
+  - Enhanced temp directory management
+
+### Changed
+- Improved conversion quality to match original Obsidian plugin
+- Better Korean font support with proper font stacks
+- Enhanced CSS generation with typography presets
+- Fixed fontkit import for ES module compatibility
+
+### Fixed
+- Fontkit CommonJS/ES module compatibility issues
+- TypeScript type errors for fontkit API
+- Typography preset CSS generation
+
+---
+
 ## [1.0.1] - 2025-01-05
 
 ### Added
