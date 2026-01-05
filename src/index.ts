@@ -105,7 +105,9 @@ export class MarkdownToDocument {
             fs.writeFileSync(tempMarkdownPath, cleanMarkdown, 'utf-8');
 
             // Step 5: Determine output paths
-            const baseName = sanitizeFilename(preprocessResult.metadata.title || 'output');
+            const title = options.customTitle || preprocessResult.metadata.title || 'Untitled';
+            const author = options.customAuthor || preprocessResult.metadata.author;
+            const baseName = sanitizeFilename(title);
             const outputDir = options.outputPath || path.dirname(options.inputPath);
             ensureDirectory(outputDir);
 
@@ -117,8 +119,8 @@ export class MarkdownToDocument {
                 const epubResult = await this.pandocService.toEpub({
                     inputPath: tempMarkdownPath,
                     outputPath: epubPath,
-                    title: preprocessResult.metadata.title || 'Untitled',
-                    author: preprocessResult.metadata.author,
+                    title: title,
+                    author: author,
                     language: preprocessResult.metadata.language,
                     coverImagePath: options.coverTheme ? undefined : undefined, // TODO: implement cover generation
                     cssPath: options.cssPath,
@@ -138,8 +140,8 @@ export class MarkdownToDocument {
                 const pdfResult = await this.pandocService.toPdf({
                     inputPath: tempMarkdownPath,
                     outputPath: pdfPath,
-                    title: preprocessResult.metadata.title || 'Untitled',
-                    author: preprocessResult.metadata.author,
+                    title: title,
+                    author: author,
                     language: preprocessResult.metadata.language,
                     cssPath: options.cssPath,
                     typographyPreset: options.typographyPreset,

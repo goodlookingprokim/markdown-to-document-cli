@@ -18,6 +18,8 @@ export interface ConversionOptions {
     generateCover?: boolean;
     includeCopyright?: boolean;
     cssPath?: string;
+    customTitle?: string;
+    customAuthor?: string;
 }
 
 export interface ConversionResult {

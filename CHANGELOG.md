@@ -7,16 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.2] - 2026-01-05
 
-### Fixed
-- **Interactive Mode Header**: Fixed border rendering issue with box-style header
-  - Changed from box-drawing characters (╔══════╗) to simple double-line borders (════════)
-  - Improved header alignment and visual consistency
+### Added
+- **Custom Title and Author**: Interactive mode now allows manual input of book title and author
+  - Custom title and author override auto-detected values
+  - Empty values fall back to auto-detection
+  - Improved flexibility for document metadata
 
 ### Changed
-- **PDF Font Configuration**: Updated Korean font settings for better readability
-  - Changed from "Apple SD Gothic Neo" to "Noto Sans CJK KR"
-  - Applied to both mainfont and CJKmainfont for LaTeX engines
-  - Improved typography CSS generation for PDF output
+- **Interactive Mode UI**: Simplified header design with clean line separators
+  - Replaced box-style borders with simple line separators
+  - Better compatibility with various terminal widths
+- **Enhanced Font Stacks**: Improved Korean font support with additional fallback fonts
+  - Added Source Han Serif KR, Source Han Sans KR
+  - Added AppleMyungjo, Apple SD Gothic Neo for macOS
+  - Added Source Code Pro for monospace
+
+### Fixed
+- Interactive mode header rendering issues on different terminal widths
 
 ---
 

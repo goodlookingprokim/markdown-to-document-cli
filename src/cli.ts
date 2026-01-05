@@ -185,12 +185,9 @@ program
     .alias('i')
     .description('Interactive mode with guided prompts')
     .action(async () => {
-        const title = '📚 Markdown to Document - Interactive Mode';
-        const width = 60;
-
-        console.log(chalk.cyan.bold('\n' + '═'.repeat(width)));
-        console.log(chalk.cyan.bold('║' + ' '.repeat((width - title.length - 2) / 2) + title + ' '.repeat((width - title.length - 2) / 2) + '║'));
-        console.log(chalk.cyan.bold('═'.repeat(width) + '\n'));
+        console.log(chalk.cyan.bold('\n' + '─'.repeat(60)));
+        console.log(chalk.cyan.bold('  Markdown to Document - Interactive Mode'));
+        console.log(chalk.cyan.bold('─'.repeat(60) + '\n'));
 
         const answers = await inquirer.prompt([
             {
@@ -210,6 +207,18 @@ program
                     // 입력값 표시 시에도 따옴표 제거
                     return input.trim().replace(/^['"]|['"]$/g, '');
                 },
+            },
+            {
+                type: 'input',
+                name: 'customTitle',
+                message: chalk.yellow('📖 Book title (leave empty to use auto-detected):'),
+                default: '',
+            },
+            {
+                type: 'input',
+                name: 'customAuthor',
+                message: chalk.yellow('✍️  Author name (leave empty to use auto-detected):'),
+                default: '',
             },
             {
                 type: 'list',
@@ -298,6 +307,8 @@ program
                 autoFix: answers.autoFix,
                 tocDepth: 2,
                 includeToc: true,
+                customTitle: answers.customTitle || undefined,
+                customAuthor: answers.customAuthor || undefined,
             };
 
             const convertSpinner = ora({

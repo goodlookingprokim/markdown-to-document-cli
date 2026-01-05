@@ -50,9 +50,9 @@ export interface CSSGenerationOptions {
 export class TypographyService {
     private presets: Map<string, TypographyPreset>;
     private defaultFontStacks = {
-        serif: '"Noto Serif CJK KR", "Noto Serif KR", "Batang", "바탕", serif',
-        sansSerif: '"Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif',
-        monospace: '"Noto Sans Mono CJK KR", "D2Coding", monospace',
+        serif: '"Noto Serif CJK KR", "Noto Serif KR", "Source Han Serif KR", "Batang", "바탕", "AppleMyungjo", serif',
+        sansSerif: '"Noto Sans CJK KR", "Noto Sans KR", "Source Han Sans KR", "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif',
+        monospace: '"Noto Sans Mono CJK KR", "D2Coding", "Source Code Pro", monospace',
     };
 
     constructor() {
