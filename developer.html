@@ -4,22 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown to Document - 개발자 워크샵</title>
+    <title>Markdown to Document - 개발자 가이드</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Noto+Sans+KR:wght@400;700;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;800&family=Plus+Jakarta+Sans:wght@400;600;800&family=Noto+Sans+KR:wght@400;700;900&display=swap"
         rel="stylesheet">
     <style>
         :root {
-            --bg-color: #1a1a1a;
-            --card-bg: #2d2d2d;
-            --main-text: #e0e0e0;
+            --bg: #ffffff;
+            --fg: #000000;
             --accent-purple: #b197fc;
             --accent-cyan: #22b8cf;
-            --accent-lime: #c0eb75;
-            --accent-orange: #ff922b;
-            --border-thick: 3px solid #fff;
-            --shadow-hard: 5px 5px 0px #fff;
-            --code-bg: #000;
+            --accent-lime: #c3ff00;
+            --accent-orange: #ffda2d;
+            --border-width: 3px;
+            --shadow-offset: 6px;
         }
 
         * {
@@ -29,226 +27,244 @@
         }
 
         body {
-            font-family: 'Noto Sans KR', 'Space Grotesk', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--main-text);
+            font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
             line-height: 1.6;
-            padding: 20px;
+            padding: 0;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
-        }
-
-        /* Neo Brutalism Header - Dark Mode Style */
-        header {
-            background-color: var(--accent-purple);
-            border: var(--border-thick);
-            box-shadow: var(--shadow-hard);
-            color: #000;
             padding: 40px 20px;
-            margin-bottom: 50px;
-            text-align: center;
-            transform: rotate(1deg);
         }
 
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            letter-spacing: -2px;
-        }
-
-        .subtitle {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background-color: #fff;
-            color: #000;
-            display: inline-block;
-            padding: 5px 15px;
-            transform: rotate(-2deg);
-        }
-
-        /* Sections */
-        section {
-            background-color: var(--card-bg);
-            border: var(--border-thick);
-            box-shadow: var(--shadow-hard);
+        /* Sophisticated Neo Brutalism Components */
+        .brutal-card {
+            background: white;
+            border: var(--border-width) solid var(--fg);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--fg);
             padding: 30px;
             margin-bottom: 40px;
-            border-radius: 0;
+            transition: all 0.2s ease;
         }
 
-        h2 {
-            font-size: 2.5rem;
-            margin-bottom: 25px;
-            border-bottom: var(--border-thick);
-            padding-bottom: 10px;
+        .brutal-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0px var(--fg);
+        }
+
+        .brutal-btn {
             display: inline-block;
-            background-color: var(--accent-cyan);
-            color: #000;
-            padding: 10px 20px;
-            transform: skew(-5deg);
-        }
-
-        h3 {
-            font-size: 1.8rem;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            color: var(--accent-lime);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        p {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            word-break: keep-all;
-        }
-
-        /* Story Box - Dev ver */
-        .story-box {
-            background-color: #333;
-            border: 2px dashed #fff;
-            padding: 20px;
-            margin: 20px 0;
-            font-style: italic;
-            color: #ccc;
-        }
-
-        .story-icon {
-            font-size: 2rem;
-            margin-right: 10px;
-        }
-
-        /* Code Blocks */
-        .code-container {
-            position: relative;
-            background-color: var(--code-bg);
-            color: #0f0;
-            padding: 20px;
-            border: var(--border-thick);
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            border-radius: 5px;
-        }
-
-        .code-container pre {
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            padding: 12px 24px;
             background-color: var(--accent-orange);
-            border: 2px solid #fff;
-            color: #000;
-            padding: 5px 15px;
-            font-weight: bold;
+            border: var(--border-width) solid var(--fg);
+            box-shadow: 4px 4px 0px var(--fg);
+            font-weight: 800;
+            text-transform: uppercase;
             cursor: pointer;
-            box-shadow: 2px 2px 0 #fff;
+            text-decoration: none;
+            color: var(--fg);
+            font-family: 'Space Grotesk', sans-serif;
             transition: all 0.1s;
         }
 
-        .copy-btn:active {
+        .brutal-btn:active {
             transform: translate(2px, 2px);
-            box-shadow: none;
+            box-shadow: 0px 0px 0px var(--fg);
+        }
+
+        /* Header Area */
+        header {
+            text-align: left;
+            margin-bottom: 60px;
+            border-bottom: var(--border-width) solid var(--fg);
+            padding-bottom: 40px;
+        }
+
+        .logo-box {
+            display: inline-block;
+            background: var(--accent-purple);
+            padding: 10px 20px;
+            border: var(--border-width) solid var(--fg);
+            margin-bottom: 20px;
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 800;
+            line-height: 0.9;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+
+        .header-desc {
+            font-size: 1.4rem;
+            font-weight: 600;
+            max-width: 600px;
+        }
+
+        /* Section Headings */
+        h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: var(--accent-cyan);
+            display: inline-block;
+            padding: 5px 15px;
+            border: var(--border-width) solid var(--fg);
+            box-shadow: 4px 4px 0px var(--fg);
+        }
+
+        h3 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 30px 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Storytelling Elements */
+        .story-section {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-left: 10px solid var(--accent-purple);
+            margin: 30px 0;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .story-highlight {
+            background-color: var(--accent-lime);
+            padding: 0 4px;
+            font-weight: 800;
         }
 
         /* Architecture Diagram */
         .arch-diagram {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
             margin: 40px 0;
         }
 
         .arch-node {
-            background: #fff;
-            color: #000;
-            border: 3px solid #000;
-            padding: 15px;
-            font-weight: bold;
+            background: white;
+            border: var(--border-width) solid var(--fg);
+            padding: 15px 25px;
+            font-weight: 800;
             text-align: center;
-            width: 80%;
+            width: 90%;
+            max-width: 600px;
             position: relative;
+            box-shadow: 4px 4px 0px var(--fg);
         }
 
         .arch-node::after {
             content: "↓";
-            font-size: 2rem;
-            color: #fff;
+            font-size: 1.5rem;
             position: absolute;
-            bottom: -35px;
+            bottom: -32px;
             left: 50%;
             transform: translateX(-50%);
+            font-weight: 900;
         }
 
         .arch-node:last-child::after {
             display: none;
         }
 
-        .arch-node.main {
-            background-color: var(--accent-cyan);
-        }
-
-        .arch-node.service {
-            background-color: var(--accent-lime);
-        }
-
-        .arch-node.output {
-            background-color: var(--accent-orange);
-        }
-
-        /* Role Cards */
+        /* Role Grid */
         .role-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
 
-        .role-card {
-            background: #3d3d3d;
-            border: 2px solid #fff;
+        .role-item {
+            border: var(--border-width) solid var(--fg);
             padding: 20px;
+            background: white;
+            box-shadow: 4px 4px 0px var(--fg);
         }
 
         .role-title {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--accent-cyan);
+            font-weight: 800;
+            font-size: 1.2rem;
             margin-bottom: 10px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+        }
+
+        /* Code Block Design */
+        .code-block {
+            background: #111;
+            color: #eee;
+            border: var(--border-width) solid var(--fg);
+            padding: 25px;
+            margin: 20px 0;
+            position: relative;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent-orange);
+            border: 2px solid var(--fg);
+            padding: 6px 12px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px var(--fg);
+        }
+
+        .copy-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px var(--fg);
         }
 
         /* Footer */
         footer {
-            text-align: center;
-            padding: 40px;
-            border-top: var(--border-thick);
-            margin-top: 50px;
-            background: var(--bg-color);
-            color: #fff;
+            margin-top: 80px;
+            padding: 60px 0;
+            border-top: var(--border-width) solid var(--fg);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        /* Mobile Responsive */
+        .footer-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
         @media (max-width: 768px) {
             h1 {
-                font-size: 2.5rem;
+                font-size: 3.5rem;
             }
 
             h2 {
-                font-size: 1.8rem;
-            }
-
-            .container {
-                padding: 10px;
+                font-size: 2rem;
             }
         }
     </style>
@@ -257,121 +273,115 @@
 <body>
     <div class="container">
         <header>
-            <h1>Developer<br>Zone</h1>
-            <div class="subtitle">마법 도구 제작소를 위한 설계도</div>
+            <div class="logo-box">DEVELOPER HUB</div>
+            <h1>INSIDE THE<br>MAGIC FACTORY.</h1>
+            <p class="header-desc">마법 같은 변환 도구의 설계도와 공정을 탐험해 보세요.</p>
         </header>
 
         <section id="intro">
-            <h2>🏗️ 마법 공방의 비밀</h2>
-            <div class="story-box">
-                <span class="story-icon">🔧</span>
-                "사용자들은 버튼 하나로 마법을 부리지만, 우리 같은 마법 공학자들은 그 이면의 톱니바퀴를 이해해야 합니다.
-                이 도구는 거대한 '공장'과 같습니다. 마크다운이라는 원석이 들어오면, 여러 부서를 거쳐 멋진 책으로 가공되어 나오죠."
+            <h2>🏗️ 설계 철학</h2>
+            <div class="story-section">
+                "사용자에겐 버튼 하나로 충분하지만, 엔지니어에겐 그 이면의 <span class="story-highlight">톱니바퀴</span>가 중요합니다.
+                이 도구는 단순한 변환기가 아닌, 하나의 정교한 <span class="story-highlight">가공 공장</span>입니다.
+                마크다운 원석이 들어오면 각 부서가 협력하여 보석을 만들어내죠."
             </div>
-            <p>
-                이 프로젝트는 <strong>TypeScript</strong>로 지어졌으며, <strong>Node.js</strong> 위에서 돌아갑니다.
-                핵심 엔진으로는 문서 변환의 대가 <strong>Pandoc</strong>을 고용(?)하여 사용하고 있습니다.
-            </p>
+            <p><strong>NpxMagicDoc</strong>은 TypeScript의 안정성과 Node.js의 강력함을 기반으로 구축되었습니다.</p>
         </section>
 
         <section id="architecture">
-            <h2>⚙️ 공정 흐름도 (Architecture)</h2>
-            <p>마크다운 원석이 제품이 되기까지의 과정을 한 눈에 살펴봅시다.</p>
+            <h2>⚙️ 아키텍처 흐름</h2>
+            <p>데이터가 최종 제품이 되기까지의 6단계 공정입니다.</p>
 
             <div class="arch-diagram">
-                <div class="arch-node main">
-                    CLI Interface (공장 정문)<br>
-                    <small>주문을 접수하고 옵션을 설정합니다 (Commander.js, Inquirer)</small>
+                <div class="arch-node" style="background: var(--accent-orange)">
+                    CLI INTERFACE<br>
+                    <small>주문 접수 및 옵션 설정</small>
                 </div>
-                <div class="arch-node service">
-                    Markdown Preprocessor (세척 & 가공)<br>
-                    <small>Obsidian 문법 등 불순물을 표준 마크다운으로 정제합니다</small>
+                <div class="arch-node">
+                    PREPROCESSOR<br>
+                    <small>원석 정제 및 Obsidian 문법 변환</small>
                 </div>
-                <div class="arch-node service">
-                    Content Validator (품질 검사)<br>
-                    <small>8가지 기준(이미지, 표, 링크 등)으로 결함을 찾아냅니다</small>
+                <div class="arch-node">
+                    VALIDATOR<br>
+                    <small>8단계 품질 검사 및 자동 수정</small>
                 </div>
-                <div class="arch-node service">
-                    Services (디자인 & 조립)<br>
-                    <small>Typography(글꼴), Cover(표지), FontSubset(최적화)</small>
+                <div class="arch-node" style="background: var(--accent-lime)">
+                    SERVICES<br>
+                    <small>타이포그래피, 표지 디자인, 폰트 최적화</small>
                 </div>
-                <div class="arch-node main">
-                    Pandoc Engine (최종 변환)<br>
-                    <small>모든 재료를 합쳐 PDF/EPUB으로 구워냅니다</small>
+                <div class="arch-node">
+                    PANDOC ENGINE<br>
+                    <small>최종 렌더링 및 파일 생성</small>
                 </div>
-                <div class="arch-node output">
-                    Output (출고)<br>
-                    <small>완성된 전자책이 사용자에게 전달됩니다</small>
+                <div class="arch-node" style="background: var(--accent-cyan)">
+                    OUTPUT<br>
+                    <small>완성된 EPUB / PDF 출고</small>
                 </div>
             </div>
         </section>
 
         <section id="modules">
-            <h2>🛠️ 핵심 부서 소개 (Key Modules)</h2>
+            <h2>🛠️ 핵심 부서 (Modules)</h2>
             <div class="role-grid">
-                <div class="role-card">
-                    <div class="role-title">1. PandocService</div>
-                    <p><strong>역할: 공장장</strong></p>
-                    <p>실제 변환을 지휘합니다. Pandoc을 자식 프로세스로 실행하고, 변환 옵션을 인자로 전달합니다. HTML 템플릿과 CSS를 주입하는 것도 이 친구 몫입니다.</p>
+                <div class="role-item">
+                    <div class="role-title">PandocService</div>
+                    <p><strong>공장장</strong></p>
+                    <p>실제 변환을 총괄 지휘하며, Pandoc 엔진에 스타일과 템플릿을 주입합니다.</p>
                 </div>
-                <div class="role-card">
-                    <div class="role-title">2. CoverService</div>
-                    <p><strong>역할: 표지 디자이너</strong></p>
-                    <p>사용자가 고른 테마에 맞춰 SVG(EPUB용)나 HTML(PDF용) 표지를 즉석에서 그려냅니다. 제목 길이에 따라 글자 크기를 조절하는 센스도 있죠.</p>
+                <div class="role-item">
+                    <div class="role-title">CoverService</div>
+                    <p><strong>디자이너</strong></p>
+                    <p>SVG와 HTML을 사용하여 실시간으로 고해상도 맞춤형 표지를 그려냅니다.</p>
                 </div>
-                <div class="role-card">
-                    <div class="role-title">3. TypographyService</div>
-                    <p><strong>역할: 스타일리스트</strong></p>
-                    <p>소설, 기술 문서 등 목적에 맞게 CSS(옷)를 입혀줍니다. 폰트 종류, 줄 간격, 여백 등 가독성을 책임집니다.</p>
+                <div class="role-item">
+                    <div class="role-title">Typography</div>
+                    <p><strong>스타일리스트</strong></p>
+                    <p>가독성 최적화 알고리즘을 통해 용도별 맞춤형 CSS 옷을 입힙니다.</p>
                 </div>
-                <div class="role-card">
-                    <div class="role-title">4. FontSubsetter</div>
-                    <p><strong>역할: 다이어트 코치</strong></p>
-                    <p>문서에 쓰인 글자만 쏙쏙 뽑아서 폰트 파일 크기를 99%까지 줄여줍니다. 덕분에 책이 가벼워지죠!</p>
+                <div class="role-item">
+                    <div class="role-title">FontSubset</div>
+                    <p><strong>최적화 코치</strong></p>
+                    <p>필요한 글자만 남겨 폰트 용량을 99% 다이어트 시키는 마법을 부립니다.</p>
                 </div>
             </div>
         </section>
 
         <section id="setup">
-            <h2>🧰 작업대 세팅 (Development Setup)</h2>
-            <p>이 마법 도구를 직접 수리하거나 개조하고 싶다면, 먼저 작업대를 차려야 합니다.</p>
+            <h2>🧰 개발 환경 구축</h2>
+            <p>공방의 작업대를 세팅하는 방법입니다.</p>
 
-            <h3>1. 도면 가져오기 (Clone)</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <h3>1. 도면 복제 (Clone)</h3>
+            <div class="code-block">
+                <button class="copy-button" onclick="copyCode(this)">COPY</button>
                 <pre>git clone https://github.com/goodlookingprokim/markdown-to-document-cli.git
 cd markdown-to-document-cli</pre>
             </div>
 
-            <h3>2. 부품 조립하기 (Install)</h3>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <h3>2. 부품 조립 (Install)</h3>
+            <div class="code-block">
+                <button class="copy-button" onclick="copyCode(this)">COPY</button>
                 <pre>npm install</pre>
             </div>
 
-            <h3>3. 마법 부여 (Build)</h3>
-            <p>TypeScript 코드를 Node.js가 이해할 수 있는 JavaScript로 변환합니다.</p>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                <pre>npm run build</pre>
-            </div>
-
-            <h3>4. 시운전 (Test)</h3>
-            <p>제대로 작동하는지 로컬에서 돌려봅니다.</p>
-            <div class="code-container">
-                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                <pre># 전역 명령어로 연결 (심볼릭 링크)
+            <h3>3. 마법 부여 (Build & Test)</h3>
+            <div class="code-block">
+                <button class="copy-button" onclick="copyCode(this)">COPY</button>
+                <pre>npm run build
 npm link
-
-# 실행 테스트
 m2d interactive</pre>
             </div>
         </section>
 
         <footer>
-            <h3>Developer Zone v1.2.3</h3>
-            <p>Designed for Future Wizards</p>
-            <p>이 문서는 초보 개발자가 전체 구조를 쉽게 파악할 수 있도록 <strong>파인만 기법</strong>을 적용하여 작성되었습니다.</p>
+            <div>
+                <div class="footer-logo">Developer Hub</div>
+                <p>Built with TypeScript, powered by passion.</p>
+            </div>
+            <div style="text-align: right;">
+                <p>v1.2.3</p>
+                <a href="https://github.com/goodlookingprokim/markdown-to-document-cli" class="brutal-btn"
+                    style="margin-top: 10px;">REPO</a>
+            </div>
         </footer>
     </div>
 
@@ -379,21 +389,14 @@ m2d interactive</pre>
         function copyCode(btn) {
             const pre = btn.nextElementSibling;
             const code = pre.innerText;
-
             navigator.clipboard.writeText(code).then(() => {
                 const originalText = btn.innerText;
-                btn.innerText = "Copied!";
-                btn.style.backgroundColor = "#c0eb75"; // Lime color for success
-                btn.style.color = "#000";
-
+                btn.innerText = "DONE!";
+                btn.style.backgroundColor = "#c3ff00";
                 setTimeout(() => {
                     btn.innerText = originalText;
-                    btn.style.backgroundColor = "#ff922b"; // Back to orange
-                    btn.style.color = "#000";
+                    btn.style.backgroundColor = "var(--accent-orange)";
                 }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                alert('복사에 실패했습니다.');
             });
         }
     </script>
