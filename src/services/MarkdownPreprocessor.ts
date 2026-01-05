@@ -202,6 +202,21 @@ export class MarkdownPreprocessor {
     }
 
     /**
+     * Escape YAML string value - properly handle special characters
+     */
+    private escapeYamlString(value: string): string {
+        // Replace backslashes first to avoid double-escaping
+        let escaped = value.replace(/\\/g, '\\\\');
+        // Escape double quotes
+        escaped = escaped.replace(/"/g, '\\"');
+        // Escape newlines
+        escaped = escaped.replace(/\n/g, '\\n');
+        // Escape carriage returns
+        escaped = escaped.replace(/\r/g, '\\r');
+        return escaped;
+    }
+
+    /**
      * Generate clean markdown with YAML frontmatter
      */
     generateCleanMarkdown(
@@ -217,14 +232,14 @@ export class MarkdownPreprocessor {
         const finalTitle = overrides?.title || metadata.title;
         const finalAuthor = overrides?.author || metadata.author;
 
-        if (finalTitle) yamlLines.push(`title: "${finalTitle}"`);
-        if (metadata.subtitle) yamlLines.push(`subtitle: "${metadata.subtitle}"`);
-        if (finalAuthor) yamlLines.push(`author: "${finalAuthor}"`);
+        if (finalTitle) yamlLines.push(`title: "${this.escapeYamlString(finalTitle)}"`);
+        if (metadata.subtitle) yamlLines.push(`subtitle: "${this.escapeYamlString(metadata.subtitle)}"`);
+        if (finalAuthor) yamlLines.push(`author: "${this.escapeYamlString(finalAuthor)}"`);
         if (metadata.language) yamlLines.push(`language: ${metadata.language}`);
         if (metadata.date) yamlLines.push(`date: ${metadata.date}`);
-        if (metadata.description) yamlLines.push(`description: "${metadata.description}"`);
+        if (metadata.description) yamlLines.push(`description: "${this.escapeYamlString(metadata.description)}"`);
         if (metadata.isbn) yamlLines.push(`isbn: ${metadata.isbn}`);
-        if (metadata.publisher) yamlLines.push(`publisher: "${metadata.publisher}"`);
+        if (metadata.publisher) yamlLines.push(`publisher: "${this.escapeYamlString(metadata.publisher)}"`);
 
         yamlLines.push('---');
         yamlLines.push('');

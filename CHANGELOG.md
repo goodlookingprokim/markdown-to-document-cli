@@ -5,6 +5,13 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2026-01-06
+
+### Fixed
+- **YAML 파싱 에러 수정**: 메타데이터 필드(title, subtitle, author, description, publisher)에 특수문자(따옴표, 줄바꿈, 백슬래시 등)가 포함될 경우 Pandoc YAML 파싱 실패 문제 해결
+  - `escapeYamlString()` 메서드 추가로 YAML 문자열 값 안전하게 이스케이프 처리
+  - "YAML parse exception: did not find expected comment or line break" 오류 해결
+
 ## [1.2.3] - 2026-01-06
 
 ### Changed
