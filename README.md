@@ -1,8 +1,10 @@
 # Markdown to Document CLI
 
-> 🚀 전문 출판 수준의 EPUB/PDF 변환 도구
+> 🚀 전문 출판 수준의 EPUB/PDF 변환 도구 | v1.2.7
 
 마크다운 문서를 **완벽한 품질의 EPUB/PDF**로 변환하는 CLI 도구입니다. 옵시디언 플러그인 "Markdown to Document Pro"의 핵심 기능을 NPM/NPX 패키지로 제공합니다.
+
+**🔒 보안 강화 (2026-01-06)**: SSH 인증 기반 Git 작업, 환경변수 토큰 주입 차단, 안전한 credential 관리 완료
 
 ## ✨ 주요 기능
 
@@ -61,10 +63,10 @@
 
 ## 📦 설치
 
-### NPX로 바로 사용 (설치 불필요)
+### NPX로 바로 사용 (권장)
 
 ```bash
-npx markdown-to-document-cli input.md
+npx markdown-to-document-cli@latest input.md
 ```
 
 ### 전역 설치

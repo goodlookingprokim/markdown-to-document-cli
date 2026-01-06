@@ -1,5 +1,7 @@
 # Project.md - Markdown to Document CLI
 
+> **Current Version**: v1.2.7 | **Last Updated**: 2026-01-06
+
 ## 프로젝트 개요
 
 **Markdown to Document CLI**는 옵시디언 플러그인 "Markdown to Document Pro"의 핵심 기능을 NPM/NPX 패키지로 변환한 프로젝트입니다. 마크다운 문서를 전문 출판 수준의 EPUB/PDF로 변환하는 CLI 도구를 제공합니다.
@@ -10,6 +12,7 @@
 2. **NPM/NPX 패키지화**: 전역 설치 없이 `npx`로 바로 사용 가능한 패키지 제공
 3. **핵심 기능 유지**: 8개 검증 모듈, 타이포그래피 프리셋, 자동 수정 등 핵심 기능 보존
 4. **사용성 향상**: 인터랙티브 모드, 상세한 오류 메시지, 진행 상황 표시
+5. **보안 강화**: SSH 기반 Git 인증, 환경변수 토큰 주입 차단, 안전한 credential 관리
 
 ## 기술 스택
 

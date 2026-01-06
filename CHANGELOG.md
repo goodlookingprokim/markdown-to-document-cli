@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **EPUB에서 `--no-toc` 옵션이 무시되던 문제 수정**: EPUB 변환에서도 `includeToc` 설정이 반영되도록 수정
 - **CLI 버전 표시 정합성 개선**: `package.json` 버전을 읽어 `m2d --version`에 표시
 
+### Security
+- **개발 환경 보안 강화**:
+  - Git 원격 저장소를 HTTPS에서 SSH 인증 방식으로 전환
+  - IDE 터미널 환경변수 자동 주입 차단 (`.vscode/settings.json`에 `GITHUB_TOKEN: null` 설정)
+  - 쉘 설정 파일(`~/.zshrc.github`)에서 토큰 export 제거
+  - Claude Desktop 설정 파일에서 하드코딩된 토큰 제거
+  - GitHub CLI는 macOS Keychain 기반 안전한 인증 사용 확인
+
 ### Docs
 - README/UserGuide/MarkdownGuide/BEGINNER_GUIDE/TroubleShooting/INSTALL 문서 내용을 현재 기본값/워크플로우에 맞게 정리
 

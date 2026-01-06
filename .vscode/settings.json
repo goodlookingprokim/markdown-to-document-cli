@@ -1,3 +1,9 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "terminal.integrated.env.osx": {
+        "GITHUB_TOKEN": null,
+        "GH_TOKEN": null
+    },
+    "github.gitAuthentication": false,
+    "git.terminalAuthentication": false
 }
