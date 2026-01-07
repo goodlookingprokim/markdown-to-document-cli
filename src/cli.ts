@@ -18,6 +18,7 @@ import inquirer from 'inquirer';
 import { MarkdownToDocument } from './index.js';
 import { DEFAULT_CONFIG, TYPOGRAPHY_PRESETS, COVER_THEMES } from './utils/constants.js';
 import { Logger } from './utils/common.js';
+import { DependencyChecker } from './utils/dependencyChecker.js';
 import * as path from 'path';
 import * as fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -342,20 +343,6 @@ program
 
             console.log(chalk.cyan.bold('\n📚 Markdown to Document CLI\n'));
 
-            // Initialize converter
-            const spinner = ora('Initializing...').start();
-            const converter = new MarkdownToDocument(options.pandocPath);
-
-            const initResult = await converter.initialize();
-            if (!initResult.success) {
-                spinner.fail('Initialization failed');
-                console.error(chalk.red(`❌ ${initResult.error}`));
-                console.log(chalk.yellow('\n' + MarkdownToDocument.getInstallInstructions()));
-                process.exit(1);
-            }
-
-            spinner.succeed('Initialized successfully');
-
             // Prepare conversion options
             const conversionOptions = {
                 inputPath,
@@ -374,6 +361,30 @@ program
                 customTitle,
                 customAuthor: customAuthor || undefined,
             };
+
+            // Check dependencies proactively
+            const depChecker = new DependencyChecker();
+            const isReady = await depChecker.quickCheck(conversionOptions.format);
+
+            if (!isReady) {
+                await depChecker.displayDependencyReport();
+                console.log(chalk.red('\n❌ 필수 의존성을 먼저 설치해 주세요.\n'));
+                process.exit(1);
+            }
+
+            // Initialize converter
+            const spinner = ora('Initializing...').start();
+            const converter = new MarkdownToDocument(options.pandocPath);
+
+            const initResult = await converter.initialize();
+            if (!initResult.success) {
+                spinner.fail('Initialization failed');
+                console.error(chalk.red(`❌ ${initResult.error}`));
+                console.log(chalk.yellow('\n' + MarkdownToDocument.getInstallInstructions()));
+                process.exit(1);
+            }
+
+            spinner.succeed('Initialized successfully');
 
             // Show conversion info
             console.log(chalk.gray('─'.repeat(50)));
@@ -730,6 +741,16 @@ program
         console.log(chalk.gray('  Step 3/3: 변환 실행\n'));
 
         try {
+            // Check dependencies proactively
+            const depChecker = new DependencyChecker();
+            const isReady = await depChecker.quickCheck(format);
+
+            if (!isReady) {
+                await depChecker.displayDependencyReport();
+                console.log(chalk.red('\n❌ 필수 의존성을 먼저 설치해 주세요.\n'));
+                process.exit(1);
+            }
+
             const spinner = ora(chalk.cyan('⚙️  초기화 중...')).start();
 
             const converter = new MarkdownToDocument();
@@ -830,17 +851,15 @@ program
     .command('check')
     .description('Check if required dependencies are installed')
     .action(async () => {
-        console.log(chalk.cyan.bold('\n🔍 Checking Dependencies...\n'));
+        const depChecker = new DependencyChecker();
+        const isReady = await depChecker.displayDependencyReport();
 
-        const converter = new MarkdownToDocument();
-        const result = await converter.initialize();
-
-        if (result.success) {
-            console.log(chalk.green('✅ All dependencies are installed!\n'));
+        if (isReady) {
+            console.log(chalk.green('🚀 준비 완료! 지금 바로 문서 변환을 시작할 수 있습니다.\n'));
+            console.log(chalk.cyan('사용 예시:'));
+            console.log(chalk.gray('  m2d document.md'));
+            console.log(chalk.gray('  m2d interactive\n'));
         } else {
-            console.log(chalk.red('❌ Dependency check failed\n'));
-            console.log(chalk.yellow(result.error || 'Unknown error'));
-            console.log(chalk.yellow('\n' + MarkdownToDocument.getInstallInstructions()));
             process.exit(1);
         }
     });
