@@ -352,7 +352,7 @@
                 <span class="badge">CONVERSION ENGINE</span>
                 <h3>Pandoc 설치</h3>
                 <p>문서를 재조립하는 실제 엔진입니다. 운영체제에 따라 아래 명령어를 복사하여 터미널에 붙여넣으세요.</p>
-                <div class="grid-2">
+                <div class="grid-2" style="margin-bottom: 20px;">
                     <div class="grid-card" style="background: var(--accent-blue); color: #fff;">
                         <h4>macOS</h4>
                         <p>터미널(Terminal)을 열고 입력:</p>
@@ -364,6 +364,20 @@
                         <p>명령 프롬프트(CMD)를 열고 입력:</p>
                         <code
                             style="background: #000; color: #fff; padding: 8px 15px; display: block; margin-top: 15px;">winget install --id JohnMacFarlane.Pandoc</code>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="grid-card" style="background: var(--accent-pink); color: #000;">
+                        <h4>Linux (Ubuntu/Debian)</h4>
+                        <p>터미널을 열고 입력:</p>
+                        <code
+                            style="background: #000; color: #fff; padding: 8px 15px; display: block; margin-top: 15px;">sudo apt-get update && sudo apt-get install pandoc</code>
+                    </div>
+                    <div class="grid-card" style="background: var(--accent-lime); color: #000;">
+                        <h4>Linux (Fedora/RHEL)</h4>
+                        <p>터미널을 열고 입력:</p>
+                        <code
+                            style="background: #000; color: #fff; padding: 8px 15px; display: block; margin-top: 15px;">sudo dnf install pandoc</code>
                     </div>
                 </div>
             </div>

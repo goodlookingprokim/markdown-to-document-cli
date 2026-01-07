@@ -290,9 +290,15 @@ brew install pandoc
 winget install --id JohnMacFarlane.Pandoc
 ```
 
-#### Linux
+#### Linux (Ubuntu/Debian)
 ```bash
+sudo apt-get update
 sudo apt-get install pandoc
+```
+
+#### Linux (Fedora/RHEL)
+```bash
+sudo dnf install pandoc
 ```
 
 ### WeasyPrint (PDF 생성, 선택사항)
@@ -480,7 +486,8 @@ m2d document.md --pandoc-path /path/to/pandoc
 **설치 방법**:
 - macOS: `brew install pandoc`
 - Windows: `winget install --id JohnMacFarlane.Pandoc`
-- Linux: `sudo apt-get install pandoc`
+- Linux (Ubuntu/Debian): `sudo apt-get update && sudo apt-get install pandoc`
+- Linux (Fedora/RHEL): `sudo dnf install pandoc`
 
 ---
 

@@ -135,9 +135,15 @@ brew install pandoc
 winget install --id JohnMacFarlane.Pandoc
 ```
 
-**Linux**:
+**Linux (Ubuntu/Debian)**:
 ```bash
+sudo apt-get update
 sudo apt-get install pandoc
+```
+
+**Linux (Fedora/RHEL)**:
+```bash
+sudo dnf install pandoc
 ```
 
 3. 커스텀 경로 지정:
