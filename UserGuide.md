@@ -82,6 +82,46 @@ pandoc --version
 pip install weasyprint
 ```
 
+## 📁 파일 경로 입력 방법
+
+### 올바른 경로 입력 (권장)
+
+**방법 1: 드래그 앤 드롭** (가장 쉬움)
+- 파일을 터미널 창으로 드래그하면 경로가 자동으로 입력됩니다
+- 백슬래시나 따옴표 걱정 없이 사용 가능
+
+**방법 2: 절대 경로**
+```bash
+m2d /Users/username/documents/my-document.md
+```
+
+**방법 3: 상대 경로**
+```bash
+m2d ./docs/document.md
+m2d ../project/README.md
+```
+
+### ⚠️ 피해야 할 경로 입력
+
+```bash
+# ❌ 백슬래시 이스케이프가 포함된 경로
+m2d /Users/username/My\ Documents/file.md
+
+# ✅ 대신 이렇게 (따옴표 사용 또는 드래그 앤 드롭)
+m2d "/Users/username/My Documents/file.md"
+```
+
+### 자동 경로 정리 기능
+
+CLI가 자동으로 다음을 처리합니다:
+- ✅ 백슬래시 이스케이프 자동 제거
+- ✅ 따옴표 자동 제거
+- ✅ 공백이 포함된 경로 자동 처리
+- ✅ 상대 경로를 절대 경로로 자동 변환
+- ✅ 파일 존재 여부 확인 및 친절한 오류 메시지
+
+---
+
 ## Interactive Mode (대화형 모드)
 
 ### 실행 방법

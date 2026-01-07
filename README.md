@@ -83,6 +83,36 @@ npm install markdown-to-document-cli
 
 ## 🚀 사용법
 
+### 📁 파일 경로 입력 방법
+
+**올바른 경로 입력 (권장)**:
+```bash
+# 방법 1: 드래그 앤 드롭 (가장 쉬움)
+# 파일을 터미널 창으로 드래그하면 경로가 자동 입력됩니다
+
+# 방법 2: 절대 경로
+m2d /Users/username/documents/my-document.md
+
+# 방법 3: 상대 경로
+m2d ./docs/document.md
+m2d ../project/README.md
+```
+
+**⚠️ 피해야 할 경로 입력**:
+```bash
+# ❌ 백슬래시 이스케이프가 포함된 경로
+m2d /Users/username/My\ Documents/file.md
+
+# ✅ 대신 이렇게 (따옴표 사용 또는 드래그 앤 드롭)
+m2d "/Users/username/My Documents/file.md"
+```
+
+**자동 경로 정리 기능**:
+- 백슬래시 이스케이프 자동 제거
+- 따옴표 자동 제거
+- 공백이 포함된 경로 자동 처리
+- 상대 경로를 절대 경로로 자동 변환
+
 ### Interactive Mode (권장)
 
 ```bash
@@ -453,6 +483,31 @@ m2d document.md --pandoc-path /path/to/pandoc
 - Linux: `sudo apt-get install pandoc`
 
 ---
+
+### 파일 경로 오류
+
+**증상**: "파일을 찾을 수 없습니다" 또는 경로에 백슬래시(`\`)가 포함됨
+
+**해결 방법**:
+1. **드래그 앤 드롭 사용** (가장 쉬움)
+   - 파일을 터미널 창으로 드래그하세요
+   - 경로가 자동으로 입력됩니다
+
+2. **따옴표로 감싸기**
+   ```bash
+   m2d "/Users/username/My Documents/file.md"
+   ```
+
+3. **백슬래시 제거**
+   ```bash
+   # ❌ 잘못된 예
+   m2d /Users/username/My\ Documents/file.md
+   
+   # ✅ 올바른 예
+   m2d "/Users/username/My Documents/file.md"
+   ```
+
+**자동 수정 기능**: CLI가 자동으로 경로를 정리하고 검증합니다.
 
 ### 이미지를 찾을 수 없음
 

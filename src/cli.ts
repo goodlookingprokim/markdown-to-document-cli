@@ -19,6 +19,7 @@ import { MarkdownToDocument } from './index.js';
 import { DEFAULT_CONFIG, TYPOGRAPHY_PRESETS, COVER_THEMES } from './utils/constants.js';
 import { Logger } from './utils/common.js';
 import { DependencyChecker } from './utils/dependencyChecker.js';
+import { PathValidator } from './utils/pathValidator.js';
 import * as path from 'path';
 import * as fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -315,19 +316,15 @@ program
                 process.env.DEBUG = 'true';
             }
 
-            // Resolve input path
-            const inputPath = path.resolve(input);
+            // Validate and normalize input path
+            const pathValidation = PathValidator.validatePath(input);
 
-            // Check if input file exists
-            if (!fs.existsSync(inputPath)) {
-                console.error(chalk.red(`❌ Error: Input file not found: ${inputPath}`));
+            if (!pathValidation.valid) {
+                PathValidator.displayValidationError(pathValidation);
                 process.exit(1);
             }
 
-            // Check if input is markdown
-            if (!inputPath.endsWith('.md')) {
-                console.error(chalk.yellow('⚠️  Warning: Input file does not have .md extension'));
-            }
+            const inputPath = pathValidation.normalizedPath!;
 
             const fileContent = fs.readFileSync(inputPath, 'utf-8');
             const analysisResult = analyzeMarkdownContent(fileContent);
@@ -541,23 +538,28 @@ program
                 name: 'inputPath',
                 message: chalk.yellow('📄 마크다운 파일 경로:'),
                 validate: (input: string) => {
-                    const cleanedInput = input.trim().replace(/^['"]|['"]$/g, '');
-                    if (!cleanedInput) return chalk.red('파일 경로를 입력하세요.');
-                    const resolvedPath = path.resolve(cleanedInput);
-                    if (!fs.existsSync(resolvedPath)) {
-                        return chalk.red('파일을 찾을 수 없습니다.');
-                    }
-                    if (!resolvedPath.endsWith('.md')) {
-                        return chalk.yellow('마크다운 파일(.md)을 선택하세요.');
+                    const validation = PathValidator.validatePath(input);
+                    if (!validation.valid) {
+                        // Return first error and suggestion
+                        let errorMsg = validation.error || '잘못된 경로입니다.';
+                        if (validation.suggestions && validation.suggestions.length > 0) {
+                            errorMsg += '\n' + chalk.gray('   💡 ' + validation.suggestions[0]);
+                        }
+                        return errorMsg;
                     }
                     return true;
                 },
-                transformer: (input: string) => input.trim().replace(/^['"]|['"]$/g, ''),
+                transformer: (input: string) => PathValidator.normalizePath(input),
             },
         ]);
 
-        const cleanedInputPath = fileAnswer.inputPath.trim().replace(/^['"]|['"]$/g, '');
-        const resolvedInputPath = path.resolve(cleanedInputPath);
+        const pathValidation = PathValidator.validatePath(fileAnswer.inputPath);
+        if (!pathValidation.valid || !pathValidation.normalizedPath) {
+            PathValidator.displayValidationError(pathValidation);
+            process.exit(1);
+        }
+
+        const resolvedInputPath = pathValidation.normalizedPath;
         const fileContent = fs.readFileSync(resolvedInputPath, 'utf-8');
 
         // 문서 분석 (자동)

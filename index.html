@@ -465,8 +465,31 @@ m2d interactive</pre>
             <div class="step-block">
                 <span class="step-num">01</span>
                 <h3>원고 전달하기</h3>
-                <p>변환할 마크다운 파일(.md)의 경로를 입력하세요. <br><span class="highlight">꿀팁:</span> 파일을 터미널 창으로 <strong>드래그 앤
-                        드롭</strong>하면 경로가 마법처럼 자동 입력됩니다.</p>
+                <p>변환할 마크다운 파일(.md)의 경로를 입력하세요.</p>
+
+                <div
+                    style="background: #f0f8ff; padding: 20px; border-radius: 8px; margin-top: 15px; border-left: 4px solid var(--accent-blue);">
+                    <h4 style="margin-bottom: 10px;">💡 경로 입력 꿀팁</h4>
+                    <p style="margin-bottom: 10px;"><strong>가장 쉬운 방법:</strong> 파일을 터미널 창으로 <span class="highlight">드래그 앤
+                            드롭</span>하면 경로가 마법처럼 자동 입력됩니다!</p>
+
+                    <p style="margin: 15px 0 10px 0;"><strong>⚠️ 이런 경로는 피하세요:</strong></p>
+                    <div class="code-box" style="background: #ffebee; border-left: 3px solid #f44336;">
+                        <pre style="color: #c62828;"># ❌ 백슬래시가 포함된 경로
+/Users/username/My\ Documents/file.md</pre>
+                    </div>
+
+                    <p style="margin: 15px 0 10px 0;"><strong>✅ 이렇게 입력하세요:</strong></p>
+                    <div class="code-box" style="background: #e8f5e9; border-left: 3px solid #4caf50;">
+                        <pre style="color: #2e7d32;"># 방법 1: 드래그 앤 드롭 (추천!)
+# 방법 2: 따옴표로 감싸기
+"/Users/username/My Documents/file.md"</pre>
+                    </div>
+
+                    <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                        <strong>자동 수정 기능:</strong> 백슬래시, 따옴표, 공백 등이 포함된 경로도 자동으로 정리됩니다!
+                    </p>
+                </div>
             </div>
 
             <div class="step-block" style="background: var(--accent-lime);">
