@@ -795,7 +795,41 @@ program
                 }
 
                 console.log(chalk.gray('\n' + '═'.repeat(60)));
-                console.log(chalk.green.bold('🎉 변환이 완료되었습니다!\n'));
+                console.log(chalk.green.bold('🎉 변환이 완료되었습니다!'));
+
+                // Post-conversion action menu
+                const outputDir = result.epubPath ? path.dirname(result.epubPath) : (result.pdfPath ? path.dirname(result.pdfPath) : '');
+
+                const actionAnswer = await inquirer.prompt([{
+                    type: 'list',
+                    name: 'action',
+                    message: chalk.yellow('\n다음 작업을 선택하세요:'),
+                    choices: [
+                        { name: chalk.cyan('📂 파일 위치 열기'), value: 'open' },
+                        { name: chalk.blue('🔄 다른 파일 변환'), value: 'convert_another' },
+                        { name: chalk.gray('✅ 종료'), value: 'exit' }
+                    ]
+                }]);
+
+                if (actionAnswer.action === 'open') {
+                    const { exec } = await import('child_process');
+                    const openCommand = process.platform === 'darwin' ? 'open' :
+                        process.platform === 'win32' ? 'explorer' : 'xdg-open';
+                    exec(`${openCommand} "${outputDir}"`, (error) => {
+                        if (error) {
+                            console.log(chalk.yellow(`\n📂 파일 위치: ${outputDir}`));
+                        }
+                    });
+                    console.log(chalk.green('\n✅ 파일 탐색기를 열었습니다.\n'));
+                } else if (actionAnswer.action === 'convert_another') {
+                    console.log(chalk.cyan('\n🔄 새로운 변환을 시작합니다...\n'));
+                    // Restart interactive mode by calling the command recursively
+                    process.argv = [process.argv[0], process.argv[1], 'interactive'];
+                    await program.parseAsync(process.argv);
+                    return;
+                }
+
+                console.log();
             } else {
                 spinner.fail(chalk.red('변환 실패'));
                 console.log(chalk.red('\n❌ 오류:'));
