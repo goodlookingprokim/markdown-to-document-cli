@@ -364,8 +364,7 @@ program
             const isReady = await depChecker.quickCheck(conversionOptions.format);
 
             if (!isReady) {
-                await depChecker.displayDependencyReport();
-                console.log(chalk.red('\n❌ 필수 의존성을 먼저 설치해 주세요.\n'));
+                await depChecker.displayDependencyReport(conversionOptions.format);
                 process.exit(1);
             }
 
@@ -749,8 +748,7 @@ program
             const isReady = await depChecker.quickCheck(format);
 
             if (!isReady) {
-                await depChecker.displayDependencyReport();
-                console.log(chalk.red('\n❌ 필수 의존성을 먼저 설치해 주세요.\n'));
+                await depChecker.displayDependencyReport(format);
                 process.exit(1);
             }
 

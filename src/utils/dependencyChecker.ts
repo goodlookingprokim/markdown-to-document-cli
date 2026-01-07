@@ -221,7 +221,7 @@ export class DependencyChecker {
     /**
      * Display comprehensive dependency report
      */
-    async displayDependencyReport(): Promise<boolean> {
+    async displayDependencyReport(format?: 'epub' | 'pdf' | 'both'): Promise<boolean> {
         console.log(chalk.cyan.bold('\n🔍 의존성 확인 중...\n'));
 
         const { allRequired, hasPdfEngine, dependencies, pdfEngines } = await this.checkAll();
@@ -292,7 +292,17 @@ export class DependencyChecker {
             console.log(chalk.green.bold('\n✅ 모든 의존성이 준비되었습니다!\n'));
         }
 
-        return allRequired;
+        // Return true only if all required deps are met AND PDF engine is available when needed
+        if (!allRequired) {
+            return false;
+        }
+
+        // If format requires PDF but no engine available, return false
+        if (format && (format === 'pdf' || format === 'both') && !hasPdfEngine) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
