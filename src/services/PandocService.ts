@@ -300,20 +300,58 @@ export class PandocService {
         return args;
     }
 
-    private resolvePdfEngine(engine: 'pdflatex' | 'xelatex' | 'weasyprint' | 'auto'): {
+    /**
+     * Check if a PDF engine is available on the system
+     */
+    private async checkPdfEngineAvailable(engine: string): Promise<boolean> {
+        try {
+            await execFileAsync(engine, ['--version'], { timeout: 3000 });
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    private async resolvePdfEngine(engine: 'pdflatex' | 'xelatex' | 'weasyprint' | 'auto'): Promise<{
         engine: 'pdflatex' | 'xelatex' | 'weasyprint';
         path: string;
-    } {
+    }> {
         if (engine === 'auto') {
-            const weasyprintPath = this.findPdfEnginePath('weasyprint');
-            if (weasyprintPath !== 'weasyprint') {
-                return { engine: 'weasyprint', path: weasyprintPath };
+            // Try engines in order of preference for Korean + typography support
+            const enginePreferences: Array<{ name: 'weasyprint' | 'xelatex' | 'pdflatex'; path: string }> = [
+                { name: 'weasyprint', path: this.findPdfEnginePath('weasyprint') },
+                { name: 'xelatex', path: 'xelatex' },
+                { name: 'pdflatex', path: 'pdflatex' },
+            ];
+
+            for (const { name, path } of enginePreferences) {
+                const isAvailable = await this.checkPdfEngineAvailable(path);
+                if (isAvailable) {
+                    Logger.debug(`[PDF Engine] Selected: ${name} (${path})`);
+                    return { engine: name, path };
+                }
             }
-            // Best fallback for Korean + typography when WeasyPrint is not installed
-            return { engine: 'xelatex', path: 'xelatex' };
+
+            // No engine found
+            throw new Error(
+                'PDF 엔진을 찾을 수 없습니다. WeasyPrint, XeLaTeX, 또는 PDFLaTeX를 설치하세요.\n' +
+                '설치 방법:\n' +
+                '  WeasyPrint: pip install weasyprint\n' +
+                '  XeLaTeX/PDFLaTeX: brew install basictex (macOS) 또는 https://www.tug.org/texlive/'
+            );
         }
 
-        return { engine, path: this.findPdfEnginePath(engine) };
+        const path = this.findPdfEnginePath(engine);
+        const isAvailable = await this.checkPdfEngineAvailable(path);
+
+        if (!isAvailable) {
+            throw new Error(
+                `지정된 PDF 엔진을 찾을 수 없습니다: ${engine}\n` +
+                '다른 엔진을 선택하거나 --pdf-engine=auto 옵션을 사용하세요.'
+            );
+        }
+
+        return { engine, path };
     }
 
     /**
@@ -343,7 +381,7 @@ export class PandocService {
 
         // PDF engine
         const requestedEngine = options.pdfEngine || 'auto';
-        const resolvedEngine = this.resolvePdfEngine(requestedEngine);
+        const resolvedEngine = await this.resolvePdfEngine(requestedEngine);
         args.push(`--pdf-engine=${resolvedEngine.path}`);
 
         // Metadata: Author

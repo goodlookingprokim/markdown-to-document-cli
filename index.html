@@ -485,6 +485,114 @@ m2d interactive</pre>
             </div>
         </section>
 
+        <!-- TROUBLESHOOTING: PDF ENGINE -->
+        <section id="troubleshooting"
+            style="background: linear-gradient(135deg, #fff5e6 0%, #ffe6f0 100%); padding: 60px 40px; border: var(--border); box-shadow: var(--shadow); margin-bottom: 180px;">
+            <h2 class="section-title" style="margin-bottom: 40px;">🔧 문제 해결: PDF가 안 만들어져요!</h2>
+
+            <div class="feynman-card" style="background: #fff; margin-bottom: 40px;">
+                <h3>🤔 왜 이런 오류가 나올까요?</h3>
+                <p style="font-size: 1.1rem; line-height: 1.8;">
+                    PDF를 만들려면 <strong>"PDF 제작 도구"</strong>가 필요합니다. 마치 빵을 굽기 위해 오븐이 필요한 것처럼요!<br><br>
+
+                    <span
+                        style="background: #ffebee; padding: 8px 16px; border-radius: 8px; display: inline-block; margin: 10px 0;">
+                        ❌ <code>xelatex not found</code> 또는 <code>PDF 엔진을 찾을 수 없습니다</code>
+                    </span><br><br>
+
+                    이 메시지는 "오븐이 없어서 빵을 구울 수 없어요"라는 뜻입니다. 아래 3가지 오븐 중 하나만 설치하면 해결됩니다!
+                </p>
+            </div>
+
+            <div class="grid-2" style="margin-bottom: 40px;">
+                <div class="grid-card" style="background: var(--accent-lime); border: var(--border);">
+                    <span class="badge" style="background: #000; color: #fff;">추천 ⭐</span>
+                    <h3>옵션 1: WeasyPrint</h3>
+                    <p><strong>가장 쉽고 빠른 방법!</strong> 한글도 완벽하게 지원합니다.</p>
+                    <div class="code-wrap">
+                        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                        <div class="code-box">
+                            <pre>pip install weasyprint</pre>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.9rem; color: #333;">
+                        💡 Python이 없다면? <a href="https://www.python.org/downloads/" target="_blank"
+                            style="color: #000; font-weight: 700;">python.org</a>에서 먼저 설치하세요.
+                    </p>
+                </div>
+
+                <div class="grid-card" style="background: var(--accent-blue); color: #fff; border: var(--border);">
+                    <span class="badge" style="background: #fff; color: #000;">한글 최적화</span>
+                    <h3>옵션 2: XeLaTeX</h3>
+                    <p><strong>한글 폰트를 아름답게!</strong> 전문 출판 수준의 품질을 원한다면 이걸로!</p>
+                    <div class="code-wrap">
+                        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                        <div class="code-box" style="background: #000;">
+                            <pre style="color: #fff;"># macOS
+brew install --cask basictex
+
+# Linux
+sudo apt-get install texlive-xetex</pre>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.9rem;">
+                        ⚠️ 설치 후 터미널을 다시 시작하세요!
+                    </p>
+                </div>
+            </div>
+
+            <div class="step-block" style="background: #f0f8ff; border: var(--border);">
+                <span class="step-num">✓</span>
+                <h3>설치 확인하기</h3>
+                <p>오븐이 제대로 설치되었는지 확인해 봅시다:</p>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box">
+                        <pre># WeasyPrint 확인
+weasyprint --version
+
+# XeLaTeX 확인
+xelatex --version</pre>
+                    </div>
+                </div>
+                <p style="margin-top: 20px;">
+                    버전 번호가 나오면 성공! 🎉 이제 다시 PDF 변환을 시도해 보세요.
+                </p>
+            </div>
+
+            <div class="feynman-card"
+                style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); margin-top: 40px;">
+                <h3>💡 프로 팁: 특정 엔진 지정하기</h3>
+                <p>여러 개를 설치했다면, 원하는 엔진을 직접 선택할 수 있습니다:</p>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box">
+                        <pre># WeasyPrint로 PDF 만들기
+m2d document.md --pdf-engine weasyprint
+
+# XeLaTeX로 PDF 만들기
+m2d document.md --pdf-engine xelatex
+
+# 자동 선택 (기본값)
+m2d document.md --pdf-engine auto</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="margin-top: 40px; padding: 30px; background: #fff; border: var(--border); box-shadow: 6px 6px 0px #000;">
+                <h4 style="font-size: 1.3rem; margin-bottom: 15px;">📚 더 많은 문제 해결이 필요하신가요?</h4>
+                <p style="margin-bottom: 20px;">
+                    이미지 오류, 한글 깨짐, 검증 문제 등 다양한 상황에 대한 해결책을 준비했습니다.
+                </p>
+                <a href="https://github.com/goodlookingprokim/markdown-to-document-cli/blob/main/TroubleShooting.md"
+                    target="_blank" class="sticky-nav-link"
+                    style="display: inline-block; background: var(--accent-pink); text-decoration: none;">
+                    전체 문제 해결 가이드 보기 →
+                </a>
+            </div>
+        </section>
+
         <!-- STEP 4: PRO TIPS -->
         <section id="tips">
             <h2 class="section-title">4. 프로 작가를 위한 팁</h2>

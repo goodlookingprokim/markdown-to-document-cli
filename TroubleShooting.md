@@ -436,30 +436,89 @@ convert image.bmp image.png
 
 ## PDF 관련 문제
 
-### 문제: "PDF 변환 실패"
+### 문제: "PDF 변환 실패 - PDF 엔진을 찾을 수 없습니다"
 
 **증상**:
 ```
-❌ PDF 변환 실패: weasyprint not found
+❌ PDF 변환 실패: xelatex not found. Please select a different --pdf-engine or install xelatex
+```
+또는
+```
+❌ PDF 엔진을 찾을 수 없습니다. WeasyPrint, XeLaTeX, 또는 PDFLaTeX를 설치하세요.
 ```
 
 **원인**:
-- WeasyPrint가 설치되지 않음
+- PDF 생성에 필요한 엔진(WeasyPrint, XeLaTeX, PDFLaTeX)이 설치되지 않음
+- `--pdf-engine=auto` 옵션 사용 시 사용 가능한 엔진이 없음
 
 **해결 방법**:
 
-1. WeasyPrint 설치:
+**옵션 1: WeasyPrint 설치 (권장)**
 ```bash
+# Python pip 사용
 pip install weasyprint
+
+# 또는 Python 3
+pip3 install weasyprint
 ```
 
-2. 다른 PDF 엔진 사용:
+**옵션 2: XeLaTeX 설치 (한글 지원 우수)**
 ```bash
-# pdflatex
-m2d document.md --format pdf --pdf-engine pdflatex
+# macOS (Homebrew)
+brew install --cask basictex
+# 설치 후 PATH 업데이트
+eval "$(/usr/libexec/path_helper)"
 
-# xelatex
-m2d document.md --format pdf --pdf-engine xelatex
+# 또는 전체 TeX Live 설치
+brew install --cask mactex
+
+# Linux (Ubuntu/Debian)
+sudo apt-get install texlive-xetex texlive-fonts-recommended
+
+# Linux (Fedora)
+sudo dnf install texlive-xetex
+
+# Windows
+# https://www.tug.org/texlive/ 에서 설치 프로그램 다운로드
+```
+
+**옵션 3: PDFLaTeX 설치**
+```bash
+# macOS
+brew install --cask basictex
+
+# Linux (Ubuntu/Debian)
+sudo apt-get install texlive-latex-base
+
+# Windows
+# https://www.tug.org/texlive/ 에서 설치 프로그램 다운로드
+```
+
+**설치 확인**:
+```bash
+# WeasyPrint 확인
+weasyprint --version
+
+# XeLaTeX 확인
+xelatex --version
+
+# PDFLaTeX 확인
+pdflatex --version
+```
+
+**특정 엔진 지정**:
+```bash
+# 자동 선택 (기본값)
+m2d document.md --pdf-engine auto
+
+# WeasyPrint 사용
+m2d document.md --pdf-engine weasyprint
+
+# XeLaTeX 사용
+m2d document.md --pdf-engine xelatex
+
+# PDFLaTeX 사용
+m2d document.md --pdf-engine pdflatex
 ```
 
 ### 문제: 한글 폰트 렌더링 오류
