@@ -5,6 +5,37 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-01-08
+
+### Refactored
+- **코드 품질 대폭 개선 (163줄 감소)**:
+  - 공통 의존성 체크 함수 생성 (`checkDependenciesOrExit`)으로 중복 제거
+  - `extractMetadata` 함수를 `utils/metadata.js` 모듈로 분리
+  - `analyzeMarkdownContent` 함수를 `services/MarkdownAnalyzer.js` 서비스로 전환
+  - 총 203줄 삭제, 40줄 추가로 코드베이스 간소화
+
+### Added
+- **파일 미리보기 기능**:
+  - Interactive 모드에서 파일 선택 후 경로, 크기, 수정일 자동 표시
+  - frontmatter 메타데이터(제목/저자) 즉시 확인 가능
+- **변환 후 액션 메뉴**:
+  - 📂 파일 위치 열기: 변환된 파일 폴더 자동 오픈
+  - 🔄 다른 파일 변환: Interactive 모드 재시작
+  - ✅ 종료: 프로그램 종료
+
+### Improved
+- **타입 안정성 강화**:
+  - `pdfEngine`, `paperSize` 타입 명시적 정의
+  - `MarkdownAnalysisResult` 타입 export 및 재사용
+- **모듈 구조 개선**:
+  - `services/MarkdownAnalyzer.ts`: 마크다운 분석 전담 서비스
+  - `utils/metadata.ts`: 메타데이터 추출 유틸리티
+  - `utils/choices.ts`: inquirer 프롬프트 선택지 생성 유틸리티
+
+### Changed
+- 코드 중복 제거로 유지보수성 향상
+- 모듈화된 구조로 테스트 용이성 개선
+
 ## [1.2.7] - 2026-01-06
 
 ### Changed
