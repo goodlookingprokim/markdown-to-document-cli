@@ -532,13 +532,13 @@ program
         // ============ STEP 1: 파일 선택 ============
         console.log(chalk.gray('  Step 1/3: 파일 선택\n'));
 
+        console.log(chalk.gray('   💡 파일을 드래그앤드롭하거나 경로를 입력하세요\n'));
+
         const fileAnswer = await inquirer.prompt([
             {
                 type: 'input',
                 name: 'inputPath',
                 message: chalk.yellow('📄 마크다운 파일 경로:'),
-                default: '',
-                prefix: chalk.gray('   💡 파일을 드래그앤드롭하거나 경로를 입력하세요\n'),
                 validate: (input: string) => {
                     const validation = PathValidator.validatePath(input);
                     if (!validation.valid) {
@@ -551,7 +551,6 @@ program
                     }
                     return true;
                 },
-                transformer: (input: string) => PathValidator.normalizePath(input),
             },
         ]);
 
