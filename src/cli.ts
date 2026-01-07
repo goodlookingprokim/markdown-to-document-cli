@@ -537,6 +537,8 @@ program
                 type: 'input',
                 name: 'inputPath',
                 message: chalk.yellow('📄 마크다운 파일 경로:'),
+                default: '',
+                prefix: chalk.gray('   💡 파일을 드래그앤드롭하거나 경로를 입력하세요\n'),
                 validate: (input: string) => {
                     const validation = PathValidator.validatePath(input);
                     if (!validation.valid) {
