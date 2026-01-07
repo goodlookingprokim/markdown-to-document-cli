@@ -309,7 +309,7 @@
     </nav>
     <div class="container">
         <header>
-            <span class="version-tag">STABLE v1.2.7 RELEASE</span>
+            <span class="version-tag">STABLE v1.2.8 RELEASE</span>
             <h1>UNDER THE HOOD.</h1>
             <div class="header-meta">
                 <div><span>STACK:</span> TypeScript, Node.js</div>
@@ -359,6 +359,16 @@
                     <h3>Pre-processor</h3>
                     <p>Obsidian 특화 문법(Wikilink, Callout)을 Pandoc이 이해할 수 있는 표준 마크다운으로 변환하는 정규식 기반 처리기입니다.</p>
                 </div>
+                <div class="tech-card">
+                    <h3>PathValidator <span style="color: var(--accent-green); font-size: 0.8rem;">NEW v1.2.8</span>
+                    </h3>
+                    <p>파일 경로 정규화 및 검증 시스템. 백슬래시 이스케이프, 따옴표, 공백 처리를 자동화하고 친절한 오류 메시지를 제공합니다.</p>
+                </div>
+                <div class="tech-card">
+                    <h3>DependencyChecker <span style="color: var(--accent-green); font-size: 0.8rem;">v1.2.7</span>
+                    </h3>
+                    <p>사전 의존성 검증 시스템. Node.js, Pandoc, PDF 엔진 등을 체크하고 플랫폼별 설치 가이드를 제공합니다.</p>
+                </div>
             </div>
         </section>
 
@@ -381,6 +391,36 @@
   --theme apple-white \
   --cover ./assets/cover.png \
   --no-toc</code></pre>
+            </div>
+
+            <p style="margin: 40px 0 20px; color: var(--accent-cyan); font-weight: 700;">의존성 체크 API</p>
+            <div class="code-container">
+                <div class="code-header">
+                    <span>bash</span>
+                    <span>dependency_check.sh</span>
+                </div>
+                <pre><code class="cmd-line"># 전체 의존성 체크
+m2d check
+
+# 특정 포맷 의존성 체크
+m2d check --format pdf</code></pre>
+            </div>
+
+            <p style="margin: 40px 0 20px; color: var(--accent-cyan); font-weight: 700;">프로그래밍 방식 사용</p>
+            <div class="code-container">
+                <div class="code-header">
+                    <span>typescript</span>
+                    <span>api_usage.ts</span>
+                </div>
+                <pre><code class="cmd-line">import { PathValidator } from './utils/pathValidator';
+
+// 경로 검증 및 정규화
+const result = PathValidator.validatePath(userInput);
+if (result.valid) {
+  console.log('Normalized:', result.normalizedPath);
+} else {
+  PathValidator.displayValidationError(result);
+}</code></pre>
             </div>
         </section>
 
@@ -418,8 +458,8 @@ npm run build</code></pre>
         </div>
 
         <footer>
-            <div>&copy; 2024 GOODLOOKINGPROKIM</div>
-            <div>BUILD: STABLE_X86_64_20240101</div>
+            <div>&copy; 2026 GOODLOOKINGPROKIM</div>
+            <div>BUILD: STABLE_v1.2.8_20260107</div>
             <div style="display: flex; gap: 20px;">
                 <a href="index.html"
                     style="color: var(--accent-cyan); text-decoration: none; font-family: 'JetBrains Mono', monospace; border: 1px solid var(--accent-cyan); padding: 5px 15px;">[
