@@ -102,11 +102,30 @@ export function convertObsidianLinks(content: string): string {
     return content.replace(/\[\[([^\]]+)\]\]/g, (match, link) => {
         const parts = link.split('|');
         const text = parts[1] || parts[0];
-        const target = parts[0];
+        let target = parts[0];
 
         // Handle external links [[link|text]] -> [text](link)
         if (target.startsWith('http')) {
             return `[${text}](${target})`;
+        }
+
+        // Handle heading links [[Note#Heading]] -> [Note - Heading](Note.md#heading)
+        if (target.includes('#')) {
+            const [noteName, heading] = target.split('#');
+            const headingSlug = heading.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+
+            // If no note name, it's a same-page heading link [[#Heading]]
+            if (!noteName) {
+                return `[${text}](#${headingSlug})`;
+            }
+
+            return `[${text}](${noteName}.md#${headingSlug})`;
+        }
+
+        // Handle block references [[Note#^block-id]] - convert to simple link
+        if (target.includes('#^')) {
+            const [noteName] = target.split('#^');
+            return `[${text}](${noteName}.md)`;
         }
 
         // Handle internal links [[link]] -> [link](link.md)
@@ -143,6 +162,28 @@ export function removeMediaEmbeds(content: string): string {
         .replace(/\!\[\[.*?\.(mp3|wav|ogg|m4a|mp4|webm|mov|avi)\]\]/gi, '')
         .replace(/\{\{audio:.*?\}\}/gi, '')
         .replace(/\{\{video:.*?\}\}/gi, '');
+}
+
+export function removeObsidianComments(content: string): string {
+    // Remove Obsidian comments: %%comment%%
+    // Handle both inline and block comments
+    return content.replace(/%%[\s\S]*?%%/g, '');
+}
+
+export function convertCallouts(content: string): string {
+    // Convert Obsidian callouts to blockquotes with custom styling
+    // > [!note] Title -> > **Note: Title**
+    return content.replace(/^>\s*\[!(\w+)\]([+-]?)\s*(.*?)$/gm, (match, type, fold, title) => {
+        const typeCapitalized = type.charAt(0).toUpperCase() + type.slice(1);
+        const titleText = title ? ` ${title}` : '';
+        return `> **${typeCapitalized}:${titleText}**`;
+    });
+}
+
+export function removeBlockReferences(content: string): string {
+    // Remove block reference IDs: ^block-id
+    // These are typically at the end of paragraphs or on separate lines
+    return content.replace(/\s*\^[\w-]+\s*$/gm, '');
 }
 
 export function countWords(content: string): number {

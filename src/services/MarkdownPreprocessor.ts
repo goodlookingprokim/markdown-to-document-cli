@@ -15,6 +15,9 @@ import {
     convertObsidianLinks,
     convertHighlights,
     removeMediaEmbeds,
+    removeObsidianComments,
+    convertCallouts,
+    removeBlockReferences,
     escapePipeCharacters,
     extractStandardImagePaths,
 } from '../utils/markdownUtils.js';
@@ -46,15 +49,18 @@ export class MarkdownPreprocessor {
         const { metadata: frontmatterMeta, content: contentWithoutYaml } =
             extractFrontmatter(content);
 
-        // Step 2: Remove audio/video embeds
-        let processedContent = removeMediaEmbeds(contentWithoutYaml);
+        // Step 2: Remove Obsidian comments (%%comment%%)
+        let processedContent = removeObsidianComments(contentWithoutYaml);
 
-        // Step 3: Convert Obsidian image syntax
+        // Step 3: Remove audio/video embeds
+        processedContent = removeMediaEmbeds(processedContent);
+
+        // Step 4: Convert Obsidian image syntax
         const { content: contentWithImages, images: obsidianImages } =
             convertObsidianImageSyntax(processedContent);
         processedContent = contentWithImages;
 
-        // Step 4: Resolve image paths
+        // Step 5: Resolve image paths
         const sourceDir = path.dirname(sourcePath);
         const searchDirs = ATTACHMENT_FOLDERS.map(folder => path.join(this.basePath, folder));
 
@@ -71,7 +77,7 @@ export class MarkdownPreprocessor {
             }
         }
 
-        // Step 5: Process standard markdown images
+        // Step 6: Process standard markdown images
         const standardImagePaths = extractStandardImagePaths(processedContent);
         const standardImagePromises: Promise<ResolvedImage>[] = [];
 
@@ -92,25 +98,31 @@ export class MarkdownPreprocessor {
             }
         }
 
-        // Step 6: Replace image paths with absolute paths
+        // Step 7: Replace image paths with absolute paths
         processedContent = this.replaceImagePaths(processedContent, resolvedImages);
 
-        // Step 7: Convert Obsidian internal links
+        // Step 8: Convert Obsidian callouts to blockquotes
+        processedContent = convertCallouts(processedContent);
+
+        // Step 9: Convert Obsidian internal links (including heading links)
         processedContent = convertObsidianLinks(processedContent);
 
-        // Step 8: Convert highlights
+        // Step 10: Convert highlights
         processedContent = convertHighlights(processedContent);
 
-        // Step 9: Replace '---' horizontal rules with '***' to avoid YAML confusion
+        // Step 11: Remove block reference IDs
+        processedContent = removeBlockReferences(processedContent);
+
+        // Step 12: Replace '---' horizontal rules with '***' to avoid YAML confusion
         // Pandoc interprets '---' as YAML frontmatter delimiter
         processedContent = processedContent.replace(/^---$/gm, '***');
 
-        // Step 10: Escape pipe characters for EPUB
+        // Step 13: Escape pipe characters for EPUB
         if (outputFormat === 'epub') {
             processedContent = escapePipeCharacters(processedContent);
         }
 
-        // Step 10: Build metadata
+        // Step 14: Build metadata
         const extractedTitle =
             frontmatterMeta.title || extractTitleFromContent(contentWithoutYaml);
         const { title, subtitle } = splitTitle(extractedTitle || path.basename(sourcePath, '.md'));

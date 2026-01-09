@@ -20,6 +20,24 @@
 - **챕터별 파일 분리** (H1 기준)
 - **한글 최적화**: Noto Sans/Serif KR 임베딩 및 가독성 높은 레이아웃
 
+### 🎯 Obsidian Flavored Markdown 완벽 지원
+
+**자동 변환되는 Obsidian 문법**:
+- **Wikilinks**: `[[Note]]`, `[[Note|Display]]`, `[[Note#Heading]]` → 표준 마크다운 링크
+- **이미지 임베드**: `![[image.png]]`, `![[image.png|300]]` → 표준 이미지 문법
+- **Callouts**: `> [!note]`, `> [!warning]` → 스타일이 적용된 blockquote
+- **Highlights**: `==text==` → `<mark>text</mark>`
+- **Comments**: `%%hidden%%` → 자동 제거
+- **Block References**: `^block-id` → 자동 제거
+- **Heading Links**: `[[#Heading]]` → 같은 페이지 앵커 링크
+
+**자동 감지 및 분석**:
+- Task Lists: `- [ ]`, `- [x]`
+- Math (LaTeX): `$inline$`, `$$block$$`
+- Mermaid Diagrams: ` ```mermaid `
+- Tags: `#tag`, `#nested/tag`
+- Footnotes: `[^1]`
+
 ### 🔍 8개 검증 모듈 (자동 수정)
 1. **Frontmatter 검증**: YAML 구문 오류 자동 수정
 2. **제목 검증**: H1 중복 감지, 레벨 갭 수정

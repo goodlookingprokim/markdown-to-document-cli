@@ -9,6 +9,13 @@ export interface MarkdownAnalysisResult {
     hasObsidianLinks: boolean;
     hasHighlights: boolean;
     hasCallouts: boolean;
+    hasComments: boolean;
+    hasBlockReferences: boolean;
+    hasTaskLists: boolean;
+    hasMath: boolean;
+    hasMermaid: boolean;
+    hasTags: boolean;
+    hasFootnotes: boolean;
     hasLongCodeLines: boolean;
     hasComplexTables: boolean;
     hasMultipleH1: boolean;
@@ -32,6 +39,13 @@ export class MarkdownAnalyzer {
             hasObsidianLinks: false,
             hasHighlights: false,
             hasCallouts: false,
+            hasComments: false,
+            hasBlockReferences: false,
+            hasTaskLists: false,
+            hasMath: false,
+            hasMermaid: false,
+            hasTags: false,
+            hasFootnotes: false,
             hasLongCodeLines: false,
             hasComplexTables: false,
             hasMultipleH1: false,
@@ -74,6 +88,64 @@ export class MarkdownAnalyzer {
         result.hasCallouts = !!calloutMatches;
         if (calloutMatches) {
             result.issues.push(`콜아웃 ${calloutMatches.length}개 발견`);
+        }
+
+        // Check for Obsidian comments: %%comment%%
+        const commentMatches = content.match(/%%[\s\S]*?%%/g);
+        result.hasComments = !!commentMatches;
+        if (commentMatches) {
+            result.issues.push(`Obsidian 주석 ${commentMatches.length}개 발견 (자동 제거됨)`);
+        }
+
+        // Check for block references: ^block-id
+        const blockRefMatches = content.match(/\s*\^[\w-]+\s*$/gm);
+        result.hasBlockReferences = !!blockRefMatches;
+        if (blockRefMatches) {
+            result.issues.push(`블록 참조 ${blockRefMatches.length}개 발견`);
+        }
+
+        // Check for task lists: - [ ] or - [x]
+        const taskListMatches = content.match(/^\s*-\s*\[[x ]\]/gm);
+        result.hasTaskLists = !!taskListMatches;
+        if (taskListMatches) {
+            result.issues.push(`작업 목록 ${taskListMatches.length}개 발견`);
+        }
+
+        // Check for math: $...$ or $$...$$
+        const inlineMathMatches = content.match(/\$[^$]+\$/g);
+        const blockMathMatches = content.match(/\$\$[\s\S]*?\$\$/g);
+        result.hasMath = !!(inlineMathMatches || blockMathMatches);
+        if (result.hasMath) {
+            const mathCount = (inlineMathMatches?.length || 0) + (blockMathMatches?.length || 0);
+            result.issues.push(`수식 ${mathCount}개 발견 (LaTeX)`);
+        }
+
+        // Check for Mermaid diagrams
+        const mermaidMatches = content.match(/```mermaid[\s\S]*?```/g);
+        result.hasMermaid = !!mermaidMatches;
+        if (mermaidMatches) {
+            result.issues.push(`Mermaid 다이어그램 ${mermaidMatches.length}개 발견`);
+        }
+
+        // Check for tags: #tag
+        const tagMatches = content.match(/#[\w가-힣]+(?:[/-][\w가-힣]+)*/g);
+        result.hasTags = !!tagMatches;
+        if (tagMatches) {
+            // Filter out headings (# at start of line)
+            const actualTags = tagMatches.filter(tag => {
+                const tagIndex = content.indexOf(tag);
+                return tagIndex > 0 && content[tagIndex - 1] !== '\n';
+            });
+            if (actualTags.length > 0) {
+                result.issues.push(`태그 ${actualTags.length}개 발견`);
+            }
+        }
+
+        // Check for footnotes: [^1]
+        const footnoteMatches = content.match(/\[\^[\w-]+\]/g);
+        result.hasFootnotes = !!footnoteMatches;
+        if (footnoteMatches) {
+            result.issues.push(`각주 ${footnoteMatches.length}개 발견`);
         }
 
         // Count images (standard markdown)
@@ -130,6 +202,8 @@ export class MarkdownAnalyzer {
             result.hasObsidianLinks ||
             result.hasHighlights ||
             result.hasCallouts ||
+            result.hasComments ||
+            result.hasBlockReferences ||
             result.hasLongCodeLines ||
             result.hasComplexTables ||
             result.hasMultipleH1;
