@@ -8,7 +8,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import type { PandocInfo, ConversionOptions, TypographyPresetId } from '../types/index.js';
-import { getTempDir, Logger } from '../utils/common.js';
+import { Logger } from '../utils/common.js';
+import { getTempDir } from '../utils/fileUtils.js';
 import { TypographyService } from './TypographyService.js';
 import { FontSubsetter } from './FontSubsetter.js';
 import { CoverService } from './CoverService.js';
@@ -238,13 +239,8 @@ export class PandocService {
             args.push('--metadata', `author=${options.author}`);
         }
 
-        // Font Embedding
-        const fontsToEmbed = [
-            '/System/Library/Fonts/Supplemental/NotoSansKR-Regular.otf',
-            '/System/Library/Fonts/Supplemental/NotoSansKR-Bold.otf',
-            '/System/Library/Fonts/Supplemental/NotoSerifKR-Regular.otf',
-            '/System/Library/Fonts/Supplemental/NotoSerifKR-Bold.otf'
-        ];
+        // Font Embedding - Platform-specific font paths
+        const fontsToEmbed = this.getPlatformFontPaths();
 
         for (const fontPath of fontsToEmbed) {
             if (fs.existsSync(fontPath)) {
@@ -434,16 +430,78 @@ export class PandocService {
     }
 
     /**
+     * Get platform-specific font paths for embedding
+     */
+    private getPlatformFontPaths(): string[] {
+        const platform = process.platform;
+
+        if (platform === 'win32') {
+            // Windows font paths
+            const windir = process.env.WINDIR || 'C:\\Windows';
+            return [
+                path.join(windir, 'Fonts', 'malgun.ttf'),      // Malgun Gothic
+                path.join(windir, 'Fonts', 'malgunbd.ttf'),    // Malgun Gothic Bold
+                path.join(windir, 'Fonts', 'batang.ttc'),      // Batang
+                path.join(windir, 'Fonts', 'gulim.ttc'),       // Gulim
+            ];
+        } else if (platform === 'darwin') {
+            // macOS font paths
+            return [
+                '/System/Library/Fonts/Supplemental/NotoSansKR-Regular.otf',
+                '/System/Library/Fonts/Supplemental/NotoSansKR-Bold.otf',
+                '/System/Library/Fonts/Supplemental/NotoSerifKR-Regular.otf',
+                '/System/Library/Fonts/Supplemental/NotoSerifKR-Bold.otf'
+            ];
+        } else {
+            // Linux font paths
+            return [
+                '/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc',
+                '/usr/share/fonts/truetype/noto/NotoSansCJK-Bold.ttc',
+                '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+                '/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc',
+            ];
+        }
+    }
+
+    /**
      * Find the full path of a PDF engine
      */
     private findPdfEnginePath(engine: string): string {
         if (engine === 'weasyprint') {
-            const locations = [
-                `${process.env.HOME}/.local/bin/weasyprint`,
-                '/usr/local/bin/weasyprint',
-                '/opt/homebrew/bin/weasyprint',
-                '/usr/bin/weasyprint',
-            ];
+            const platform = process.platform;
+            let locations: string[] = [];
+
+            if (platform === 'win32') {
+                // Windows paths for WeasyPrint
+                const userProfile = process.env.USERPROFILE || 'C:\\Users\\Default';
+                const pythonVersions = ['Python312', 'Python311', 'Python310', 'Python39', 'Python38'];
+
+                locations = [
+                    path.join(userProfile, 'AppData', 'Local', 'Programs', 'Python', 'Python312', 'Scripts', 'weasyprint.exe'),
+                    path.join(userProfile, 'AppData', 'Roaming', 'Python', 'Python312', 'Scripts', 'weasyprint.exe'),
+                    'C:\\Python312\\Scripts\\weasyprint.exe',
+                    'C:\\Python311\\Scripts\\weasyprint.exe',
+                    'C:\\Python310\\Scripts\\weasyprint.exe',
+                    'weasyprint',
+                ];
+
+                // Add dynamic Python version paths
+                for (const pyVer of pythonVersions) {
+                    locations.push(path.join(userProfile, 'AppData', 'Local', 'Programs', 'Python', pyVer, 'Scripts', 'weasyprint.exe'));
+                    locations.push(`C:\\${pyVer}\\Scripts\\weasyprint.exe`);
+                }
+            } else {
+                // Unix/macOS paths
+                const home = process.env.HOME || '';
+                locations = [
+                    `${home}/.local/bin/weasyprint`,
+                    '/usr/local/bin/weasyprint',
+                    '/opt/homebrew/bin/weasyprint',
+                    '/usr/bin/weasyprint',
+                    'weasyprint',
+                ];
+            }
+
             for (const loc of locations) {
                 if (fs.existsSync(loc)) {
                     return loc;

@@ -357,7 +357,14 @@ program
         // ============ STEP 1: 파일 선택 ============
         console.log(chalk.gray('  Step 1/3: 파일 선택\n'));
 
-        console.log(chalk.gray('   💡 파일을 드래그앤드롭하거나 경로를 입력하세요\n'));
+        const isWindows = process.platform === 'win32';
+        if (isWindows) {
+            console.log(chalk.gray('   💡 파일을 드래그앤드롭하거나 경로를 입력하세요'));
+            console.log(chalk.gray('   예: C:\\Users\\username\\document.md\n'));
+        } else {
+            console.log(chalk.gray('   💡 파일을 드래그앤드롭하거나 경로를 입력하세요'));
+            console.log(chalk.gray('   예: /Users/username/document.md\n'));
+        }
 
         const fileAnswer = await inquirer.prompt([
             {

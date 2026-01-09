@@ -495,6 +495,60 @@ m2d document.md --pandoc-path /path/to/pandoc
 
 ---
 
+### Windows PowerShell 실행 정책 오류
+
+**증상**: Windows PowerShell에서 `npx` 또는 `m2d` 실행 시 다음 오류 발생
+```powershell
+npx : File C:\Program Files\nodejs\npx.ps1 cannot be loaded because running scripts is disabled on this system.
+```
+
+**원인**:
+- Windows PowerShell의 기본 실행 정책이 스크립트 실행을 차단함
+- 보안 설정으로 인해 Node.js 스크립트 실행 불가
+
+**해결 방법**:
+
+#### **옵션 1: CMD 사용 (가장 빠름, 권장)**
+
+PowerShell 대신 명령 프롬프트(CMD)를 사용하면 실행 정책 문제가 없습니다:
+
+```cmd
+# CMD(명령 프롬프트) 실행 후
+npx markdown-to-document-cli interactive
+
+# 또는 전역 설치 후
+m2d interactive
+```
+
+#### **옵션 2: 실행 정책 변경 (영구적 해결)**
+
+PowerShell을 **관리자 권한**으로 실행한 후:
+
+```powershell
+# 현재 사용자에 대해 실행 정책 변경
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# 확인 메시지가 나오면 'Y' 입력
+```
+
+그 다음 일반 PowerShell에서 다시 시도:
+```powershell
+npx markdown-to-document-cli interactive
+```
+
+#### **옵션 3: 일회성 우회 (임시 해결)**
+
+관리자 권한 없이 현재 세션에서만 허용:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+npx markdown-to-document-cli interactive
+```
+
+**💡 권장**: Windows 사용자는 **CMD(명령 프롬프트)**를 사용하는 것이 가장 간단합니다.
+
+---
+
 ### 파일 경로 오류
 
 **증상**: "파일을 찾을 수 없습니다" 또는 경로에 백슬래시(`\`)가 포함됨

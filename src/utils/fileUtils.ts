@@ -81,7 +81,10 @@ export async function writeFileAsync(filePath: string, content: string): Promise
 }
 
 export function getTempDir(): string {
-    const tempDir = path.join(process.env.TMPDIR || '/tmp', 'markdown-to-document');
+    // Use Node.js os.tmpdir() for cross-platform compatibility
+    // Works on Windows (C:\Users\...\AppData\Local\Temp), macOS (/var/folders/...), Linux (/tmp)
+    const os = require('os');
+    const tempDir = path.join(os.tmpdir(), 'markdown-to-document');
     ensureDirectory(tempDir);
     return tempDir;
 }

@@ -5,14 +5,15 @@
 ## 목차
 
 1. [설치 문제](#설치-문제)
-2. [Pandoc 관련 문제](#pandoc-관련-문제)
-3. [변환 문제](#변환-문제)
-4. [이미지 문제](#이미지-문제)
-5. [PDF 관련 문제](#pdf-관련-문제)
-6. [타이포그래피 관련 문제](#타이포그래피-관련-문제)
-7. [폰트 서브세팅 관련 문제](#폰트-서브세팅-관련-문제)
-8. [성능 문제](#성능-문제)
-9. [기타 문제](#기타-문제)
+2. [Windows 관련 문제](#windows-관련-문제)
+3. [Pandoc 관련 문제](#pandoc-관련-문제)
+4. [변환 문제](#변환-문제)
+5. [이미지 문제](#이미지-문제)
+6. [PDF 관련 문제](#pdf-관련-문제)
+7. [타이포그래피 관련 문제](#타이포그래피-관련-문제)
+8. [폰트 서브세팅 관련 문제](#폰트-서브세팅-관련-문제)
+9. [성능 문제](#성능-문제)
+10. [기타 문제](#기타-문제)
 
 ---
 
@@ -100,6 +101,135 @@ error TS2307: Cannot find module 'fs'
 ```bash
 npm install --save-dev @types/node
 ```
+
+---
+
+## Windows 관련 문제
+
+### 문제: PowerShell 실행 정책 오류 (매우 흔함)
+
+**증상**:
+```powershell
+npx : File C:\Program Files\nodejs\npx.ps1 cannot be loaded because running scripts is disabled on this system.
+For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
+At line:1 char:1
++ npx markdown-to-document-cli interactive
++ ~~~
+    + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+```
+
+**원인**:
+- Windows PowerShell의 기본 실행 정책이 스크립트 실행을 차단
+- 보안 설정으로 인해 `.ps1` 스크립트(Node.js의 `npx.ps1`, `npm.ps1` 등) 실행 불가
+- Windows의 기본 보안 정책
+
+**해결 방법**:
+
+#### **방법 1: CMD 사용 (가장 빠르고 쉬움, 강력 권장 ⭐)**
+
+PowerShell 대신 **명령 프롬프트(CMD)**를 사용하면 실행 정책 문제가 전혀 발생하지 않습니다:
+
+**CMD 실행 방법**:
+1. `Win + R` 키 누르기
+2. `cmd` 입력 후 Enter
+3. 또는 시작 메뉴에서 "명령 프롬프트" 검색
+
+```cmd
+# CMD에서 실행
+npx markdown-to-document-cli interactive
+
+# 또는 전역 설치 후
+m2d interactive
+
+# 파일 변환
+npx markdown-to-document-cli document.md
+```
+
+**장점**:
+- ✅ 설정 변경 불필요
+- ✅ 관리자 권한 불필요
+- ✅ 즉시 사용 가능
+- ✅ 모든 기능 정상 작동
+
+#### **방법 2: 실행 정책 변경 (영구적 해결)**
+
+PowerShell을 계속 사용하고 싶다면 실행 정책을 변경하세요:
+
+**단계**:
+1. PowerShell을 **관리자 권한**으로 실행
+   - 시작 메뉴에서 "PowerShell" 검색
+   - 우클릭 → "관리자 권한으로 실행"
+
+2. 다음 명령어 실행:
+```powershell
+# 현재 사용자에 대해 실행 정책 변경
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# 확인 메시지가 나오면 'Y' 입력
+```
+
+3. 일반 PowerShell 창을 닫고 새로 열기
+
+4. 다시 시도:
+```powershell
+npx markdown-to-document-cli interactive
+```
+
+**설명**:
+- `RemoteSigned`: 로컬 스크립트는 실행 허용, 다운로드한 스크립트는 서명 필요
+- `CurrentUser`: 현재 사용자에게만 적용 (시스템 전체 변경 없음)
+
+#### **방법 3: 일회성 우회 (임시 해결)**
+
+관리자 권한 없이 현재 PowerShell 세션에서만 허용:
+
+```powershell
+# 현재 세션에서만 실행 정책 우회
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+
+# 이제 npx 실행 가능
+npx markdown-to-document-cli interactive
+```
+
+**주의**: PowerShell 창을 닫으면 다시 원래대로 돌아갑니다.
+
+#### **방법 4: 직접 Node 실행**
+
+실행 정책을 완전히 우회:
+
+```powershell
+# npx 대신 node로 직접 실행
+node "C:\Users\YourName\AppData\Roaming\npm\node_modules\markdown-to-document-cli\dist\cli.js" interactive
+```
+
+---
+
+### 문제: Windows 경로 인식 오류
+
+**증상**:
+```
+❌ 파일을 찾을 수 없습니다: C:\Users\username\document.md
+```
+
+**원인**:
+- Windows 경로 구분자(`\`)와 Unix 경로 구분자(`/`) 혼용
+- 공백이 포함된 경로
+
+**해결 방법**:
+
+1. **드래그 앤 드롭 사용** (가장 쉬움):
+   - 파일 탐색기에서 파일을 CMD/PowerShell 창으로 드래그
+
+2. **따옴표 사용**:
+   ```cmd
+   m2d "C:\Users\John Doe\Documents\file.md"
+   ```
+
+3. **경로 복사**:
+   - 파일 탐색기에서 파일 선택
+   - `Shift + 우클릭` → "경로 복사"
+   - CMD/PowerShell에 붙여넣기
 
 ---
 

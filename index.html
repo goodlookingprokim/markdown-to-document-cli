@@ -538,6 +538,83 @@ m2d interactive</pre>
             </div>
         </section>
 
+        <!-- TROUBLESHOOTING: WINDOWS POWERSHELL -->
+        <section id="troubleshooting-windows"
+            style="background: linear-gradient(135deg, #fff0f0 0%, #ffe6e6 100%); padding: 60px 40px; border: var(--border); box-shadow: var(--shadow); margin-bottom: 80px;">
+            <h2 class="section-title" style="margin-bottom: 40px;">🪟 Windows 사용자: 실행이 안 돼요!</h2>
+
+            <div class="feynman-card" style="background: #fff; margin-bottom: 40px;">
+                <h3>🚨 Windows에서 가장 흔한 오류</h3>
+                <p style="font-size: 1.1rem; line-height: 1.8;">
+                    Windows PowerShell에서 <code>npx</code> 또는 <code>m2d</code>를 실행하면 이런 오류가 나타날 수 있습니다:<br><br>
+
+                    <span
+                        style="background: #ffebee; padding: 12px 20px; border-radius: 8px; display: block; margin: 15px 0; font-family: monospace; font-size: 0.9rem;">
+                        ❌
+                        <code>npx : File C:\Program Files\nodejs\npx.ps1 cannot be loaded because running scripts is disabled on this system.</code>
+                    </span>
+
+                    이것은 Windows PowerShell의 <strong>보안 정책</strong> 때문입니다. 걱정 마세요! 아래 방법으로 쉽게 해결됩니다.
+                </p>
+            </div>
+
+            <div class="grid-2" style="margin-bottom: 40px;">
+                <div class="grid-card" style="background: var(--accent-blue); color: #fff; border: var(--border);">
+                    <span class="badge" style="background: #fff; color: #000;">가장 쉬움 ⭐</span>
+                    <h3>해결 방법 1: CMD 사용</h3>
+                    <p><strong>PowerShell 대신 CMD를 사용하세요!</strong> 설정 변경 없이 바로 작동합니다.</p>
+                    <div class="code-wrap">
+                        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                        <div class="code-box" style="background: #000;">
+                            <pre style="color: #fff;"># Win + R 키를 누르고 'cmd' 입력
+# 또는 시작 메뉴에서 "명령 프롬프트" 검색
+
+npx markdown-to-document-cli interactive</pre>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.95rem;">
+                        ✅ 설정 변경 불필요<br>
+                        ✅ 관리자 권한 불필요<br>
+                        ✅ 모든 기능 정상 작동
+                    </p>
+                </div>
+
+                <div class="grid-card" style="background: var(--accent-lime); border: var(--border);">
+                    <span class="badge" style="background: #000; color: #fff;">영구적 해결</span>
+                    <h3>해결 방법 2: 실행 정책 변경</h3>
+                    <p><strong>PowerShell을 계속 사용하고 싶다면</strong> 실행 정책을 변경하세요.</p>
+                    <div class="code-wrap">
+                        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                        <div class="code-box">
+                            <pre># PowerShell을 관리자 권한으로 실행 후
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# 확인 메시지가 나오면 'Y' 입력</pre>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.9rem; color: #333;">
+                        ⚠️ PowerShell 창을 닫고 새로 열어야 적용됩니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="step-block" style="background: #e8f5e9; border: var(--border);">
+                <span class="step-num">💡</span>
+                <h3>일회성 우회 (임시 해결)</h3>
+                <p>관리자 권한 없이 현재 PowerShell 세션에서만 허용:</p>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box">
+                        <pre>Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+npx markdown-to-document-cli interactive</pre>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; color: #666;">
+                    주의: PowerShell 창을 닫으면 다시 원래대로 돌아갑니다.
+                </p>
+            </div>
+        </section>
+
         <!-- TROUBLESHOOTING: PDF ENGINE -->
         <section id="troubleshooting"
             style="background: linear-gradient(135deg, #fff5e6 0%, #ffe6f0 100%); padding: 60px 40px; border: var(--border); box-shadow: var(--shadow); margin-bottom: 180px;">

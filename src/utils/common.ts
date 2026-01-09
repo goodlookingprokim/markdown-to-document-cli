@@ -75,10 +75,5 @@ export class Logger {
     }
 }
 
-export function getTempDir(): string {
-    const tempDir = (process.env.TMPDIR || '/tmp') + '/markdown-to-document';
-    if (!import('fs').then(fs => fs.existsSync(tempDir))) {
-        import('fs').then(fs => fs.mkdirSync(tempDir, { recursive: true }));
-    }
-    return tempDir;
-}
+// getTempDir moved to fileUtils.ts to avoid duplication
+// Import from fileUtils.ts instead: import { getTempDir } from './fileUtils.js';
