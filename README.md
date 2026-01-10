@@ -439,6 +439,9 @@ eval "$(/usr/libexec/path_helper)"
 # 또는 전체 TeX Live 설치
 brew install --cask mactex
 
+# Windows
+winget install MiKTeX.MiKTeX
+
 # Linux (Ubuntu/Debian)
 sudo apt-get install texlive-xetex texlive-fonts-recommended
 
@@ -446,7 +449,8 @@ sudo apt-get install texlive-xetex texlive-fonts-recommended
 sudo dnf install texlive-xetex
 ```
 
-⚠️ **중요**: 설치 후 터미널을 다시 시작하세요!
+⚠️ **중요**: 설치 후 터미널을 다시 시작하세요!  
+🪟 **Windows**: MiKTeX 설치 후 첫 실행 시 패키지 자동 설치를 허용하세요.
 
 #### 옵션 3: PDFLaTeX 설치
 

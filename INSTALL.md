@@ -100,10 +100,46 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 자세한 내용은 [TroubleShooting.md](./TroubleShooting.md#windows-관련-문제)를 참조하세요.
 
-### WeasyPrint (PDF 생성, 선택사항)
+### PDF 엔진 설치 (선택사항)
+
+PDF 변환을 위해서는 최소 1개의 PDF 엔진이 필요합니다.
+
+#### WeasyPrint (권장)
+
+가장 쉽고 빠른 방법입니다:
 
 ```bash
 pip install weasyprint
+```
+
+💡 Python이 없다면 [python.org](https://www.python.org/downloads/)에서 먼저 설치하세요.
+
+#### XeLaTeX (한글 최적화)
+
+전문 출판 수준의 품질을 원한다면:
+
+```bash
+# macOS
+brew install --cask basictex
+
+# Windows
+winget install MiKTeX.MiKTeX
+
+# Linux (Ubuntu/Debian)
+sudo apt-get install texlive-xetex texlive-fonts-recommended
+```
+
+⚠️ 설치 후 터미널을 다시 시작하세요.  
+🪟 **Windows**: MiKTeX 설치 후 첫 실행 시 패키지 자동 설치를 허용하세요.
+
+#### 설치 확인
+
+```bash
+# WeasyPrint 확인
+weasyprint --version
+
+# XeLaTeX 확인
+xelatex --version
 ```
 
 ## 문제 해결
