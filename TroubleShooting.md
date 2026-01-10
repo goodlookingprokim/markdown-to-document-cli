@@ -827,36 +827,65 @@ m2d document.md --pdf-engine xelatex
 m2d document.md --pdf-engine pdflatex
 ```
 
-### 문제: Windows MiKTeX 패키지 설치 대화상자 (unicode-math.sty)
+### 문제: Windows MiKTeX 패키지 설치 대화상자 (unicode-math.sty, special.map 등)
 
 **증상**:
-Windows에서 PDF 변환 시 다음과 같은 패키지 설치 대화상자가 반복적으로 나타남:
+Windows에서 PDF 변환 시 다음과 같은 패키지 설치 대화상자가 **반복적으로** 나타남:
 ```
 This required file could not be found:
-  unicode-math.sty
+  unicode-math.sty (또는 special.map, fontspec.sty 등)
 
 The file is a part of this package:
-  unicode-math
+  unicode-math (또는 fontname, fontspec 등)
 ```
+
+> **⚠️ 중요**: 대화상자가 계속 나타나는 것은 정상입니다. XeLaTeX는 10개 이상의 패키지가 필요하므로 각각에 대해 대화상자가 나타납니다.
 
 **원인**:
 - MiKTeX가 필요한 LaTeX 패키지를 자동으로 다운로드하려고 시도
-- `unicode-math`, `fontspec`, `xetex` 등의 패키지가 누락됨
+- `unicode-math`, `fontname`, `fontspec`, `xetex` 등 10개 이상의 패키지가 누락됨
 - XeLaTeX 사용 시 한글 폰트 처리를 위해 필요한 패키지들
+
+**🚀 빠른 해결 (30초)**:
+```
+1. 현재 대화상자 "Cancel" 클릭
+2. Windows 시작 메뉴 → "MiKTeX Console" 실행
+3. Settings → General → "Install missing packages on-the-fly" → Always
+4. 다시 PDF 변환 실행 → 자동으로 모든 패키지 설치됨
+```
 
 **해결 방법**:
 
-#### 옵션 1: 패키지 자동 설치 허용 (권장)
+#### 옵션 1: 자동 설치 활성화 (가장 권장) ⭐
 
-1. **대화상자에서 "Install" 클릭**
-   - MiKTeX가 자동으로 필요한 패키지를 다운로드하고 설치합니다
-   - 여러 패키지가 필요할 수 있으므로 여러 번 "Install"을 클릭해야 할 수 있습니다
+**대화상자가 계속 나타나는 이유**:
+- XeLaTeX는 `unicode-math`, `fontname`, `fontspec`, `xetex` 등 10개 이상의 패키지가 필요합니다
+- 각 패키지마다 대화상자가 나타나므로 매우 번거롭습니다
 
-2. **MiKTeX 설정에서 자동 설치 활성화**:
-   - MiKTeX Console 실행
-   - Settings → General
-   - "Install missing packages on-the-fly" → **Yes** 선택
-   - 이후 패키지가 자동으로 설치됩니다
+**해결 방법 - 자동 설치 활성화**:
+
+1. **현재 대화상자는 "Cancel" 클릭** (일단 중단)
+
+2. **MiKTeX Console 실행**:
+   - Windows 시작 메뉴에서 "MiKTeX Console" 검색 및 실행
+
+3. **자동 설치 설정**:
+   ```
+   Settings → General → "Install missing packages on-the-fly"
+   → Always (또는 Yes) 선택
+   → OK 클릭
+   ```
+
+4. **다시 PDF 변환 실행**:
+   ```bash
+   m2d document.md --format pdf
+   ```
+   - 이제 대화상자 없이 자동으로 모든 패키지가 설치됩니다
+
+**또는 수동으로 모든 패키지 설치** (대화상자가 계속 나타나는 경우):
+- 각 대화상자에서 "Install" 클릭
+- 필요한 패키지: `unicode-math`, `fontname`, `fontspec`, `xetex`, `lm-math`, `amsmath`, `geometry`, `hyperref` 등
+- 약 10-15개의 패키지 설치 후 완료됩니다
 
 #### 옵션 2: 수동으로 필요한 패키지 설치
 
