@@ -499,6 +499,37 @@ m2d document.md --pdf-engine pdflatex
 
 ---
 
+### ❌ 변환 실패: "require is not defined"
+
+**증상**:
+```
+✖ 변환 실패
+
+❌ 오류:
+   • require is not defined
+```
+
+**원인**:
+- v1.5.2 이하 버전의 ESM/CommonJS 호환성 문제
+
+**해결 방법**:
+
+최신 버전(v1.5.3 이상)으로 업데이트하세요:
+
+```bash
+# 캐시 클리어 후 최신 버전 실행
+npx clear-npx-cache
+npx markdown-to-document-cli@latest interactive
+
+# 또는 전역 설치 업데이트
+npm uninstall -g markdown-to-document-cli
+npm install -g markdown-to-document-cli
+```
+
+자세한 내용은 [TroubleShooting.md](./TroubleShooting.md#esm-모듈-오류)를 참조하세요.
+
+---
+
 ### Pandoc을 찾을 수 없음
 
 ```bash

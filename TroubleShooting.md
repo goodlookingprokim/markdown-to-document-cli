@@ -8,12 +8,13 @@
 2. [Windows 관련 문제](#windows-관련-문제)
 3. [Pandoc 관련 문제](#pandoc-관련-문제)
 4. [변환 문제](#변환-문제)
-5. [이미지 문제](#이미지-문제)
-6. [PDF 관련 문제](#pdf-관련-문제)
-7. [타이포그래피 관련 문제](#타이포그래피-관련-문제)
-8. [폰트 서브세팅 관련 문제](#폰트-서브세팅-관련-문제)
-9. [성능 문제](#성능-문제)
-10. [기타 문제](#기타-문제)
+5. [ESM 모듈 오류](#esm-모듈-오류)
+6. [이미지 문제](#이미지-문제)
+7. [PDF 관련 문제](#pdf-관련-문제)
+8. [타이포그래피 관련 문제](#타이포그래피-관련-문제)
+9. [폰트 서브세팅 관련 문제](#폰트-서브세팅-관련-문제)
+10. [성능 문제](#성능-문제)
+11. [기타 문제](#기타-문제)
 
 ---
 
@@ -528,6 +529,70 @@ m2d document.md
 <!-- 표준 마크다운 -->
 [링크](링크.md)
 ```
+
+---
+
+## ESM 모듈 오류
+
+### 문제: "require is not defined"
+
+**증상**:
+```
+✖ 변환 실패
+
+❌ 오류:
+   • require is not defined
+```
+
+또는:
+```
+[INFO] Step 4/6: Assemble
+✖ 변환 실패
+❌ 오류: require is not defined in ES module scope
+```
+
+**원인**:
+- v1.5.2 이하 버전에서 발생하는 ESM/CommonJS 호환성 문제
+- `fileUtils.ts`에서 CommonJS의 `require('os')`를 사용하여 발생
+- Node.js의 ESM 모듈 환경에서는 `require` 함수를 사용할 수 없음
+
+**해결 방법**:
+
+**방법 1: 최신 버전으로 업데이트 (권장)**
+
+v1.5.3 이상에서 수정되었습니다:
+
+```bash
+# 캐시 클리어 후 최신 버전 실행
+npx clear-npx-cache
+npx markdown-to-document-cli@latest interactive
+
+# 또는 전역 설치 업데이트
+npm uninstall -g markdown-to-document-cli
+npm install -g markdown-to-document-cli
+```
+
+**방법 2: 특정 버전 지정**
+
+```bash
+# v1.5.3 이상 사용
+npx markdown-to-document-cli@1.5.3 interactive
+```
+
+**확인 방법**:
+
+```bash
+# 설치된 버전 확인
+npm list -g markdown-to-document-cli
+
+# 또는 npx로 버전 확인
+npx markdown-to-document-cli@latest --version
+```
+
+**기술적 배경**:
+- Node.js의 `type: "module"` 설정으로 인해 ESM 모듈 시스템 사용
+- ESM에서는 `import` 구문만 사용 가능
+- v1.5.3에서 `require('os')`를 `import * as os from 'os'`로 변경하여 해결
 
 ---
 

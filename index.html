@@ -615,6 +615,77 @@ npx markdown-to-document-cli@latest interactive</pre>
             </div>
         </section>
 
+        <!-- TROUBLESHOOTING: ESM MODULE ERROR -->
+        <section id="troubleshooting-esm"
+            style="background: linear-gradient(135deg, #ffebee 0%, #fff3e0 100%); padding: 60px 40px; border: var(--border); box-shadow: var(--shadow); margin-bottom: 60px;">
+            <h2 class="section-title" style="margin-bottom: 40px;">🐛 문제 해결: "require is not defined" 오류</h2>
+
+            <div class="feynman-card" style="background: #fff; margin-bottom: 40px;">
+                <h3>🤔 왜 이런 오류가 나올까요?</h3>
+                <p style="font-size: 1.1rem; line-height: 1.8;">
+                    변환 중 다음과 같은 오류가 발생할 수 있습니다:<br><br>
+
+                    <span
+                        style="background: #ffebee; padding: 8px 16px; border-radius: 8px; display: inline-block; margin: 10px 0;">
+                        ❌ <code>require is not defined</code>
+                    </span><br><br>
+
+                    이는 <strong>v1.5.2 이하 버전</strong>에서 발생하는 ESM/CommonJS 호환성 문제입니다.
+                    Node.js의 ESM 모듈 환경에서는 <code>require</code> 함수를 사용할 수 없기 때문에 발생합니다.
+                </p>
+            </div>
+
+            <div class="grid-card" style="background: var(--accent-lime); border: var(--border); margin-bottom: 40px;">
+                <span class="badge" style="background: #000; color: #fff;">해결 방법 ⭐</span>
+                <h3>최신 버전으로 업데이트</h3>
+                <p><strong>v1.5.3 이상</strong>에서 수정되었습니다. 최신 버전을 사용하세요!</p>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box">
+                        <pre># 캐시 클리어 후 최신 버전 실행
+npx clear-npx-cache
+npx markdown-to-document-cli@latest interactive
+
+# 또는 전역 설치 업데이트
+npm uninstall -g markdown-to-document-cli
+npm install -g markdown-to-document-cli</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-block" style="background: #f0f8ff; border: var(--border);">
+                <span class="step-num">✓</span>
+                <h3>버전 확인하기</h3>
+                <p>현재 설치된 버전을 확인하세요:</p>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box">
+                        <pre># 전역 설치 버전 확인
+npm list -g markdown-to-document-cli
+
+# npx 버전 확인
+npx markdown-to-document-cli@latest --version</pre>
+                    </div>
+                </div>
+                <p style="margin-top: 20px;">
+                    <strong>v1.5.3</strong> 이상이면 문제가 해결됩니다! 🎉
+                </p>
+            </div>
+
+            <div
+                style="margin-top: 40px; padding: 30px; background: #fff; border: var(--border); box-shadow: 6px 6px 0px #000;">
+                <h4 style="font-size: 1.3rem; margin-bottom: 15px;">📚 더 자세한 기술 정보가 필요하신가요?</h4>
+                <p style="margin-bottom: 20px;">
+                    ESM 모듈 시스템과 CommonJS 호환성에 대한 자세한 설명을 확인하세요.
+                </p>
+                <a href="https://github.com/goodlookingprokim/markdown-to-document-cli/blob/main/TroubleShooting.md#esm-모듈-오류"
+                    target="_blank" class="sticky-nav-link"
+                    style="display: inline-block; background: var(--accent-cyan); text-decoration: none;">
+                    상세 문제 해결 가이드 보기 →
+                </a>
+            </div>
+        </section>
+
         <!-- TROUBLESHOOTING: PDF ENGINE -->
         <section id="troubleshooting"
             style="background: linear-gradient(135deg, #fff5e6 0%, #ffe6f0 100%); padding: 60px 40px; border: var(--border); box-shadow: var(--shadow); margin-bottom: 180px;">
