@@ -22,11 +22,14 @@ export interface PathValidationResult {
 
 export class PathValidator {
     /**
-     * Detect if a path is a Windows absolute path
+     * Detect if a path is a Windows absolute path (drive letter or UNC)
      */
     private static isWindowsPath(inputPath: string): boolean {
         // Check for Windows drive letter patterns: C:\, D:\, etc.
-        return /^[a-zA-Z]:[\\\\]/.test(inputPath);
+        const hasDriveLetter = /^[a-zA-Z]:[\\\\]/.test(inputPath);
+        // Check for UNC paths: \\server\share or //server/share
+        const isUNCPath = /^[\\\\]{2}[^\\\\]+[\\\\][^\\\\]+/.test(inputPath) || /^\/\/[^\/]+\/[^\/]+/.test(inputPath);
+        return hasDriveLetter || isUNCPath;
     }
 
     /**
@@ -56,9 +59,14 @@ export class PathValidator {
         const isWindowsPath = this.isWindowsPath(cleaned);
 
         if (isWindowsPath) {
-            // Windows path: Keep backslashes as path separators
+            // Windows path (drive letter or UNC): Keep backslashes as path separators
             // Only handle escaped spaces in Windows paths
             cleaned = cleaned.replace(/\\ /g, ' ');
+
+            // Convert forward slashes to backslashes for UNC paths like //Mac/Home/file.md
+            if (/^\/\/[^\/]+\/[^\/]+/.test(cleaned)) {
+                cleaned = cleaned.replace(/\//g, '\\');
+            }
 
             // Normalize Windows path separators (handles mixed slashes)
             cleaned = path.normalize(cleaned);
@@ -76,7 +84,9 @@ export class PathValidator {
         }
 
         // Resolve to absolute path if relative
-        if (!path.isAbsolute(cleaned)) {
+        // Note: UNC paths (\\server\share) are absolute but path.isAbsolute() may not recognize them on non-Windows
+        const isUNCPath = /^[\\]{2}[^\\]+[\\][^\\]+/.test(cleaned);
+        if (!path.isAbsolute(cleaned) && !isUNCPath) {
             cleaned = path.resolve(process.cwd(), cleaned);
         }
 
@@ -182,7 +192,8 @@ export class PathValidator {
         const isWindows = process.platform === 'win32';
         if (isWindows && !this.isWindowsPath(invalidPath) && invalidPath.includes('\\')) {
             suggestions.push('⚠️  경로 형식을 확인하세요');
-            suggestions.push('Windows: C:\\Users\\username\\file.md');
+            suggestions.push('Windows 로컬: C:\\Users\\username\\file.md');
+            suggestions.push('Windows 네트워크: \\\\ServerName\\ShareName\\file.md');
             suggestions.push('파일을 드래그 앤 드롭하면 자동으로 올바른 경로가 입력됩니다');
         } else if (!isWindows && invalidPath.includes('\\')) {
             suggestions.push('⚠️  백슬래시(\\)가 포함되어 있습니다');
@@ -218,7 +229,8 @@ export class PathValidator {
         const isWindows = process.platform === 'win32';
         if (isWindows) {
             console.log(chalk.gray('   2. 절대 경로 입력: C:\\Users\\username\\document.md'));
-            console.log(chalk.gray('   3. 상대 경로 입력: .\\docs\\document.md'));
+            console.log(chalk.gray('   3. 네트워크 경로: \\\\Mac\\Home\\document.md'));
+            console.log(chalk.gray('   4. 상대 경로 입력: .\\docs\\document.md'));
         } else {
             console.log(chalk.gray('   2. 절대 경로 입력: /Users/username/document.md'));
             console.log(chalk.gray('   3. 상대 경로 입력: ./docs/document.md'));

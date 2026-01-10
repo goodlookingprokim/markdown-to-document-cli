@@ -360,7 +360,8 @@ program
         const isWindows = process.platform === 'win32';
         if (isWindows) {
             console.log(chalk.gray('   💡 파일을 드래그앤드롭하거나 경로를 입력하세요'));
-            console.log(chalk.gray('   예: C:\\Users\\username\\document.md\n'));
+            console.log(chalk.gray('   로컬: C:\\Users\\username\\document.md'));
+            console.log(chalk.gray('   네트워크: \\\\Mac\\Home\\document.md\n'));
         } else {
             console.log(chalk.gray('   💡 파일을 드래그앤드롭하거나 경로를 입력하세요'));
             console.log(chalk.gray('   예: /Users/username/document.md\n'));

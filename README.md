@@ -113,7 +113,12 @@ npm install markdown-to-document-cli
 # 파일을 터미널 창으로 드래그하면 경로가 자동 입력됩니다
 
 # 방법 2: 절대 경로
+# macOS/Linux
 m2d /Users/username/documents/my-document.md
+# Windows 로컬
+m2d C:\Users\username\documents\my-document.md
+# Windows 네트워크 공유 (UNC 경로)
+m2d \\Mac\Home\documents\my-document.md
 
 # 방법 3: 상대 경로
 m2d ./docs/document.md
