@@ -59,7 +59,7 @@ source ~/.zshrc
 
 4. 또는 npx 사용:
 ```bash
-npx markdown-to-document-cli document.md
+npx markdown-to-document-cli@latest document.md
 ```
 
 ### 문제: "Cannot find module 'xxx'"
@@ -113,7 +113,7 @@ npm install --save-dev @types/node
 npx : File C:\Program Files\nodejs\npx.ps1 cannot be loaded because running scripts is disabled on this system.
 For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
 At line:1 char:1
-+ npx markdown-to-document-cli interactive
++ npx markdown-to-document-cli@latest interactive
 + ~~~
     + CategoryInfo          : SecurityError: (:) [], PSSecurityException
     + FullyQualifiedErrorId : UnauthorizedAccess
@@ -137,13 +137,13 @@ PowerShell 대신 **명령 프롬프트(CMD)**를 사용하면 실행 정책 문
 
 ```cmd
 # CMD에서 실행
-npx markdown-to-document-cli interactive
+npx markdown-to-document-cli@latest interactive
 
 # 또는 전역 설치 후
 m2d interactive
 
 # 파일 변환
-npx markdown-to-document-cli document.md
+npx markdown-to-document-cli@latest document.md
 ```
 
 **장점**:
@@ -173,7 +173,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 4. 다시 시도:
 ```powershell
-npx markdown-to-document-cli interactive
+npx markdown-to-document-cli@latest interactive
 ```
 
 **설명**:
@@ -189,7 +189,7 @@ npx markdown-to-document-cli interactive
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 
 # 이제 npx 실행 가능
-npx markdown-to-document-cli interactive
+npx markdown-to-document-cli@latest interactive
 ```
 
 **주의**: PowerShell 창을 닫으면 다시 원래대로 돌아갑니다.
@@ -1083,7 +1083,7 @@ sudo npm install -g markdown-to-document-cli
 
 3. npx 사용 (권한 문제 회피):
 ```bash
-npx markdown-to-document-cli document.md
+npx markdown-to-document-cli@latest document.md
 ```
 
 ### 문제: 임시 파일 정리

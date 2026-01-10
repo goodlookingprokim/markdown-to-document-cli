@@ -11,7 +11,7 @@ Markdown to Document CLI는 마크다운 문서를 전문 출판 수준의 EPUB/
 설치 없이 바로 사용할 수 있습니다:
 
 ```bash
-npx markdown-to-document-cli document.md
+npx markdown-to-document-cli@latest document.md
 ```
 
 ### 방법 2: 전역 설치
@@ -39,7 +39,7 @@ npm install markdown-to-document-cli
 `npx`로 실행:
 
 ```bash
-npx markdown-to-document-cli document.md
+npx markdown-to-document-cli@latest document.md
 ```
 
 ## 필수 요구사항
@@ -133,7 +133,7 @@ CLI가 자동으로 다음을 처리합니다:
 ### 실행 방법
 
 ```bash
-npx markdown-to-document-cli interactive
+npx markdown-to-document-cli@latest interactive
 # 또는
 m2d i
 ```

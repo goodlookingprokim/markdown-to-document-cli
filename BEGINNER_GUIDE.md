@@ -624,7 +624,7 @@ npm view markdown-to-document-cli  # 정보가 보이나요? ✅
 
 **명령어**:
 ```bash
-npx markdown-to-document-cli --help
+npx markdown-to-document-cli@latest --help
 ```
 
 **출력 예시**:
@@ -660,7 +660,7 @@ echo "# 테스트 문서
 
 **변환 실행**:
 ```bash
-npx markdown-to-document-cli test.md
+npx markdown-to-document-cli@latest test.md
 ```
 
 **출력 예시**:
@@ -706,10 +706,10 @@ npx markdown-to-document-cli test.md
 
 ```bash
 # NPX 테스트
-npx markdown-to-document-cli --help  # 도움말이 보이나요? ✅
+npx markdown-to-document-cli@latest --help  # 도움말이 보이나요? ✅
 
 # 실제 변환
-npx markdown-to-document-cli test.md  # EPUB/PDF 파일이 생성되나요? ✅
+npx markdown-to-document-cli@latest test.md  # EPUB/PDF 파일이 생성되나요? ✅
 ```
 
 ---
@@ -821,8 +821,8 @@ npm view markdown-to-document-cli version  # 새 버전이 보이나요? ✅
    - npm view (배포 확인)
 
 ✅ 5단계: NPX 사용
-   - npx markdown-to-document-cli --help
-   - npx markdown-to-document-cli test.md
+   - npx markdown-to-document-cli@latest --help
+   - npx markdown-to-document-cli@latest test.md
    - 변환 결과 확인
 
 ✅ 6단계: 버전 업데이트

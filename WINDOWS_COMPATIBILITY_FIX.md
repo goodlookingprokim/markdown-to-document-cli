@@ -282,7 +282,7 @@ private findPdfEnginePath(engine: string): string {
 
 ```powershell
 # PowerShell에서 npx 실행 시도
-npx markdown-to-document-cli --version
+npx markdown-to-document-cli@latest --version
 ```
 
 **예상 오류**:
@@ -298,7 +298,7 @@ npx : File C:\Program Files\nodejs\npx.ps1 cannot be loaded because running scri
 cmd
 
 # npx 실행
-npx markdown-to-document-cli --version
+npx markdown-to-document-cli@latest --version
 ```
 
 **예상 결과**:
@@ -311,7 +311,7 @@ npx markdown-to-document-cli --version
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 # 일반 PowerShell에서 재시도
-npx markdown-to-document-cli --version
+npx markdown-to-document-cli@latest --version
 ```
 
 **예상 결과**:
@@ -321,7 +321,7 @@ npx markdown-to-document-cli --version
 **방법 3: 일회성 우회**
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-npx markdown-to-document-cli --version
+npx markdown-to-document-cli@latest --version
 ```
 
 **예상 결과**:

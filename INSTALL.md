@@ -89,7 +89,7 @@ npx : File C:\Program Files\nodejs\npx.ps1 cannot be loaded because running scri
 ```cmd
 # PowerShell 대신 CMD(명령 프롬프트) 사용
 # Win + R → cmd 입력
-npx markdown-to-document-cli interactive
+npx markdown-to-document-cli@latest interactive
 ```
 
 **옵션 2: 실행 정책 변경**

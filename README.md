@@ -139,7 +139,7 @@ m2d "/Users/username/My Documents/file.md"
 
 ```bash
 # 대화형 모드로 실행
-npx markdown-to-document-cli interactive
+npx markdown-to-document-cli@latest interactive
 # 또는
 m2d i
 ```
@@ -165,13 +165,13 @@ m2d i
 
 ```bash
 # 기본 변환 (권장: EPUB + PDF)
-npx markdown-to-document-cli document.md
+npx markdown-to-document-cli@latest document.md
 
 # PDF 변환
-npx markdown-to-document-cli document.md --format pdf
+npx markdown-to-document-cli@latest document.md --format pdf
 
 # EPUB + PDF 동시 변환
-npx markdown-to-document-cli document.md --format both
+npx markdown-to-document-cli@latest document.md --format both
 
 # 전역 설치 후 사용
 m2d document.md
@@ -532,7 +532,7 @@ PowerShell 대신 명령 프롬프트(CMD)를 사용하면 실행 정책 문제�
 
 ```cmd
 # CMD(명령 프롬프트) 실행 후
-npx markdown-to-document-cli interactive
+npx markdown-to-document-cli@latest interactive
 
 # 또는 전역 설치 후
 m2d interactive
@@ -551,7 +551,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 그 다음 일반 PowerShell에서 다시 시도:
 ```powershell
-npx markdown-to-document-cli interactive
+npx markdown-to-document-cli@latest interactive
 ```
 
 #### **옵션 3: 일회성 우회 (임시 해결)**
@@ -560,7 +560,7 @@ npx markdown-to-document-cli interactive
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-npx markdown-to-document-cli interactive
+npx markdown-to-document-cli@latest interactive
 ```
 
 **💡 권장**: Windows 사용자는 **CMD(명령 프롬프트)**를 사용하는 것이 가장 간단합니다.
