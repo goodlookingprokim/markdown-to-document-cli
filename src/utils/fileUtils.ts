@@ -4,6 +4,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import { glob } from 'glob';
 
 export function sanitizeFilename(filename: string): string {
@@ -83,7 +84,6 @@ export async function writeFileAsync(filePath: string, content: string): Promise
 export function getTempDir(): string {
     // Use Node.js os.tmpdir() for cross-platform compatibility
     // Works on Windows (C:\Users\...\AppData\Local\Temp), macOS (/var/folders/...), Linux (/tmp)
-    const os = require('os');
     const tempDir = path.join(os.tmpdir(), 'markdown-to-document');
     ensureDirectory(tempDir);
     return tempDir;
