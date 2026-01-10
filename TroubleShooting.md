@@ -655,6 +655,97 @@ npx markdown-to-document-cli@latest --version
 
 ## 이미지 문제
 
+### 문제: 이미지 형식 오류 (.shtml, HTML 파일)
+
+**증상**:
+```
+[WARNING] Could not convert image .../xxx.shtml: Cannot load file
+  Jpeg Invalid marker used
+  PNG Invalid PNG file, signature broken
+  ...
+  
+! LaTeX Error: Cannot determine size of graphic in .../xxx.shtml (no BoundingBox)
+```
+
+**원인**:
+- 마크다운 파일에 **HTML 페이지 URL**이 이미지로 참조됨
+- `.shtml`, `.html`, `.htm` 등 웹 페이지 파일을 이미지로 사용
+- Pandoc이 이를 다운로드하지만 이미지 형식이 아니어서 변환 실패
+
+**문제가 되는 마크다운 예시**:
+```markdown
+![이미지](https://example.com/page.shtml)
+![설명](http://site.com/document.html)
+```
+
+**해결 방법**:
+
+#### 옵션 1: 실제 이미지 URL로 교체 (권장)
+
+웹 페이지 대신 실제 이미지 파일 URL 사용:
+
+```markdown
+# ❌ 잘못된 예
+![로고](https://example.com/about.shtml)
+
+# ✅ 올바른 예
+![로고](https://example.com/images/logo.png)
+```
+
+#### 옵션 2: 이미지 다운로드 후 로컬 파일 사용
+
+1. 웹 페이지에서 실제 이미지 찾기
+2. 이미지 다운로드 (우클릭 → 이미지 저장)
+3. 로컬 경로로 참조:
+
+```markdown
+![로고](./images/logo.png)
+```
+
+#### 옵션 3: 잘못된 이미지 참조 제거
+
+이미지가 필수가 아니라면 해당 라인 삭제:
+
+```markdown
+# 이 줄을 삭제
+![이미지](https://example.com/page.shtml)
+```
+
+#### 옵션 4: 마크다운 파일 검사
+
+잘못된 이미지 참조 찾기:
+
+```bash
+# Windows (PowerShell)
+Select-String -Path "document.md" -Pattern "!\[.*\]\(.*\.shtml\)"
+Select-String -Path "document.md" -Pattern "!\[.*\]\(.*\.html\)"
+
+# macOS/Linux
+grep -n "!\[.*\](.*\.shtml)" document.md
+grep -n "!\[.*\](.*\.html)" document.md
+```
+
+**지원되는 이미지 형식**:
+```
+✅ PNG (.png)
+✅ JPEG (.jpg, .jpeg)
+✅ GIF (.gif)
+✅ SVG (.svg)
+✅ WebP (.webp)
+✅ BMP (.bmp)
+
+❌ HTML (.html, .htm, .shtml)
+❌ 텍스트 파일 (.txt, .md)
+❌ 문서 파일 (.pdf, .docx)
+```
+
+**참고**:
+- 이 오류는 **소스 마크다운 파일의 문제**입니다
+- 변환 도구가 아닌 **마크다운 파일을 수정**해야 합니다
+- 웹 페이지 스크린샷을 이미지로 저장하여 사용할 수 있습니다
+
+---
+
 ### 문제: "Image not found"
 
 **증상**:
