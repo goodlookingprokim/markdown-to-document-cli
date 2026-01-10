@@ -419,14 +419,43 @@ export class PandocService {
             if (options.marginRight) args.push('-V', `margin-right:${options.marginRight}`);
 
             // Korean font support for latex engines (xelatex is preferred)
-            args.push('-V', 'mainfont:Noto Sans KR');
-            args.push('-V', 'CJKmainfont:Noto Sans KR');
+            // Use platform-appropriate fonts with fallback
+            const koreanFont = this.getKoreanFontForLatex();
+            args.push('-V', `mainfont:${koreanFont}`);
+            args.push('-V', `CJKmainfont:${koreanFont}`);
         }
 
         // Standalone document
         args.push('--standalone');
 
         return args;
+    }
+
+    /**
+     * Get Korean font name for LaTeX engines based on platform
+     * Returns font name that is most likely to be available
+     */
+    private getKoreanFontForLatex(): string {
+        const platform = process.platform;
+
+        if (platform === 'win32') {
+            // Windows: Check for Noto Sans KR first, fallback to Malgun Gothic
+            const windir = process.env.WINDIR || 'C:\\Windows';
+            const notoPath = path.join(windir, 'Fonts', 'NotoSansKR-Regular.otf');
+
+            if (fs.existsSync(notoPath)) {
+                return 'Noto Sans KR';
+            }
+
+            // Fallback to Malgun Gothic (included in Windows by default)
+            return 'Malgun Gothic';
+        } else if (platform === 'darwin') {
+            // macOS: Noto Sans KR is usually available
+            return 'Noto Sans KR';
+        } else {
+            // Linux: Try Noto Sans CJK KR
+            return 'Noto Sans CJK KR';
+        }
     }
 
     /**

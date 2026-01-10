@@ -934,6 +934,97 @@ MiKTeX 대신 전체 TeX Live 설치:
 
 ---
 
+### 문제: MiKTeX 폰트 오류 "The font 'Noto Sans KR' cannot be found"
+
+**증상**:
+```
+! Package fontspec Error: The font "Noto Sans KR" cannot be found.
+xelatex: security risk: running with elevated privileges
+miktex-maketfm: major issue: So far, you have not checked for MiKTeX updates.
+Couldn't open `Noto Sans .cfg'
+```
+
+**원인**:
+- XeLaTeX가 시스템에 설치된 "Noto Sans KR" 폰트를 찾지 못함
+- MiKTeX가 관리자 권한으로 실행되어 보안 경고 발생
+- MiKTeX 업데이트가 필요함
+
+**해결 방법**:
+
+#### 옵션 1: WeasyPrint 사용 (가장 간단) ⭐
+
+XeLaTeX 대신 WeasyPrint를 사용하면 폰트 문제가 없습니다:
+
+```bash
+# Python 및 WeasyPrint 설치
+pip install weasyprint
+
+# WeasyPrint로 PDF 생성
+m2d document.md --pdf-engine weasyprint
+```
+
+**장점**:
+- 시스템 폰트 자동 인식
+- MiKTeX 패키지 관리 불필요
+- 보안 경고 없음
+- 한글 완벽 지원
+
+#### 옵션 2: Noto Sans KR 폰트 설치
+
+Windows에 Noto Sans KR 폰트가 없는 경우:
+
+1. **Google Fonts에서 다운로드**:
+   - https://fonts.google.com/noto/specimen/Noto+Sans+KR 방문
+   - "Download family" 클릭
+   - ZIP 파일 압축 해제
+
+2. **폰트 설치**:
+   - `.ttf` 파일들을 모두 선택
+   - 우클릭 → "설치" 또는 "모든 사용자용으로 설치"
+   - 컴퓨터 재시작
+
+3. **다시 변환 시도**:
+   ```bash
+   m2d document.md --format pdf
+   ```
+
+#### 옵션 3: MiKTeX 업데이트 및 권한 문제 해결
+
+1. **MiKTeX Console을 관리자 권한으로 실행**:
+   - Windows 시작 메뉴에서 "MiKTeX Console" 검색
+   - 우클릭 → "관리자 권한으로 실행"
+
+2. **업데이트 확인 및 설치**:
+   ```
+   Updates 탭 클릭
+   → "Check for updates" 클릭
+   → 업데이트 있으면 "Update now" 클릭
+   ```
+
+3. **자동 패키지 설치 활성화**:
+   ```
+   Settings → General
+   → "Install missing packages on-the-fly" → Always
+   ```
+
+4. **다시 변환 시도**
+
+#### 옵션 4: 기본 폰트 사용
+
+Noto Sans KR 대신 Windows 기본 폰트 사용:
+
+```bash
+# 폰트 지정 없이 변환 (기본 폰트 사용)
+m2d document.md --format pdf --pdf-engine xelatex
+```
+
+**참고**:
+- XeLaTeX는 시스템에 설치된 폰트만 사용 가능
+- WeasyPrint는 웹 폰트와 시스템 폰트 모두 사용 가능
+- 한글 문서는 WeasyPrint 사용을 권장
+
+---
+
 ### 문제: 한글 폰트 렌더링 오류
 
 **증상**:
