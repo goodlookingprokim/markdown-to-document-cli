@@ -445,6 +445,63 @@ m2d ./docs/document.md
 m2d /Users/username/docs/document.md
 ```
 
+---
+
+### 문제: Windows 네트워크 경로 오류 (v1.5.4+에서 해결됨)
+
+**증상**:
+```
+❌ 파일을 찾을 수 없습니다: \\Mac\Home\README.md
+```
+
+**원인**:
+- Windows에서 네트워크 공유 폴더의 파일 경로를 복사하면 UNC 경로 형식(`\\ServerName\ShareName\path`)으로 복사됨
+- v1.5.3 이하 버전에서는 UNC 경로를 인식하지 못함
+
+**해결 방법**:
+
+#### 옵션 1: 최신 버전으로 업데이트 (권장)
+
+v1.5.4 이상에서는 UNC 경로를 자동으로 인식합니다:
+
+```bash
+# 최신 버전으로 업데이트
+npm install -g markdown-to-document-cli@latest
+
+# 또는 npx로 최신 버전 사용
+npx markdown-to-document-cli@latest interactive
+```
+
+#### 옵션 2: 로컬 드라이브에 복사
+
+네트워크 파일을 로컬 드라이브로 복사:
+
+```cmd
+# Windows
+copy \\Mac\Home\README.md C:\Users\username\Documents\
+m2d C:\Users\username\Documents\README.md
+```
+
+#### 옵션 3: 네트워크 드라이브 매핑
+
+네트워크 공유를 드라이브 문자로 매핑:
+
+```cmd
+# Windows에서 네트워크 드라이브 매핑
+net use Z: \\Mac\Home
+
+# 매핑된 드라이브 사용
+m2d Z:\README.md
+```
+
+**지원되는 UNC 경로 형식 (v1.5.4+)**:
+```
+✅ \\Mac\Home\document.md
+✅ \\ServerName\ShareName\folder\file.md
+✅ \\192.168.1.100\Documents\test.md
+✅ //Mac/Home/document.md (자동으로 백슬래시로 변환됨)
+```
+
 ### 문제: "검증 오류: N개 발견"
 
 **증상**:
@@ -769,6 +826,84 @@ m2d document.md --pdf-engine xelatex
 # PDFLaTeX 사용
 m2d document.md --pdf-engine pdflatex
 ```
+
+### 문제: Windows MiKTeX 패키지 설치 대화상자 (unicode-math.sty)
+
+**증상**:
+Windows에서 PDF 변환 시 다음과 같은 패키지 설치 대화상자가 반복적으로 나타남:
+```
+This required file could not be found:
+  unicode-math.sty
+
+The file is a part of this package:
+  unicode-math
+```
+
+**원인**:
+- MiKTeX가 필요한 LaTeX 패키지를 자동으로 다운로드하려고 시도
+- `unicode-math`, `fontspec`, `xetex` 등의 패키지가 누락됨
+- XeLaTeX 사용 시 한글 폰트 처리를 위해 필요한 패키지들
+
+**해결 방법**:
+
+#### 옵션 1: 패키지 자동 설치 허용 (권장)
+
+1. **대화상자에서 "Install" 클릭**
+   - MiKTeX가 자동으로 필요한 패키지를 다운로드하고 설치합니다
+   - 여러 패키지가 필요할 수 있으므로 여러 번 "Install"을 클릭해야 할 수 있습니다
+
+2. **MiKTeX 설정에서 자동 설치 활성화**:
+   - MiKTeX Console 실행
+   - Settings → General
+   - "Install missing packages on-the-fly" → **Yes** 선택
+   - 이후 패키지가 자동으로 설치됩니다
+
+#### 옵션 2: 수동으로 필요한 패키지 설치
+
+MiKTeX Console에서 직접 설치:
+```
+1. MiKTeX Console 실행
+2. Packages 탭 클릭
+3. 검색창에서 다음 패키지 검색 및 설치:
+   - unicode-math
+   - fontspec
+   - xetex
+   - lm-math
+   - amsmath
+```
+
+#### 옵션 3: WeasyPrint 사용 (LaTeX 불필요)
+
+MiKTeX 패키지 문제를 피하려면 WeasyPrint를 사용하세요:
+
+```bash
+# Python 및 WeasyPrint 설치
+pip install weasyprint
+
+# WeasyPrint로 PDF 생성
+m2d document.md --pdf-engine weasyprint
+```
+
+**장점**:
+- LaTeX 패키지 관리 불필요
+- 설치가 간단함
+- 한글 지원 우수
+
+#### 옵션 4: 전체 TeX Live 설치
+
+MiKTeX 대신 전체 TeX Live 설치:
+```
+1. https://www.tug.org/texlive/ 방문
+2. install-tl-windows.exe 다운로드
+3. 전체 설치 (약 5GB, 모든 패키지 포함)
+```
+
+**참고**:
+- 첫 PDF 변환 시 여러 패키지 설치 대화상자가 나타날 수 있습니다
+- 모두 "Install"을 클릭하면 이후에는 나타나지 않습니다
+- 자동 설치를 활성화하면 사용자 개입 없이 진행됩니다
+
+---
 
 ### 문제: 한글 폰트 렌더링 오류
 

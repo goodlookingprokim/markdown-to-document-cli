@@ -5,6 +5,30 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.4] - 2026-01-11
+
+### Added
+- **Windows UNC 네트워크 경로 지원**:
+  - Windows 네트워크 공유 경로 인식: `\\Mac\Home\file.md`, `\\Server\Share\path`
+  - 포워드 슬래시 UNC 경로 자동 변환: `//Mac/Home` → `\\Mac\Home`
+  - 따옴표로 감싸진 UNC 경로 처리
+  - UNC 경로가 상대 경로로 잘못 인식되는 문제 수정
+
+### Improved
+- **경로 검증 강화**:
+  - `PathValidator.isWindowsPath()`: UNC 경로 패턴 감지 추가
+  - `PathValidator.normalizePath()`: UNC 경로 정규화 로직 개선
+  - 절대 경로 판단 시 UNC 경로 고려
+  
+### Changed
+- **문서 업데이트**:
+  - README.md: Windows UNC 경로 예제 추가
+  - Interactive 모드: Windows 사용자를 위한 네트워크 경로 가이드 추가
+  - 에러 메시지: UNC 경로 형식 안내 추가
+
+### Fixed
+- Windows에서 네트워크 드라이브 경로 복사 시 발생하던 "파일을 찾을 수 없습니다" 오류 해결
+
 ## [1.5.0] - 2026-01-08
 
 ### Refactored
