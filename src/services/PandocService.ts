@@ -211,16 +211,57 @@ export class PandocService {
         });
 
         try {
-            await execFileAsync(this.pandocPath, args, {
+            // Set timeout to prevent hanging (default: 120 seconds for large documents)
+            const timeout = 120000; // 2 minutes
+
+            const conversionPromise = execFileAsync(this.pandocPath, args, {
                 maxBuffer: 50 * 1024 * 1024,
                 cwd: getTempDir(),
                 env: { ...process.env, TMPDIR: getTempDir() },
+                timeout: timeout,
             });
+
+            // Add timeout wrapper with better error message
+            const timeoutPromise = new Promise<never>((_, reject) => {
+                setTimeout(() => {
+                    reject(new Error(
+                        'PDF 변환 시간 초과 (2분).\n' +
+                        '가능한 원인:\n' +
+                        '  1. MiKTeX 패키지 설치 대화상자가 표시되었을 수 있습니다\n' +
+                        '     → MiKTeX Console에서 "Install missing packages on-the-fly"를 "Always"로 설정하세요\n' +
+                        '  2. 문서가 너무 큽니다\n' +
+                        '     → 문서를 작은 단위로 나누어 변환하세요\n' +
+                        '  3. PDF 엔진 문제\n' +
+                        '     → --pdf-engine=weasyprint 옵션을 사용해보세요'
+                    ));
+                }, timeout);
+            });
+
+            await Promise.race([conversionPromise, timeoutPromise]);
             return { success: true };
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+
+            // Provide helpful error messages for common issues
+            let enhancedError = errorMessage;
+
+            if (errorMessage.includes('ETIMEDOUT') || errorMessage.includes('timeout')) {
+                enhancedError =
+                    'PDF 변환 시간 초과.\n' +
+                    'Windows에서 MiKTeX를 사용하는 경우:\n' +
+                    '  1. MiKTeX Console 실행\n' +
+                    '  2. Settings → General → "Install missing packages on-the-fly" → Always\n' +
+                    '  3. 다시 시도\n\n' +
+                    '또는 WeasyPrint 사용: m2d document.md --pdf-engine weasyprint';
+            } else if (errorMessage.includes('killed')) {
+                enhancedError =
+                    'PDF 변환 프로세스가 강제 종료되었습니다.\n' +
+                    '메모리 부족이거나 시스템 리소스 문제일 수 있습니다.';
+            }
+
             return {
                 success: false,
-                error: error instanceof Error ? error.message : String(error),
+                error: enhancedError,
             };
         }
     }

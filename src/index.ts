@@ -154,6 +154,7 @@ export class MarkdownToDocument {
             // Step 7: Convert to PDF
             if (options.format === 'pdf' || options.format === 'both') {
                 Logger.info('Step 5/6: Convert (PDF)');
+                console.log('   💡 PDF 변환은 최대 2분 소요될 수 있습니다. 잠시만 기다려주세요...');
                 const pdfResult = await this.pandocService.toPdf({
                     inputPath: tempMarkdownPath,
                     outputPath: pdfPath,

@@ -5,6 +5,25 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.6] - 2026-01-11
+
+### Fixed
+- **PDF 변환 멈춤 문제 해결**:
+  - PDF 변환에 2분 타임아웃 추가하여 무한 대기 방지
+  - MiKTeX 패키지 설치 대화상자로 인한 프로세스 차단 감지
+  - 타임아웃 발생 시 명확한 오류 메시지와 해결 방법 제공
+
+### Added
+- **PDF 변환 진행 상황 표시**:
+  - "PDF 변환은 최대 2분 소요될 수 있습니다" 안내 메시지 추가
+  - 사용자가 프로세스 상태를 이해할 수 있도록 개선
+
+### Improved
+- **오류 메시지 개선**:
+  - 타임아웃 오류 시 MiKTeX 자동 설치 설정 방법 안내
+  - WeasyPrint 대안 제시
+  - 프로세스 강제 종료 시 메모리 부족 가능성 안내
+
 ## [1.5.5] - 2026-01-11
 
 ### Fixed

@@ -827,6 +827,86 @@ m2d document.md --pdf-engine xelatex
 m2d document.md --pdf-engine pdflatex
 ```
 
+### 문제: PDF 변환이 멈추거나 시간 초과
+
+**증상**:
+```
+[INFO] Step 5/6: Convert (PDF)
+💡 PDF 변환은 최대 2분 소요될 수 있습니다. 잠시만 기다려주세요...
+(프로세스가 멈춤 또는 2분 후 시간 초과 오류)
+```
+
+또는:
+```
+❌ PDF 변환 실패: PDF 변환 시간 초과 (2분).
+```
+
+**원인**:
+- **Windows MiKTeX**: 패키지 설치 대화상자가 백그라운드에서 표시되어 프로세스 차단
+- **대용량 문서**: 변환에 2분 이상 소요
+- **PDF 엔진 문제**: XeLaTeX/PDFLaTeX 실행 중 오류로 입력 대기
+
+**해결 방법**:
+
+#### 옵션 1: MiKTeX 자동 설치 활성화 (Windows 사용자) ⭐
+
+**문제**: MiKTeX가 패키지 설치 대화상자를 표시하지만 CLI에서는 응답할 수 없음
+
+**해결**:
+```
+1. 현재 프로세스 중단 (Ctrl+C)
+2. MiKTeX Console 실행 (관리자 권한)
+3. Settings → General → "Install missing packages on-the-fly" → Always
+4. 다시 변환 실행
+```
+
+이제 패키지가 자동으로 설치되어 대화상자가 나타나지 않습니다.
+
+#### 옵션 2: WeasyPrint 사용 (가장 간단)
+
+MiKTeX 문제를 완전히 우회:
+
+```bash
+# WeasyPrint 설치
+pip install weasyprint
+
+# WeasyPrint로 PDF 생성
+m2d document.md --pdf-engine weasyprint
+```
+
+**장점**:
+- 패키지 관리 불필요
+- 빠른 변환 속도
+- 대화상자 없음
+
+#### 옵션 3: 대용량 문서 분할
+
+문서가 너무 큰 경우:
+
+```bash
+# 문서를 여러 파일로 분할
+# 각 파일을 개별적으로 변환
+m2d chapter1.md --format pdf
+m2d chapter2.md --format pdf
+```
+
+#### 옵션 4: 다른 PDF 엔진 시도
+
+```bash
+# PDFLaTeX 사용
+m2d document.md --pdf-engine pdflatex
+
+# 또는 자동 선택
+m2d document.md --pdf-engine auto
+```
+
+**참고**:
+- v1.5.6부터 PDF 변환에 2분 타임아웃 적용
+- 타임아웃 발생 시 명확한 오류 메시지와 해결 방법 제공
+- EPUB 변환은 정상 작동하므로 PDF만 문제가 있는 경우 위 방법 시도
+
+---
+
 ### 문제: Windows MiKTeX 패키지 설치 대화상자 (unicode-math.sty, special.map 등)
 
 **증상**:
