@@ -5,6 +5,25 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.5] - 2026-01-11
+
+### Fixed
+- **Windows 폰트 오류 해결**:
+  - XeLaTeX에서 "The font 'Noto Sans KR' cannot be found" 오류 수정
+  - Windows에서 Noto Sans KR이 없을 때 자동으로 Malgun Gothic(맑은 고딕)으로 폴백
+  - `getKoreanFontForLatex()` 메서드 추가로 플랫폼별 폰트 자동 감지
+
+### Added
+- **MiKTeX 폰트 오류 문제 해결 가이드**:
+  - TroubleShooting.md에 상세한 해결 방법 추가
+  - 4가지 해결 옵션 제공: WeasyPrint 사용, 폰트 설치, MiKTeX 업데이트, 기본 폰트 사용
+  - MiKTeX 보안 경고 및 업데이트 관련 안내 추가
+
+### Improved
+- **Windows 환경 안정성 향상**:
+  - 폰트 파일 존재 여부 자동 확인
+  - Windows 기본 폰트(Malgun Gothic) 우선 사용으로 설치 없이 바로 사용 가능
+
 ## [1.5.4] - 2026-01-11
 
 ### Added
