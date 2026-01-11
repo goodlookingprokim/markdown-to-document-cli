@@ -83,51 +83,95 @@
 - **임시 디렉토리 관리**: 안전한 임시 파일 처리
 - **버전 호환성**: Pandoc 2.x 및 3.x 지원
 
-## 🪟 Windows 사용자 빠른 설정
+## 🪟 Windows 완전 초보자 가이드
 
-> **Windows에서 처음 사용하시나요?** 아래 3단계를 먼저 완료하세요!
+> **🎯 목표**: 컴퓨터에 아무것도 없는 상태에서 전자책을 만들 수 있는 환경 구축
 
-### 1단계: Node.js 설치
+### 🍳 요리로 이해하기
+
+| 비유 | 실제 | 역할 |
+|------|------|------|
+| 🔥 가스레인지 | **Node.js** | 프로그램 실행 환경 |
+| 🍳 프라이팬 | **Pandoc** | 문서 변환 도구 |
+| 🧑‍🍳 요리사 | **NpxMagicDoc** | 모든 것을 조합하는 셰프 |
+| 🖨️ 오븐 | **Python + WeasyPrint** | PDF 만들 때만 필요 |
+
+**💡 핵심**: Node.js + Pandoc만 있으면 **EPUB 변환 가능**!  
+PDF도 원하면 Python + WeasyPrint 추가 설치
+
+### 1️⃣ Node.js 설치 (가스레인지)
+
+1. [nodejs.org](https://nodejs.org/) 방문
+2. **LTS 버전** (왼쪽 초록 버튼) 다운로드
+3. 설치 시 **"Automatically install the necessary tools"** 체크 ☑️
+4. 설치 완료 후 **컴퓨터 재시작**
+
 ```powershell
-# Node.js 공식 사이트에서 LTS 버전 다운로드
-# https://nodejs.org/
-# 설치 후 터미널 재시작
+# 확인 (PowerShell에서)
+node --version   # v20.x.x 나오면 성공!
 ```
 
-### 2단계: Pandoc 설치
+### 2️⃣ Pandoc 설치 (프라이팬)
+
+1. [pandoc.org/installing.html](https://pandoc.org/installing.html) 방문
+2. Windows 설치 파일 다운로드 (`.msi`)
+3. 더블클릭해서 설치
+
 ```powershell
-# Pandoc 공식 사이트에서 다운로드
-# https://pandoc.org/installing.html
-# 또는 winget 사용:
-winget install JohnMacFarlane.Pandoc
+# 확인 (새 PowerShell 창에서)
+pandoc --version   # pandoc 3.x.x 나오면 성공!
 ```
 
-### 3단계: PDF 엔진 설치 (PDF 변환 시 필요)
+### 🎉 여기까지 하면 EPUB 변환 가능!
 
-**옵션 A: WeasyPrint (권장 - 간편함)**
+```powershell
+npx markdown-to-document-cli@latest interactive
+```
+
+### 3️⃣ [선택] Python 설치 (PDF용 오븐)
+
+> ⚠️ **PDF 변환이 필요할 때만** 설치하세요!
+
+1. [python.org/downloads](https://www.python.org/downloads/) 방문
+2. **"Download Python 3.x.x"** 클릭
+3. **⚠️ 매우 중요!** 설치 시 **"Add python.exe to PATH"** 반드시 체크 ☑️
+4. "Install Now" 클릭
+5. 컴퓨터 재시작
+
+```powershell
+# 확인
+python --version   # Python 3.x.x 나오면 성공!
+```
+
+### 4️⃣ [선택] WeasyPrint 설치 (PDF 엔진)
+
 ```powershell
 pip install weasyprint
-```
-
-**옵션 B: MiKTeX (고급 - LaTeX 기반)**
-```powershell
-# https://miktex.org/download 에서 다운로드
-# 설치 후 MiKTeX Console 실행:
-# Settings → General → "Install missing packages on-the-fly" → Always
-```
-
-### ✅ 설치 확인
-```powershell
-node --version    # v18.0.0 이상
-pandoc --version  # 2.x 또는 3.x
+weasyprint --version   # 성공 확인
 ```
 
 ### 🚀 바로 사용하기
+
 ```powershell
-npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md"
+# EPUB 변환 (Node.js + Pandoc만 필요)
+npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md" --format epub
+
+# PDF 변환 (Python + WeasyPrint 필요)
+npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md" --format pdf
+
+# 대화형 모드 (가장 쉬움!)
+npx markdown-to-document-cli@latest interactive
 ```
 
-> 💡 **팁**: EPUB만 필요하면 PDF 엔진 설치는 생략 가능합니다!
+### ❓ 문제 해결
+
+| 오류 | 해결 방법 |
+|------|-----------|
+| `'node' 인식 안됨` | 컴퓨터 재시작 후 새 PowerShell 열기 |
+| `'python' 인식 안됨` | Python 삭제 → 재설치 시 **PATH 체크** |
+| `'pip' 인식 안됨` | Python 재설치 필요 |
+
+> 📚 **상세 가이드**: [TroubleShooting.md](./TroubleShooting.md)의 "Windows 완전 초보자를 위한 설치 가이드" 참조
 
 ---
 
