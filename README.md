@@ -128,9 +128,9 @@ pandoc --version   # pandoc 3.x.x 나오면 성공!
 npx markdown-to-document-cli@latest interactive
 ```
 
-### 3️⃣ [선택] Python 설치 (PDF용 오븐)
+### 3️⃣ Python 설치 (PDF용 오븐)
 
-> ⚠️ **PDF 변환이 필요할 때만** 설치하세요!
+> ⚠️ **PDF 변환에 필요합니다!** (EPUB만 필요하면 건너뛰세요)
 
 1. [python.org/downloads](https://www.python.org/downloads/) 방문
 2. **"Download Python 3.x.x"** 클릭
@@ -143,11 +143,36 @@ npx markdown-to-document-cli@latest interactive
 python --version   # Python 3.x.x 나오면 성공!
 ```
 
-### 4️⃣ [선택] WeasyPrint 설치 (PDF 엔진)
+### 4️⃣ [필수] WeasyPrint 설치 (PDF 엔진)
+
+> ⚠️ **PDF 변환에 필수!** v1.5.7부터 Windows에서 WeasyPrint 없이 PDF 변환 시 에러가 발생합니다.
 
 ```powershell
 pip install weasyprint
 weasyprint --version   # 성공 확인
+```
+
+**왜 필수인가요?**
+- WeasyPrint: Mac과 **100% 동일한** 고품질 PDF 생성
+- LaTeX (MiKTeX): HTML 태그 노출, 레이아웃 깨짐 발생
+- v1.5.7부터 Windows에서 LaTeX 자동 선택이 차단됩니다
+
+#### 🧯 Windows 설치 오류 (libgobject-2.0-0)
+
+```powershell
+# 오류 메시지 예시
+WeasyPrint could not import some external libraries...
+OSError: cannot load library 'libgobject-2.0-0'
+```
+
+| 원인 | 해결 방법 |
+|------|-----------|
+| GTK/Pango DLL 미설치 | 1) [MSYS2](https://www.msys2.org/) 설치 <br> 2) MSYS2 UCRT64 터미널에서 `pacman -Syu` <br> 3) `pacman -S mingw-w64-ucrt-x86_64-gtk3 mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo` |
+| PATH에 DLL 없음 | `C:\msys64\ucrt64\bin` 경로를 **시스템 PATH**에 추가 후 PowerShell 재시작 |
+
+```powershell
+# 설치 후 다시 확인
+weasyprint --version
 ```
 
 ### 🚀 바로 사용하기

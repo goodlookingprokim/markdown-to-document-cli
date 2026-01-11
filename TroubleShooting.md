@@ -1147,107 +1147,65 @@ grep -n "!\[.*\](.*\.html)" document.md
 
 ---
 
-## 🖥️ Mac vs Windows PDF 결과물 차이
+## ✅ [v1.5.7에서 해결됨] Mac vs Windows PDF 결과물 차이
 
-### 🎯 증상
+> **v1.5.7부터 이 문제가 해결되었습니다.** Windows에서 WeasyPrint 없이 PDF 변환 시 에러가 발생하며, 설치 안내가 표시됩니다.
+
+### 🔄 v1.5.7 변경 사항
+
+**이전 동작 (v1.5.6 이하)**:
+- Windows에서 WeasyPrint가 없으면 XeLaTeX 자동 사용
+- 경고만 표시하고 변환 진행 → HTML 태그 노출 문제
+
+**새로운 동작 (v1.5.7 이상)**:
+- Windows에서 WeasyPrint **필수**
+- WeasyPrint 없이 PDF 변환 시 **에러 발생** + 설치 안내
+- 명시적으로 `--pdf-engine=xelatex` 지정 시에만 LaTeX 사용 가능 (경고 표시)
+
+### 🚀 해결 방법 (Windows 사용자)
+
+```powershell
+# 1. WeasyPrint 설치 (1회만)
+pip install weasyprint
+
+# 2. 정상 변환 - Mac과 100% 동일한 결과
+npx markdown-to-document-cli@latest document.md --format pdf
+```
+
+이제 Mac과 **동일한 고품질 PDF**를 받을 수 있습니다.
+
+### 📋 이전 문제 요약
 
 | 항목 | Mac (WeasyPrint) | Windows (MiKTeX) |
 |------|------------------|------------------|
-| **PDF 엔진** | WeasyPrint 67.0 | MiKTeX-dvipdfmx |
+| **PDF 엔진** | WeasyPrint | MiKTeX-dvipdfmx |
+| **HTML 처리** | ✅ 완벽 렌더링 | ❌ HTML 태그 노출 |
 | **페이지 수** | 더 많음 | 더 적음 |
-| **HTML 처리** | 완벽하게 렌더링 | HTML 태그 노출 |
-| **파일 크기** | 더 큼 | 더 작음 |
 | **목차 형식** | 깔끔한 목록 | HTML 태그 혼합 |
 
-### 🔍 Root Cause 분석
+### 🔍 Root Cause (참고용)
 
-#### 1. **PDF 엔진의 근본적 차이**
-- **WeasyPrint**: HTML/CSS를 직접 PDF로 변환 (웹 표준 기반)
-- **MiKTeX**: HTML → LaTeX → PDF 변환 (과정에서 HTML 태그 노출)
+1. **PDF 엔진의 근본적 차이**
+   - **WeasyPrint**: HTML/CSS를 직접 PDF로 변환 (웹 표준 기반)
+   - **MiKTeX**: HTML → LaTeX → PDF 변환 (HTML 태그 노출 발생)
 
-#### 2. **레이아웃 엔진 차이**
-- **WeasyPrint**: 웹 브라우저와 유사한 렌더링
-- **MiKTeX**: LaTeX 조판 규칙 적용
+2. **Cover 시스템과의 호환성**
+   - 표지가 HTML/CSS (Flexbox, Gradient)로 생성됨
+   - LaTeX는 이런 현대 CSS를 지원하지 않음 → 렌더링 실패
 
-#### 3. **페이지 나누기 알고리즘**
-- **WeasyPrint**: CSS 기반 페이지 나누기 (더 세밀함)
-- **MiKTeX**: LaTeX 기반 페이지 나누기 (더 단순함)
+### 💡 LaTeX 강제 사용 (권장하지 않음)
 
-### 🛠️ 해결 방안
-
-#### 방법 1: Windows에서 WeasyPrint 사용 (강력 권장)
-
-```powershell
-# 1. Python 설치 (이미 설치되어 있으면 생략)
-# https://www.python.org/downloads/
-
-# 2. WeasyPrint 설치
-pip install weasyprint
-
-# 3. 변환 테스트
-npx markdown-to-document-cli@latest document.md --pdf-engine weasyprint
-```
-
-**장점**:
-- ✅ Mac과 100% 동일한 결과
-- ✅ HTML/CSS 완벽 지원
-- ✅ 최신 웹 표준 준수
-
-#### 방법 2: 명시적 PDF 엔진 지정
+특수한 상황에서 LaTeX를 사용해야 한다면:
 
 ```bash
-# WeasyPrint 강제 사용
-m2d document.md --pdf-engine weasyprint
-
-# 또는
-npx markdown-to-document-cli@latest document.md --pdf-engine weasyprint
-```
-
-#### 방법 3: LaTeX 최적화 (MiKTeX 사용 시)
-
-```bash
-# XeLaTeX 사용 (PDFLaTeX보다 나음)
+# XeLaTeX 강제 사용 (경고 표시됨)
 m2d document.md --pdf-engine xelatex
+
+# PDFLaTeX 강제 사용 (경고 표시됨)
+m2d document.md --pdf-engine pdflatex
 ```
 
-### 📊 비교 예시
-
-**Mac (WeasyPrint) 결과:**
-```
-• CLAUDE.md
-◦ Obsidian Integration Guidelines
-◦ Environment Overview
-```
-
-**Windows (MiKTeX) 결과:**
-```
-<div class="pdf-cover-page">
-<div class="pdf-cover-frame">
-<div class="pdf-cover-title-group">
-```
-
-### 🎯 권장 설정
-
-**Windows 사용자를 위한 최적 설정:**
-
-1. **Python + WeasyPrint 설치**
-2. **항상 WeasyPrint 사용**
-3. **--pdf-engine weasyprint 옵션 추가**
-
-```powershell
-# 설정 확인
-python --version
-weasyprint --version
-
-# 변환 실행
-npx markdown-to-document-cli@latest document.md --pdf-engine weasyprint
-```
-
-### ⚠️ 주의사항
-
-- **MiKTeX 사용 시**: HTML 태그가 그대로 노출될 수 있음
-- **레이아웃 차이**: 같은 문서라도 엔진에 따라 다른 페이지 수
-- **호환성**: WeasyPrint가 현대적인 HTML/CSS를 더 잘 지원
+> ⚠️ **주의**: LaTeX 엔진 사용 시 HTML 태그 노출, 레이아웃 깨짐이 발생할 수 있습니다.
 
 ---
 
@@ -2172,4 +2130,4 @@ A: 현재는 단일 파일만 지원합니다. 배치 처리는 향후 계획에
 
 ---
 
-**마지막 업데이트**: 2026-01-06 (v1.2.7)
+**마지막 업데이트**: 2026-01-11 (v1.5.7)

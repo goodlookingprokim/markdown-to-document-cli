@@ -364,11 +364,20 @@ export class PandocService {
             for (const { name, path } of enginePreferences) {
                 const isAvailable = await this.checkPdfEngineAvailable(path);
                 if (isAvailable) {
-                    // Warning for Windows users when LaTeX engines are selected
+                    // Windows에서 LaTeX 엔진 선택 시 차단 (auto 모드)
+                    // LaTeX는 HTML/CSS 기반 표지를 제대로 렌더링하지 못함
                     if (process.platform === 'win32' && (name === 'xelatex' || name === 'pdflatex')) {
-                        console.warn('\n⚠️  경고: Windows에서 LaTeX 엔진을 사용하면 Mac과 다른 결과가 나올 수 있습니다.');
-                        console.warn('📝 문제점: HTML 태그 노출, 레이아웃 차이, 페이지 수 차이');
-                        console.warn('🔥 해결책: WeasyPrint 설치 - pip install weasyprint\n');
+                        throw new Error(
+                            '⚠️ Windows에서 고품질 PDF 생성을 위해 WeasyPrint가 필요합니다.\n\n' +
+                            '🔥 설치 방법:\n' +
+                            '   pip install weasyprint\n\n' +
+                            '📝 이유: LaTeX 엔진은 HTML/CSS 기반 표지를 제대로 렌더링하지 못합니다.\n' +
+                            '   - HTML 태그 노출\n' +
+                            '   - 레이아웃 깨짐\n' +
+                            '   - Mac과 다른 결과\n\n' +
+                            '✅ WeasyPrint 설치 후 Mac과 동일한 품질의 PDF를 받을 수 있습니다.\n\n' +
+                            '💡 LaTeX 엔진을 강제로 사용하려면: --pdf-engine=xelatex'
+                        );
                     }
                     Logger.debug(`[PDF Engine] Selected: ${name} (${path})`);
                     return { engine: name, path };
@@ -407,6 +416,13 @@ export class PandocService {
                 `지정된 PDF 엔진을 찾을 수 없습니다: ${engine}\n` +
                 '다른 엔진을 선택하거나 --pdf-engine=auto 옵션을 사용하세요.'
             );
+        }
+
+        // Windows에서 LaTeX 엔진을 명시적으로 지정한 경우 경고 표시
+        if (process.platform === 'win32' && (engine === 'xelatex' || engine === 'pdflatex')) {
+            console.warn('\n⚠️ 경고: Windows에서 LaTeX 엔진을 사용하면 Mac과 다른 결과가 나올 수 있습니다.');
+            console.warn('   HTML 태그 노출, 레이아웃 차이가 발생할 수 있습니다.');
+            console.warn('   권장: pip install weasyprint 후 --pdf-engine=weasyprint 사용\n');
         }
 
         return { engine, path };

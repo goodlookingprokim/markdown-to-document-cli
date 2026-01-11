@@ -467,13 +467,13 @@ pip --version      # pip 23.3.1 나오면 성공!</pre>
                 </div>
             </div>
 
-            <!-- Step 4: WeasyPrint (Optional) -->
+            <!-- Step 4: WeasyPrint (Required for PDF) -->
             <div class="step-block"
-                style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border: var(--border);">
+                style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border: var(--border);">
                 <span class="step-num">4</span>
-                <span class="badge" style="background: #388e3c;">선택: 오븐 예열</span>
-                <h3>[PDF용] WeasyPrint 설치하기</h3>
-                <p style="margin-bottom: 15px;">Python이 설치되어 있어야 합니다.</p>
+                <span class="badge" style="background: #e65100;">필수: PDF 엔진</span>
+                <h3>[PDF용] WeasyPrint 설치하기 ⚠️</h3>
+                <p style="margin-bottom: 15px;"><strong>v1.5.7부터 Windows에서 PDF 변환 시 필수입니다!</strong> WeasyPrint 없이 PDF 변환 시 에러가 발생합니다.</p>
 
                 <div class="code-wrap">
                     <button class="copy-btn" onclick="copyCode(this)">COPY</button>
@@ -485,18 +485,24 @@ pip install weasyprint
 weasyprint --version   # WeasyPrint version 60.1 나오면 성공!</pre>
                     </div>
                 </div>
+                <p style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                    <strong>왜 필수인가요?</strong> WeasyPrint는 Mac과 100% 동일한 고품질 PDF를 생성합니다.<br>
+                    LaTeX(MiKTeX)는 HTML 태그 노출, 레이아웃 깨짐 등의 문제가 발생하여 v1.5.7부터 자동 선택이 차단됩니다.
+                </p>
             </div>
 
             <!-- All Done! -->
             <div class="step-block"
                 style="background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%); border: var(--border);">
                 <span class="step-num">✓</span>
-                <h3>🎉 모든 설치 완료! 이제 PDF도 변환 가능!</h3>
+                <h3>🎉 모든 설치 완료! 이제 Mac과 동일한 PDF 변환 가능!</h3>
                 <div class="code-wrap">
                     <button class="copy-btn" onclick="copyCode(this)">COPY</button>
                     <div class="code-box">
-                        <pre># 변환 테스트
-npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md" --format both</pre>
+                        <pre># 변환 테스트 (WeasyPrint 설치 필수)
+npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md" --format both
+
+# Mac과 100% 동일한 고품질 PDF가 생성됩니다!</pre>
                     </div>
                 </div>
             </div>
