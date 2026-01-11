@@ -83,6 +83,54 @@
 - **임시 디렉토리 관리**: 안전한 임시 파일 처리
 - **버전 호환성**: Pandoc 2.x 및 3.x 지원
 
+## 🪟 Windows 사용자 빠른 설정
+
+> **Windows에서 처음 사용하시나요?** 아래 3단계를 먼저 완료하세요!
+
+### 1단계: Node.js 설치
+```powershell
+# Node.js 공식 사이트에서 LTS 버전 다운로드
+# https://nodejs.org/
+# 설치 후 터미널 재시작
+```
+
+### 2단계: Pandoc 설치
+```powershell
+# Pandoc 공식 사이트에서 다운로드
+# https://pandoc.org/installing.html
+# 또는 winget 사용:
+winget install JohnMacFarlane.Pandoc
+```
+
+### 3단계: PDF 엔진 설치 (PDF 변환 시 필요)
+
+**옵션 A: WeasyPrint (권장 - 간편함)**
+```powershell
+pip install weasyprint
+```
+
+**옵션 B: MiKTeX (고급 - LaTeX 기반)**
+```powershell
+# https://miktex.org/download 에서 다운로드
+# 설치 후 MiKTeX Console 실행:
+# Settings → General → "Install missing packages on-the-fly" → Always
+```
+
+### ✅ 설치 확인
+```powershell
+node --version    # v18.0.0 이상
+pandoc --version  # 2.x 또는 3.x
+```
+
+### 🚀 바로 사용하기
+```powershell
+npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md"
+```
+
+> 💡 **팁**: EPUB만 필요하면 PDF 엔진 설치는 생략 가능합니다!
+
+---
+
 ## 📦 설치
 
 ### NPX로 바로 사용 (권장)

@@ -2,6 +2,119 @@
 
 이 가이드는 Markdown to Document CLI 사용 중 발생할 수 있는 일반적인 문제와 해결 방법을 제공합니다.
 
+---
+
+## 🪟 Windows 사용자 빠른 설정 가이드
+
+> **⚠️ Windows에서 처음 사용하시나요?** 변환 전에 아래 설정을 먼저 완료하세요!
+
+### 📋 필수 설치 체크리스트
+
+| 구성 요소 | 용도 | 필수 여부 |
+|-----------|------|-----------|
+| Node.js | CLI 실행 | ✅ 필수 |
+| Pandoc | 문서 변환 | ✅ 필수 |
+| WeasyPrint 또는 MiKTeX | PDF 생성 | 📄 PDF 필요시 |
+
+### 1️⃣ Node.js 설치
+
+```powershell
+# 방법 1: 공식 사이트
+# https://nodejs.org/ 에서 LTS 버전 다운로드 및 설치
+
+# 방법 2: winget 사용
+winget install OpenJS.NodeJS.LTS
+
+# 설치 확인
+node --version   # v18.0.0 이상 권장
+npm --version
+```
+
+### 2️⃣ Pandoc 설치
+
+```powershell
+# 방법 1: 공식 사이트
+# https://pandoc.org/installing.html 에서 다운로드
+
+# 방법 2: winget 사용 (권장)
+winget install JohnMacFarlane.Pandoc
+
+# 설치 확인
+pandoc --version   # 2.x 또는 3.x
+```
+
+### 3️⃣ PDF 엔진 설치 (PDF 변환 시 필요)
+
+#### 옵션 A: WeasyPrint (⭐ 권장 - 간편함)
+
+```powershell
+# Python이 필요합니다
+# https://www.python.org/downloads/ 에서 Python 설치
+
+# WeasyPrint 설치
+pip install weasyprint
+
+# 설치 확인
+weasyprint --version
+```
+
+**장점**: 
+- 설치 간편
+- 패키지 관리 불필요
+- 대화상자 없음
+
+#### 옵션 B: MiKTeX (고급 - LaTeX 기반)
+
+```powershell
+# 1. MiKTeX 다운로드 및 설치
+# https://miktex.org/download
+
+# 2. 설치 후 반드시 MiKTeX Console 실행
+# 3. Settings → General 탭
+# 4. "Install missing packages on-the-fly" → "Always" 선택
+# 5. 저장 후 닫기
+```
+
+**⚠️ 중요**: MiKTeX 자동 설치를 "Always"로 설정하지 않으면 변환 중 대화상자가 나타나 프로세스가 멈출 수 있습니다!
+
+### ✅ 전체 설치 확인
+
+```powershell
+# 모든 구성 요소 확인
+node --version      # ✅ v18.0.0 이상
+npm --version       # ✅ 설치됨
+pandoc --version    # ✅ 2.x 또는 3.x
+
+# PDF 엔진 (둘 중 하나)
+weasyprint --version   # WeasyPrint 사용 시
+xelatex --version      # MiKTeX 사용 시
+```
+
+### 🚀 바로 사용하기
+
+```powershell
+# EPUB + PDF 변환
+npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md" --format both
+
+# EPUB만 변환 (PDF 엔진 불필요)
+npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md" --format epub
+
+# PDF만 변환 (WeasyPrint 사용)
+npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md" --format pdf --pdf-engine weasyprint
+
+# 대화형 모드 (가장 쉬움)
+npx markdown-to-document-cli@latest interactive
+```
+
+### 💡 Windows 사용 팁
+
+1. **경로에 공백이 있으면** 따옴표로 감싸세요: `"C:\My Documents\file.md"`
+2. **네트워크 드라이브** UNC 경로 지원: `\\Mac\Home\file.md`
+3. **드래그 앤 드롭**: 파일을 터미널에 끌어다 놓으면 경로 자동 입력
+4. **관리자 권한 불필요**: 일반 사용자 권한으로 실행 가능
+
+---
+
 ## 목차
 
 1. [설치 문제](#설치-문제)

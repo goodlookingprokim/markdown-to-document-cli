@@ -374,6 +374,78 @@
             </div>
         </section>
 
+        <!-- WINDOWS QUICK SETUP -->
+        <section id="windows-setup" style="margin-bottom: 80px;">
+            <h2 class="section-title">🪟 Windows 사용자 빠른 설정</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 30px;">
+                <strong>Windows에서 처음 사용하시나요?</strong> 아래 3단계를 먼저 완료하세요!
+            </p>
+
+            <div class="step-block"
+                style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: var(--border);">
+                <span class="step-num">1</span>
+                <span class="badge" style="background: #1976d2;">STEP 1</span>
+                <h3>Node.js 설치</h3>
+                <p><a href="https://nodejs.org" target="_blank" style="font-weight: 700;">nodejs.org</a>에서 LTS 버전 다운로드
+                    또는:</p>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box">
+                        <pre>winget install OpenJS.NodeJS.LTS</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-block"
+                style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border: var(--border);">
+                <span class="step-num">2</span>
+                <span class="badge" style="background: #f57c00;">STEP 2</span>
+                <h3>Pandoc 설치</h3>
+                <p><a href="https://pandoc.org/installing.html" target="_blank"
+                        style="font-weight: 700;">pandoc.org</a>에서 다운로드 또는:</p>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box">
+                        <pre>winget install JohnMacFarlane.Pandoc</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-block"
+                style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border: var(--border);">
+                <span class="step-num">3</span>
+                <span class="badge" style="background: #388e3c;">STEP 3 (PDF용)</span>
+                <h3>PDF 엔진 설치</h3>
+                <p><strong>WeasyPrint (권장)</strong> - Python 필요:</p>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box">
+                        <pre>pip install weasyprint</pre>
+                    </div>
+                </div>
+                <p style="margin-top: 15px;"><strong>또는 MiKTeX</strong>: <a href="https://miktex.org/download"
+                        target="_blank">miktex.org</a>에서 설치 후<br>
+                    ⚠️ MiKTeX Console → Settings → "Install missing packages on-the-fly" → <strong>Always</strong></p>
+            </div>
+
+            <div class="step-block" style="background: var(--accent-lime); border: var(--border);">
+                <span class="step-num">✓</span>
+                <h3>설치 확인 & 바로 사용</h3>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box">
+                        <pre># 설치 확인
+node --version    # v18.0.0 이상
+pandoc --version  # 2.x 또는 3.x
+
+# 바로 사용하기
+npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md"</pre>
+                    </div>
+                </div>
+                <p style="margin-top: 15px;">💡 <strong>팁</strong>: EPUB만 필요하면 PDF 엔진 설치는 생략 가능!</p>
+            </div>
+        </section>
+
         <!-- STEP 1: PREPARATION -->
         <section id="preparation">
             <h2 class="section-title">1. 주방 기초 공사</h2>
