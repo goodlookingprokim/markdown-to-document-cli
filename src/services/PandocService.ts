@@ -364,18 +364,39 @@ export class PandocService {
             for (const { name, path } of enginePreferences) {
                 const isAvailable = await this.checkPdfEngineAvailable(path);
                 if (isAvailable) {
+                    // Warning for Windows users when LaTeX engines are selected
+                    if (process.platform === 'win32' && (name === 'xelatex' || name === 'pdflatex')) {
+                        console.warn('\n⚠️  경고: Windows에서 LaTeX 엔진을 사용하면 Mac과 다른 결과가 나올 수 있습니다.');
+                        console.warn('📝 문제점: HTML 태그 노출, 레이아웃 차이, 페이지 수 차이');
+                        console.warn('🔥 해결책: WeasyPrint 설치 - pip install weasyprint\n');
+                    }
                     Logger.debug(`[PDF Engine] Selected: ${name} (${path})`);
                     return { engine: name, path };
                 }
             }
 
             // No engine found
-            throw new Error(
-                'PDF 엔진을 찾을 수 없습니다. WeasyPrint, XeLaTeX, 또는 PDFLaTeX를 설치하세요.\n' +
-                '설치 방법:\n' +
-                '  WeasyPrint: pip install weasyprint\n' +
-                '  XeLaTeX/PDFLaTeX: brew install basictex (macOS) 또는 https://www.tug.org/texlive/'
-            );
+            const platform = process.platform;
+            if (platform === 'win32') {
+                throw new Error(
+                    'PDF 엔진을 찾을 수 없습니다. Windows에서는 WeasyPrint 사용을 강력히 권장합니다.\n\n' +
+                    '🔥 WeasyPrint 설치 (권장 - Mac과 동일한 결과):\n' +
+                    '  1. Python 설치: https://www.python.org/downloads/\n' +
+                    '  2. PowerShell 실행: pip install weasyprint\n\n' +
+                    '⚠️ MiKTeX/LaTeX 사용 시 문제점:\n' +
+                    '  - HTML 태그가 그대로 노출됨\n' +
+                    '  - Mac과 다른 레이아웃 결과\n' +
+                    '  - 더 적은 페이지 수\n\n' +
+                    '설치 후 다시 시도하세요.'
+                );
+            } else {
+                throw new Error(
+                    'PDF 엔진을 찾을 수 없습니다. WeasyPrint, XeLaTeX, 또는 PDFLaTeX를 설치하세요.\n' +
+                    '설치 방법:\n' +
+                    '  WeasyPrint: pip install weasyprint\n' +
+                    '  XeLaTeX/PDFLaTeX: brew install basictex (macOS) 또는 https://www.tug.org/texlive/'
+                );
+            }
         }
 
         const path = this.findPdfEnginePath(engine);
