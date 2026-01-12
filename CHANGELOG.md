@@ -5,6 +5,27 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.15] - 2026-01-12
+
+### Fixed
+- **Critical: Windows WeasyPrint GTK 호환성 문제 해결**:
+  - UCRT64 환경에서 cffi DLL 로딩 실패 (error 0x7e) 문제 발견 및 해결
+  - **해결책**: MINGW64 환경 사용 권장 (`C:\msys64\mingw64\bin`)
+  - cffi 2.0.0과 UCRT64 DLL 간 호환성 문제 확인
+  - Python 3.14와 cffi 호환성 문제 문서화
+
+### Added
+- **WEASYPRINT_GTK_WINDOWS_FIX.md**: Windows GTK 트러블슈팅 완벽 가이드
+  - Root Cause 분석 (Top-Down, Bottom-Up)
+  - UCRT64 vs MINGW64 환경 비교
+  - 단계별 해결 방법 (MSYS2 설정, PATH 변경)
+  - Python 버전별 cffi 호환성 정보
+  - 진단 명령어 및 트러블슈팅 체크리스트
+
+### Documentation
+- **TroubleShooting.md**: WeasyPrint GTK 문제 해결 섹션 추가
+- Windows 환경에서 최적의 WeasyPrint 설정 가이드 제공
+
 ## [1.5.13] - 2026-01-12
 
 ### Fixed

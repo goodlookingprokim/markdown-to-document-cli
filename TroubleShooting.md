@@ -1542,26 +1542,39 @@ OSError: cannot load library 'libpango-1.0-0.dll': error 0x7e
 **원인**:
 - Windows에서 WeasyPrint는 GTK 런타임 라이브러리(GObject, Pango, Cairo)가 필요함
 - `pip install weasyprint`만으로는 Python 패키지만 설치되고 GTK DLL은 설치되지 않음
+- **중요**: UCRT64 환경은 cffi와 호환성 문제가 있음 → **MINGW64 사용 권장**
 
 **해결 방법**:
 
-**방법 1: MSYS2로 GTK 설치 (권장)**
+**⭐ 방법 1: MSYS2 MINGW64로 GTK 설치 (권장)**
+
+> **핵심**: UCRT64 대신 **MINGW64** 환경을 사용해야 cffi와 호환됩니다!
+
 ```powershell
 # 1. MSYS2 설치
 #    https://www.msys2.org/ 에서 다운로드 및 설치
 
-# 2. MSYS2 UCRT64 터미널 열기 (시작 메뉴에서 "MSYS2 UCRT64")
+# 2. MSYS2 MINGW64 터미널 열기 (⚠️ UCRT64 아님!)
+#    시작 메뉴에서 "MSYS2 MINGW64" 검색
 
-# 3. GTK3 전체 패키지 설치 (모든 의존성 포함)
-pacman -S mingw-w64-ucrt-x86_64-gtk3
+# 3. GTK3 전체 패키지 설치
+pacman -S --needed mingw-w64-x86_64-gtk3
 
-# 4. 시스템 PATH에 C:\msys64\ucrt64\bin 추가
-#    - Win + R → sysdm.cpl → 고급 → 환경 변수
-#    - Path 편집 → 새로 만들기 → C:\msys64\ucrt64\bin
+# 4. 시스템 PATH 설정 (중요!)
+#    - C:\msys64\ucrt64\bin 이 있다면 제거
+#    - C:\msys64\mingw64\bin 추가 (맨 위에 추가 권장)
+#    - Win + R → sysdm.cpl → 고급 → 환경 변수 → Path 편집
 
 # 5. 새 CMD/PowerShell 열고 테스트
 weasyprint --version
 ```
+
+**환경 비교 (왜 MINGW64인가?)**:
+
+| 환경 | cffi 호환성 | 권장 |
+|------|------------|------|
+| UCRT64 (`C:\msys64\ucrt64\bin`) | ❌ error 0x7e | - |
+| MINGW64 (`C:\msys64\mingw64\bin`) | ✅ 정상 작동 | ⭐ |
 
 **방법 2: GTK 런타임 설치 (Chocolatey)**
 ```powershell
@@ -1576,7 +1589,12 @@ choco install gtk-runtime
 ```powershell
 # WeasyPrint가 GTK를 찾을 수 있는지 확인
 python -c "import weasyprint; print('OK')"
+
+# DLL 로드 테스트
+python -c "import ctypes;ctypes.WinDLL(r'C:\msys64\mingw64\bin\libgobject-2.0-0.dll');print('SUCCESS')"
 ```
+
+💡 **상세 가이드**: [WEASYPRINT_GTK_WINDOWS_FIX.md](./WEASYPRINT_GTK_WINDOWS_FIX.md) 참조
 
 💡 **참고**: 공식 WeasyPrint Windows 설치 가이드
 https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows
