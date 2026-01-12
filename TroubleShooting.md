@@ -1352,13 +1352,31 @@ convert image.bmp image.png
 **해결 방법**:
 
 **옵션 1: WeasyPrint 설치 (권장)**
+
 ```bash
 # Python pip 사용
 pip install weasyprint
-
-# 또는 Python 3
-pip3 install weasyprint
 ```
+
+⚠️ **Windows 사용자 필수**: WeasyPrint는 GTK 런타임이 필요합니다!
+
+```powershell
+# 방법 1: MSYS2 사용 (권장)
+# 1. https://www.msys2.org/ 에서 MSYS2 설치
+# 2. MSYS2 UCRT64 터미널 열기
+# 3. GTK/Pango 라이브러리 설치:
+pacman -S mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo
+
+# 4. 시스템 PATH에 추가 (제어판 → 시스템 → 환경 변수):
+#    C:\msys64\ucrt64\bin
+
+# 방법 2: Chocolatey 사용
+choco install gtk-runtime
+
+# 설치 후 반드시 새 터미널 열기!
+```
+
+💡 자세한 설치 가이드: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows
 
 **옵션 2: XeLaTeX 설치 (한글 지원 우수)**
 ```bash
@@ -1418,6 +1436,61 @@ m2d document.md --pdf-engine xelatex
 # PDFLaTeX 사용
 m2d document.md --pdf-engine pdflatex
 ```
+
+### 문제: WeasyPrint "cannot load library 'libgobject'" 오류 (Windows)
+
+**증상**:
+```
+OSError: cannot load library 'libgobject-2.0-0.dll': error 0x7e
+```
+또는
+```
+OSError: cannot load library 'libpango-1.0-0.dll': error 0x7e
+```
+
+**원인**:
+- Windows에서 WeasyPrint는 GTK 런타임 라이브러리(GObject, Pango, Cairo)가 필요함
+- `pip install weasyprint`만으로는 Python 패키지만 설치되고 GTK DLL은 설치되지 않음
+
+**해결 방법**:
+
+**방법 1: MSYS2로 GTK 설치 (권장)**
+```powershell
+# 1. MSYS2 설치
+#    https://www.msys2.org/ 에서 다운로드 및 설치
+
+# 2. MSYS2 UCRT64 터미널 열기 (시작 메뉴에서 "MSYS2 UCRT64")
+
+# 3. GTK/Pango 라이브러리 설치
+pacman -S mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo
+
+# 4. 시스템 PATH에 C:\msys64\ucrt64\bin 추가
+#    - Win + R → sysdm.cpl → 고급 → 환경 변수
+#    - Path 편집 → 새로 만들기 → C:\msys64\ucrt64\bin
+
+# 5. 새 CMD/PowerShell 열고 테스트
+weasyprint --version
+```
+
+**방법 2: GTK 런타임 설치 (Chocolatey)**
+```powershell
+choco install gtk-runtime
+```
+
+**방법 3: 공식 GTK 설치 프로그램**
+- https://github.com/nickvision-apps/gtk4-windows-packager/releases 에서 다운로드
+- 설치 후 PATH에 추가
+
+**설치 확인**:
+```powershell
+# WeasyPrint가 GTK를 찾을 수 있는지 확인
+python -c "import weasyprint; print('OK')"
+```
+
+💡 **참고**: 공식 WeasyPrint Windows 설치 가이드
+https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows
+
+---
 
 ### 문제: PDF 변환이 멈추거나 시간 초과
 

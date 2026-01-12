@@ -463,6 +463,16 @@ sudo dnf install pandoc
 pip install weasyprint
 ```
 
+⚠️ **Windows 사용자**: WeasyPrint는 GTK 런타임이 필요합니다!
+```powershell
+# MSYS2 설치 후 (https://www.msys2.org/)
+# MSYS2 UCRT64 터미널에서:
+pacman -S mingw-w64-ucrt-x86_64-pango
+
+# PATH에 C:\msys64\ucrt64\bin 추가 필요
+```
+자세한 내용: [TroubleShooting.md](./TroubleShooting.md#문제-weasyprint-cannot-load-library-libgobject-오류-windows)
+
 ## 📝 프로그래밍 방식 사용
 
 ```javascript
