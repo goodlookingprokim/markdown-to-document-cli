@@ -489,6 +489,15 @@ weasyprint --version   # WeasyPrint version 60.1 나오면 성공!</pre>
                     <strong>왜 필수인가요?</strong> WeasyPrint는 Mac과 100% 동일한 고품질 PDF를 생성합니다.<br>
                     LaTeX(MiKTeX)는 HTML 태그 노출, 레이아웃 깨짐 등의 문제가 발생하여 v1.5.7부터 자동 선택이 차단됩니다.
                 </p>
+                <div style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 8px; border: 1px solid #ffc107;">
+                    <strong>⚠️ 중요: GTK 런타임 설치 필요!</strong><br>
+                    <code>pip install weasyprint</code>만으로는 부족합니다. GTK 라이브러리가 필요합니다:<br><br>
+                    <strong>1.</strong> <a href="https://www.msys2.org/" target="_blank">MSYS2 설치</a><br>
+                    <strong>2.</strong> MSYS2 UCRT64 터미널에서:<br>
+                    <code style="background: #000; color: #0f0; padding: 3px 6px; border-radius: 3px;">pacman -S mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo</code><br>
+                    <strong>3.</strong> PATH에 <code>C:\msys64\ucrt64\bin</code> 추가<br><br>
+                    <a href="https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows" target="_blank" style="color: #856404;">📖 공식 설치 가이드 →</a>
+                </div>
             </div>
 
             <!-- All Done! -->

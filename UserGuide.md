@@ -857,6 +857,18 @@ pip3 install weasyprint
 
 💡 **Python이 없다면?** [python.org](https://www.python.org/downloads/)에서 먼저 설치하세요.
 
+⚠️ **Windows 사용자 필수**: WeasyPrint는 GTK 런타임이 필요합니다!
+
+```powershell
+# 1. MSYS2 설치: https://www.msys2.org/
+# 2. MSYS2 UCRT64 터미널에서:
+pacman -S mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo
+
+# 3. PATH에 C:\msys64\ucrt64\bin 추가
+```
+
+자세한 내용: [TroubleShooting.md](./TroubleShooting.md#문제-weasyprint-cannot-load-library-libgobject-오류-windows)
+
 #### 옵션 2: XeLaTeX 설치 (한글 최적화)
 
 **한글 폰트를 아름답게!** 전문 출판 수준의 품질을 원한다면 이걸로!
