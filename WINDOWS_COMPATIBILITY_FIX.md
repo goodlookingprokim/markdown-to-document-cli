@@ -406,7 +406,7 @@ m2d "C:\Users\John Doe\My Documents\test.md"
 node --version  # v18 이상
 
 # Pandoc 설치
-winget install --id JohnMacFarlane.Pandoc
+choco install pandoc
 
 # 설치 확인
 pandoc --version
@@ -415,7 +415,7 @@ pandoc --version
 #### 2. **PDF 생성을 위한 추가 설치**
 ```powershell
 # Python 설치
-winget install Python.Python.3
+choco install python
 
 # WeasyPrint 설치 (권장)
 pip install weasyprint

@@ -188,6 +188,17 @@ npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md" --format pdf
 npx markdown-to-document-cli@latest interactive
 ```
 
+### 💡 Windows 터미널 붙여넣기 팁
+
+**Ctrl+V가 안 될 때:**
+| 방법 | 설명 |
+|------|------|
+| **마우스 오른쪽 클릭** | 가장 확실한 방법! 클릭만 하면 붙여넣기 |
+| **Ctrl+Shift+V** | 일부 최신 터미널에서 작동 |
+| **Windows Terminal 설치** | Microsoft Store에서 설치, Ctrl+V 기본 지원 |
+
+> 💡 CMD 창 제목 표시줄 우클릭 → 속성 → "Ctrl 키 바로 가기 사용" 체크하면 Ctrl+V 활성화!
+
 ### ❓ 문제 해결
 
 | 오류 | 해결 방법 |
@@ -195,6 +206,7 @@ npx markdown-to-document-cli@latest interactive
 | `'node' 인식 안됨` | 컴퓨터 재시작 후 새 PowerShell 열기 |
 | `'python' 인식 안됨` | Python 삭제 → 재설치 시 **PATH 체크** |
 | `'pip' 인식 안됨` | Python 재설치 필요 |
+| `Ctrl+V 안됨` | 마우스 오른쪽 클릭으로 붙여넣기 |
 
 > 📚 **상세 가이드**: [TroubleShooting.md](./TroubleShooting.md)의 "Windows 완전 초보자를 위한 설치 가이드" 참조
 
@@ -431,7 +443,7 @@ brew install pandoc
 
 #### Windows
 ```bash
-winget install --id JohnMacFarlane.Pandoc
+choco install pandoc
 ```
 
 #### Linux (Ubuntu/Debian)
@@ -562,7 +574,7 @@ eval "$(/usr/libexec/path_helper)"
 brew install --cask mactex
 
 # Windows
-winget install MiKTeX.MiKTeX
+choco install miktex
 
 # Linux (Ubuntu/Debian)
 sudo apt-get install texlive-xetex texlive-fonts-recommended
@@ -664,7 +676,7 @@ m2d document.md --pandoc-path /path/to/pandoc
 
 **설치 방법**:
 - macOS: `brew install pandoc`
-- Windows: `winget install --id JohnMacFarlane.Pandoc`
+- Windows: `choco install pandoc`
 - Linux (Ubuntu/Debian): `sudo apt-get update && sudo apt-get install pandoc`
 - Linux (Fedora/RHEL): `sudo dnf install pandoc`
 

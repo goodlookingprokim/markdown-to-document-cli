@@ -671,9 +671,9 @@ export class PandocService {
 brew install pandoc
 \`\`\`
 
-### Windows (winget)
+### Windows (Chocolatey)
 \`\`\`bash
-winget install --id JohnMacFarlane.Pandoc
+choco install pandoc
 \`\`\`
 
 ### Linux (apt)

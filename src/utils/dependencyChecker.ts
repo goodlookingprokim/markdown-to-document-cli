@@ -10,6 +10,9 @@ import chalk from 'chalk';
 
 const execFileAsync = promisify(execFile);
 
+// Platform detection
+const isWindows = process.platform === 'win32';
+
 export interface DependencyStatus {
     name: string;
     required: boolean;
@@ -32,7 +35,7 @@ export class DependencyChecker {
      */
     private async isCommandAvailable(command: string, args: string[] = ['--version']): Promise<{ available: boolean; version?: string }> {
         try {
-            const { stdout } = await execFileAsync(command, args, { timeout: 3000 });
+            const { stdout } = await execFileAsync(command, args, { timeout: 5000 });
             const versionMatch = stdout.match(/(\d+\.\d+(?:\.\d+)?)/);
             return {
                 available: true,
@@ -41,6 +44,40 @@ export class DependencyChecker {
         } catch {
             return { available: false };
         }
+    }
+
+    /**
+     * Check if a Python package is installed (cross-platform)
+     */
+    private async isPythonPackageInstalled(packageName: string): Promise<{ available: boolean; version?: string }> {
+        // Try multiple methods to detect Python packages
+        const pythonCommands = isWindows ? ['python', 'python3', 'py'] : ['python3', 'python'];
+
+        for (const pythonCmd of pythonCommands) {
+            try {
+                // Method 1: Try pip show (most reliable)
+                const { stdout } = await execFileAsync(pythonCmd, ['-m', 'pip', 'show', packageName], { timeout: 10000 });
+                const versionMatch = stdout.match(/Version:\s*(\d+\.\d+(?:\.\d+)?)/);
+                if (versionMatch) {
+                    return { available: true, version: versionMatch[1] };
+                }
+                return { available: true, version: 'installed' };
+            } catch {
+                // Continue to next python command
+            }
+        }
+
+        // Method 2: Try direct command (works if Scripts folder is in PATH)
+        try {
+            const cmd = isWindows ? `${packageName}.exe` : packageName;
+            const { stdout } = await execFileAsync(cmd, ['--version'], { timeout: 5000 });
+            const versionMatch = stdout.match(/(\d+\.\d+(?:\.\d+)?)/);
+            return { available: true, version: versionMatch ? versionMatch[1] : 'installed' };
+        } catch {
+            // Not available via direct command
+        }
+
+        return { available: false };
     }
 
     /**
@@ -57,7 +94,7 @@ export class DependencyChecker {
                 description: 'JavaScript 런타임 - CLI가 실행되는 기반',
                 macOS: ['brew install node', '또는 https://nodejs.org 에서 다운로드'],
                 linux: ['sudo apt-get install nodejs npm', '또는 https://nodejs.org 에서 다운로드'],
-                windows: ['winget install OpenJS.NodeJS', '또는 https://nodejs.org 에서 다운로드'],
+                windows: ['choco install nodejs', '또는 https://nodejs.org 에서 다운로드'],
                 notes: 'Node.js 18 이상 권장'
             }
         };
@@ -77,7 +114,7 @@ export class DependencyChecker {
                 description: '문서 변환 엔진 - EPUB/PDF 생성의 핵심',
                 macOS: ['brew install pandoc'],
                 linux: ['sudo apt-get install pandoc'],
-                windows: ['winget install --id JohnMacFarlane.Pandoc'],
+                windows: ['choco install pandoc'],
                 notes: 'Pandoc 2.19 이상 필요'
             }
         };
@@ -87,16 +124,26 @@ export class DependencyChecker {
      * Check PDF engines (at least one should be available)
      */
     private async checkPdfEngines(): Promise<DependencyStatus[]> {
-        const engines = [
-            {
-                name: 'WeasyPrint',
-                command: 'weasyprint',
+        const results: DependencyStatus[] = [];
+
+        // Check WeasyPrint using Python package detection (cross-platform)
+        const weasyPrintResult = await this.isPythonPackageInstalled('weasyprint');
+        results.push({
+            name: 'WeasyPrint',
+            required: false,
+            installed: weasyPrintResult.available,
+            version: weasyPrintResult.version,
+            installInstructions: {
                 description: 'PDF 생성 엔진 (추천) - 가장 쉽고 한글 지원 우수',
                 macOS: ['pip3 install weasyprint', '또는 pip install weasyprint'],
                 linux: ['pip3 install weasyprint', '또는 pip install weasyprint'],
                 windows: ['pip install weasyprint'],
                 notes: 'Python이 필요합니다: https://python.org'
-            },
+            }
+        });
+
+        // Check LaTeX engines using direct command detection
+        const latexEngines = [
             {
                 name: 'XeLaTeX',
                 command: 'xelatex',
@@ -117,8 +164,7 @@ export class DependencyChecker {
             }
         ];
 
-        const results: DependencyStatus[] = [];
-        for (const engine of engines) {
+        for (const engine of latexEngines) {
             const result = await this.isCommandAvailable(engine.command);
             results.push({
                 name: engine.name,
@@ -154,7 +200,7 @@ export class DependencyChecker {
                 description: 'WeasyPrint 설치에 필요 (선택사항)',
                 macOS: ['brew install python3'],
                 linux: ['sudo apt-get install python3 python3-pip'],
-                windows: ['winget install Python.Python.3', '또는 https://python.org 에서 다운로드'],
+                windows: ['choco install python', '또는 https://python.org 에서 다운로드'],
                 notes: 'WeasyPrint를 사용하려면 필요합니다'
             }
         };

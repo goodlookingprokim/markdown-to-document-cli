@@ -67,7 +67,7 @@ npm --version
 brew install pandoc
 
 # Windows
-winget install --id JohnMacFarlane.Pandoc
+choco install pandoc
 
 # Linux
 sudo apt-get install pandoc
@@ -123,7 +123,7 @@ pip install weasyprint
 brew install --cask basictex
 
 # Windows
-winget install MiKTeX.MiKTeX
+choco install miktex
 
 # Linux (Ubuntu/Debian)
 sudo apt-get install texlive-xetex texlive-fonts-recommended

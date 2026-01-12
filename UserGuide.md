@@ -63,7 +63,7 @@ brew install pandoc
 
 #### Windows
 ```bash
-winget install --id JohnMacFarlane.Pandoc
+choco install pandoc
 ```
 
 #### Linux (Ubuntu/Debian)
@@ -936,7 +936,7 @@ m2d document.md --pandoc-path /path/to/pandoc
 
 **설치 방법**:
 - macOS: `brew install pandoc`
-- Windows: `winget install --id JohnMacFarlane.Pandoc`
+- Windows: `choco install pandoc`
 - Linux: `sudo apt-get install pandoc`
 
 ### 이미지를 찾을 수 없음
