@@ -464,6 +464,97 @@ source ~/.zshrc
 npx markdown-to-document-cli@latest document.md
 ```
 
+### 문제: Windows에서 "'m2d'은(는) 내부 또는 외부 명령... 인식되지 않습니다"
+
+**증상**:
+```cmd
+C:\Users\사용자>m2d interactive
+'m2d' is not recognized as an internal or external command,
+operable program or batch file.
+```
+
+**원인**:
+- npm 전역 설치 폴더(`%APPDATA%\npm`)가 시스템 PATH에 없음
+- Windows에서 Node.js 설치 후 npm global bin이 자동으로 PATH에 추가되지 않는 경우 발생
+
+**해결 방법**:
+
+#### **방법 1: npx 사용 (가장 쉬움, 강력 권장! ⭐)**
+
+전역 설치 없이 바로 사용할 수 있습니다:
+
+```cmd
+npx markdown-to-document-cli@latest interactive
+```
+
+또는 파일 변환:
+```cmd
+npx markdown-to-document-cli@latest "C:\Users\사용자\문서.md"
+```
+
+**장점**:
+- ✅ PATH 설정 불필요
+- ✅ 항상 최신 버전 사용
+- ✅ 설치 과정 간소화
+- ✅ 어떤 폴더에서든 실행 가능
+
+#### **방법 2: PATH에 npm 폴더 추가 (영구적 해결)**
+
+**단계별 가이드**:
+
+1. **npm 전역 폴더 확인**
+```cmd
+npm config get prefix
+```
+결과 예시: `C:\Users\사용자\AppData\Roaming\npm`
+
+2. **환경 변수 설정 열기**
+   - Windows 검색에서 **"환경 변수"** 검색
+   - **"시스템 환경 변수 편집"** 클릭
+   - **"환경 변수..."** 버튼 클릭
+
+3. **사용자 변수에서 Path 편집**
+   - **"사용자 변수"** 섹션에서 **"Path"** 선택
+   - **"편집"** 클릭
+   - **"새로 만들기"** 클릭
+   - 아래 경로 입력 (복사해서 붙여넣기):
+
+```
+%APPDATA%\npm
+```
+
+4. **확인 후 새 터미널 열기**
+   - 모든 창에서 **"확인"** 클릭
+   - ⚠️ **중요**: 기존 CMD/PowerShell 창을 닫고 **새 창**을 열어야 적용됨!
+
+5. **설치 확인**
+```cmd
+m2d --version
+```
+
+#### **방법 3: 전체 경로로 직접 실행**
+
+PATH 설정 없이 전체 경로로 실행:
+
+```cmd
+"%APPDATA%\npm\m2d.cmd" interactive
+```
+
+또는:
+```cmd
+C:\Users\사용자\AppData\Roaming\npm\m2d.cmd interactive
+```
+
+#### **문제 해결 팁**
+
+| 증상 | 해결 |
+|------|------|
+| npm install -g 성공했지만 m2d 안 됨 | 새 터미널 창 열기 또는 npx 사용 |
+| PATH 추가했는데도 안 됨 | 컴퓨터 재시작 후 다시 시도 |
+| "npm" 명령어도 안 됨 | Node.js 재설치 필요 |
+
+---
+
 ### 문제: "Cannot find module 'xxx'"
 
 **증상**:

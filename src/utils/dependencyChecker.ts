@@ -26,7 +26,21 @@ export interface InstallInstructions {
     macOS: string[];
     linux: string[];
     windows: string[];
+    windowsDetailed?: WindowsDetailedInstructions;
     notes?: string;
+}
+
+export interface WindowsDetailedInstructions {
+    steps: WindowsInstallStep[];
+    copyableCommands?: string[];
+    troubleshooting?: string[];
+}
+
+export interface WindowsInstallStep {
+    title: string;
+    description: string;
+    command?: string;
+    url?: string;
 }
 
 export class DependencyChecker {
@@ -94,7 +108,38 @@ export class DependencyChecker {
                 description: 'JavaScript 런타임 - CLI가 실행되는 기반',
                 macOS: ['brew install node', '또는 https://nodejs.org 에서 다운로드'],
                 linux: ['sudo apt-get install nodejs npm', '또는 https://nodejs.org 에서 다운로드'],
-                windows: ['choco install nodejs', '또는 https://nodejs.org 에서 다운로드'],
+                windows: ['https://nodejs.org 에서 LTS 버전 다운로드 후 설치'],
+                windowsDetailed: {
+                    steps: [
+                        {
+                            title: '1. Node.js 다운로드',
+                            description: '아래 링크를 클릭하여 Node.js 공식 사이트에서 LTS 버전을 다운로드하세요.',
+                            url: 'https://nodejs.org/'
+                        },
+                        {
+                            title: '2. 설치 프로그램 실행',
+                            description: '다운로드된 .msi 파일을 더블클릭하여 실행합니다.'
+                        },
+                        {
+                            title: '3. 설치 진행',
+                            description: '"I accept the terms..." 체크 → Next → Next → ⚠️ "Automatically install the necessary tools" 체크 → Next → Install'
+                        },
+                        {
+                            title: '4. 컴퓨터 재시작',
+                            description: '설치 완료 후 컴퓨터를 재시작하세요.'
+                        },
+                        {
+                            title: '5. 설치 확인',
+                            description: '새 CMD 또는 PowerShell 창을 열고 아래 명령어로 확인:',
+                            command: 'node --version'
+                        }
+                    ],
+                    copyableCommands: ['node --version'],
+                    troubleshooting: [
+                        "'node'은(는) 내부 또는 외부 명령... 오류 시 → 컴퓨터 재시작 후 다시 시도",
+                        '여전히 안 되면 Node.js를 삭제 후 재설치'
+                    ]
+                },
                 notes: 'Node.js 18 이상 권장'
             }
         };
@@ -114,7 +159,38 @@ export class DependencyChecker {
                 description: '문서 변환 엔진 - EPUB/PDF 생성의 핵심',
                 macOS: ['brew install pandoc'],
                 linux: ['sudo apt-get install pandoc'],
-                windows: ['choco install pandoc'],
+                windows: ['https://pandoc.org/installing.html 에서 Windows 설치 파일 다운로드'],
+                windowsDetailed: {
+                    steps: [
+                        {
+                            title: '1. Pandoc 다운로드',
+                            description: '아래 링크에서 Windows용 설치 파일(.msi)을 다운로드하세요.',
+                            url: 'https://github.com/jgm/pandoc/releases/latest'
+                        },
+                        {
+                            title: '2. 설치 프로그램 실행',
+                            description: 'pandoc-x.x.x-windows-x86_64.msi 파일을 더블클릭하여 실행합니다.'
+                        },
+                        {
+                            title: '3. 설치 완료',
+                            description: 'Next → "I accept..." 체크 → Next → Install → Finish'
+                        },
+                        {
+                            title: '4. 새 터미널 열기',
+                            description: '⚠️ 중요: 기존 CMD/PowerShell 창을 닫고 새 창을 열어야 합니다!'
+                        },
+                        {
+                            title: '5. 설치 확인',
+                            description: '새 CMD 또는 PowerShell 창에서 아래 명령어로 확인:',
+                            command: 'pandoc --version'
+                        }
+                    ],
+                    copyableCommands: ['pandoc --version'],
+                    troubleshooting: [
+                        "'pandoc'은(는) 내부 또는 외부 명령... 오류 시 → 새 터미널 창을 열고 다시 시도",
+                        '컴퓨터 재시작 후에도 안 되면 Pandoc 재설치'
+                    ]
+                },
                 notes: 'Pandoc 2.19 이상 필요'
             }
         };
@@ -138,16 +214,67 @@ export class DependencyChecker {
                 macOS: ['pip3 install weasyprint', '또는 pip install weasyprint'],
                 linux: ['pip3 install weasyprint', '또는 pip install weasyprint'],
                 windows: [
-                    'pip install weasyprint',
-                    '',
-                    '⚠️ Windows 필수: GTK 런타임 설치가 필요합니다!',
-                    '1. MSYS2 설치: https://www.msys2.org/',
-                    '2. MSYS2 UCRT64 터미널에서 실행:',
-                    '   pacman -S mingw-w64-ucrt-x86_64-gtk3',
-                    '3. 시스템 PATH에 추가: C:\\msys64\\ucrt64\\bin',
-                    '4. 새 터미널 열고 확인: weasyprint --version'
+                    '⚠️ Windows에서는 GTK 런타임 설치가 필수입니다!',
+                    '아래 단계별 가이드를 따라주세요.'
                 ],
-                notes: 'Python + GTK 런타임이 필요합니다'
+                windowsDetailed: {
+                    steps: [
+                        {
+                            title: '📌 사전 요구사항',
+                            description: 'Python이 먼저 설치되어 있어야 합니다. python --version 으로 확인하세요.'
+                        },
+                        {
+                            title: '1단계: MSYS2 설치',
+                            description: 'GTK 런타임을 설치하기 위해 MSYS2가 필요합니다. 아래 링크에서 다운로드하세요.',
+                            url: 'https://www.msys2.org/'
+                        },
+                        {
+                            title: '2단계: MSYS2 설치 프로그램 실행',
+                            description: 'msys2-x86_64-xxxxxxxx.exe 파일을 더블클릭 → Next → 설치 경로는 기본값(C:\\msys64) 유지 → Next → Install'
+                        },
+                        {
+                            title: '3단계: GTK 설치',
+                            description: '⚠️ 중요: 설치 완료 후 열리는 MSYS2 터미널(검은 창)에서 아래 명령어를 복사해서 붙여넣고 Enter:',
+                            command: 'pacman -S mingw-w64-ucrt-x86_64-gtk3'
+                        },
+                        {
+                            title: '4단계: 설치 확인',
+                            description: '"Proceed with installation? [Y/n]" 메시지가 나오면 Y 입력 후 Enter. 설치 완료되면 MSYS2 창을 닫습니다.'
+                        },
+                        {
+                            title: '5단계: 환경 변수 설정 (PATH 추가)',
+                            description: '시스템 환경 변수에 GTK 경로를 추가해야 합니다:\n1. Windows 검색에서 "환경 변수" 검색 → "시스템 환경 변수 편집" 클릭\n2. "환경 변수..." 버튼 클릭\n3. "시스템 변수"에서 "Path" 선택 → "편집" 클릭\n4. "새로 만들기" 클릭 → 아래 경로 입력:'
+                        },
+                        {
+                            title: '📋 복사할 PATH 경로',
+                            description: '아래 경로를 복사하여 새 항목으로 추가하세요:',
+                            command: 'C:\\msys64\\ucrt64\\bin'
+                        },
+                        {
+                            title: '6단계: WeasyPrint 설치',
+                            description: '새 CMD 창(⚠️ 기존 창 말고 새 창!)을 열고 아래 명령어 실행:',
+                            command: 'pip install weasyprint'
+                        },
+                        {
+                            title: '7단계: 설치 확인',
+                            description: '설치가 완료되면 아래 명령어로 확인:',
+                            command: 'weasyprint --version'
+                        }
+                    ],
+                    copyableCommands: [
+                        'pacman -S mingw-w64-ucrt-x86_64-gtk3',
+                        'C:\\msys64\\ucrt64\\bin',
+                        'pip install weasyprint',
+                        'weasyprint --version'
+                    ],
+                    troubleshooting: [
+                        "'weasyprint'은(는) 내부 또는 외부 명령... 오류 → PATH에 C:\\msys64\\ucrt64\\bin 추가 확인 후 새 CMD 창 열기",
+                        "'OSError: cannot load library' 오류 → GTK가 제대로 설치되지 않음. MSYS2에서 pacman 명령어 다시 실행",
+                        "'pip'를 찾을 수 없음 → Python 설치 시 PATH 추가 옵션을 체크하지 않음. Python 재설치 필요",
+                        "MSYS2 터미널이 열리지 않음 → 시작 메뉴에서 'MSYS2 UCRT64' 검색하여 실행"
+                    ]
+                },
+                notes: 'Python + GTK 런타임이 필요합니다 (Windows에서 설치가 다소 복잡함)'
             }
         });
 
@@ -209,7 +336,55 @@ export class DependencyChecker {
                 description: 'WeasyPrint 설치에 필요 (선택사항)',
                 macOS: ['brew install python3'],
                 linux: ['sudo apt-get install python3 python3-pip'],
-                windows: ['choco install python', '또는 https://python.org 에서 다운로드'],
+                windows: ['https://python.org 에서 다운로드'],
+                windowsDetailed: {
+                    steps: [
+                        {
+                            title: '1. Python 다운로드',
+                            description: '아래 링크에서 Python을 다운로드하세요.',
+                            url: 'https://www.python.org/downloads/'
+                        },
+                        {
+                            title: '2. 설치 프로그램 실행',
+                            description: 'python-3.x.x-amd64.exe 파일을 더블클릭하여 실행합니다.'
+                        },
+                        {
+                            title: '⚠️ 3. 매우 중요! PATH 옵션 체크',
+                            description: '설치 화면 하단의 "Add python.exe to PATH" 옵션을 반드시 체크하세요!\n이 옵션을 체크하지 않으면 나중에 python 명령어가 작동하지 않습니다.'
+                        },
+                        {
+                            title: '4. Install Now 클릭',
+                            description: '"Install Now" 버튼을 클릭하여 설치를 진행합니다.'
+                        },
+                        {
+                            title: '5. 설치 완료',
+                            description: '"Disable path length limit" 버튼이 보이면 클릭하세요. 그 후 Close 클릭.'
+                        },
+                        {
+                            title: '6. 컴퓨터 재시작 (권장)',
+                            description: '환경 변수가 적용되도록 컴퓨터를 재시작하세요.'
+                        },
+                        {
+                            title: '7. 설치 확인',
+                            description: '새 CMD 창을 열고 아래 명령어로 확인:',
+                            command: 'python --version'
+                        },
+                        {
+                            title: '8. pip 확인',
+                            description: 'pip도 함께 확인:',
+                            command: 'pip --version'
+                        }
+                    ],
+                    copyableCommands: [
+                        'python --version',
+                        'pip --version'
+                    ],
+                    troubleshooting: [
+                        "'python'은(는) 내부 또는 외부 명령... 오류 → 'Add python.exe to PATH' 체크를 안 함. Python 삭제 후 재설치 필요",
+                        "삭제 방법: 설정 → 앱 → Python 찾아서 제거",
+                        "'pip'를 찾을 수 없음 → Python 재설치 시 PATH 옵션 체크 필수"
+                    ]
+                },
                 notes: 'WeasyPrint를 사용하려면 필요합니다'
             }
         };
@@ -257,10 +432,17 @@ export class DependencyChecker {
                 console.log(chalk.white(`   $ ${cmd}`));
             });
         } else if (platform === 'win32') {
-            console.log(chalk.cyan('   Windows:'));
-            instructions.windows.forEach(cmd => {
-                console.log(chalk.white(`   > ${cmd}`));
-            });
+            // Windows: Show detailed step-by-step guide if available
+            if (instructions.windowsDetailed) {
+                this.displayWindowsDetailedInstructions(dep.name, instructions.windowsDetailed);
+            } else {
+                console.log(chalk.cyan('   Windows:'));
+                instructions.windows.forEach(cmd => {
+                    if (cmd) {
+                        console.log(chalk.white(`   > ${cmd}`));
+                    }
+                });
+            }
         } else {
             console.log(chalk.cyan('   Linux:'));
             instructions.linux.forEach(cmd => {
@@ -270,6 +452,63 @@ export class DependencyChecker {
 
         if (instructions.notes) {
             console.log(chalk.gray(`\n   💡 ${instructions.notes}`));
+        }
+    }
+
+    /**
+     * Display detailed Windows installation instructions
+     */
+    private displayWindowsDetailedInstructions(name: string, detailed: WindowsDetailedInstructions): void {
+        console.log(chalk.cyan.bold(`\n   ═══════════════════════════════════════════════════════`));
+        console.log(chalk.cyan.bold(`   📋 ${name} Windows 설치 가이드 (초보자용)`));
+        console.log(chalk.cyan.bold(`   ═══════════════════════════════════════════════════════\n`));
+
+        // Display each step
+        detailed.steps.forEach((step) => {
+            console.log(chalk.yellow(`   ${step.title}`));
+
+            // Multi-line descriptions
+            const lines = step.description.split('\n');
+            lines.forEach(line => {
+                console.log(chalk.white(`      ${line}`));
+            });
+
+            // Show URL if provided
+            if (step.url) {
+                console.log(chalk.blue(`      🔗 ${step.url}`));
+            }
+
+            // Show command if provided (highlighted for copy-paste)
+            if (step.command) {
+                console.log(chalk.gray(`      ┌${'─'.repeat(50)}┐`));
+                console.log(chalk.green.bold(`      │  ${step.command}`));
+                console.log(chalk.gray(`      └${'─'.repeat(50)}┘`));
+                console.log(chalk.gray(`      ↑ 위 명령어를 복사하여 붙여넣기 (마우스 우클릭)`));
+            }
+
+            console.log('');
+        });
+
+        // Show all copyable commands summary
+        if (detailed.copyableCommands && detailed.copyableCommands.length > 0) {
+            console.log(chalk.cyan(`   ───────────────────────────────────────────────────────`));
+            console.log(chalk.cyan.bold(`   📋 복사용 명령어 요약 (마우스 우클릭으로 붙여넣기):`));
+            console.log(chalk.cyan(`   ───────────────────────────────────────────────────────`));
+            detailed.copyableCommands.forEach((cmd, idx) => {
+                console.log(chalk.green(`   ${idx + 1}. ${cmd}`));
+            });
+            console.log('');
+        }
+
+        // Show troubleshooting tips
+        if (detailed.troubleshooting && detailed.troubleshooting.length > 0) {
+            console.log(chalk.cyan(`   ───────────────────────────────────────────────────────`));
+            console.log(chalk.yellow.bold(`   ⚠️  문제 해결 (오류가 발생했을 때):`));
+            console.log(chalk.cyan(`   ───────────────────────────────────────────────────────`));
+            detailed.troubleshooting.forEach((tip) => {
+                console.log(chalk.gray(`   • ${tip}`));
+            });
+            console.log('');
         }
     }
 

@@ -5,6 +5,44 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.12] - 2026-01-12
+
+### Improved
+- **Windows 초급 사용자를 위한 설치 가이드 대폭 개선**:
+  - 의존성 에러 발생 시 단계별 상세 설치 가이드 표시
+  - 복사해서 붙여넣기 가능한 명령어 형식으로 제공
+  - 각 단계마다 URL, 설명, 명령어를 명확히 구분하여 표시
+
+- **DependencyChecker Windows 가이드 강화**:
+  - Node.js: 5단계 상세 설치 가이드 + 문제 해결 팁
+  - Pandoc: 5단계 상세 설치 가이드 + 문제 해결 팁
+  - Python: 8단계 상세 설치 가이드 (PATH 옵션 체크 강조)
+  - WeasyPrint: 7단계 상세 설치 가이드 (GTK 런타임 설치 포함)
+
+- **복사 가능한 명령어 요약 섹션 추가**:
+  - 각 의존성별로 필요한 모든 명령어를 순서대로 나열
+  - 마우스 우클릭으로 붙여넣기 안내
+
+- **문제 해결 팁 자동 표시**:
+  - 흔한 오류 메시지와 해결 방법 제공
+  - PATH 문제, GTK 오류, pip 오류 등 대응 방법 안내
+
+### Changed
+- **PandocService.getInstallInstructions() 개선**:
+  - Windows에서 상세한 박스형 설치 가이드 표시
+  - Mac/Linux는 기존 간단한 형식 유지
+
+### Documentation
+- **TroubleShooting.md**: Windows에서 `m2d` 명령어 인식 안됨 문제 해결 가이드 추가
+  - npx 사용법 (권장), PATH 추가 방법, 전체 경로 실행 방법 상세 설명
+- **README.md**: 전역 설치 섹션에 Windows 주의사항 추가
+- **BEGINNER_GUIDE.md**: npm link 후 Windows 사용자를 위한 안내 추가
+
+### Technical
+- `WindowsDetailedInstructions` 인터페이스 추가로 구조화된 가이드 지원
+- `displayWindowsDetailedInstructions()` 메서드로 시각적 가이드 렌더링
+- 기존 Mac/Linux 로직은 변경 없이 유지
+
 ## [1.5.6] - 2026-01-11
 
 ### Fixed

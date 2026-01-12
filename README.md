@@ -203,6 +203,7 @@ npx markdown-to-document-cli@latest interactive
 
 | 오류 | 해결 방법 |
 |------|-----------|
+| `'m2d' 인식 안됨` | **npx 사용**: `npx markdown-to-document-cli@latest interactive` |
 | `'node' 인식 안됨` | 컴퓨터 재시작 후 새 PowerShell 열기 |
 | `'python' 인식 안됨` | Python 삭제 → 재설치 시 **PATH 체크** |
 | `'pip' 인식 안됨` | Python 재설치 필요 |
@@ -225,6 +226,15 @@ npx markdown-to-document-cli@latest input.md
 ```bash
 npm install -g markdown-to-document-cli
 ```
+
+> ⚠️ **Windows 사용자 주의**: 전역 설치 후 `m2d` 명령어가 인식되지 않을 수 있습니다!
+>
+> **해결 방법 (택 1)**:
+> 1. **npx 사용 (권장)**: `npx markdown-to-document-cli@latest interactive`
+> 2. **PATH 추가**: `%APPDATA%\npm`을 시스템 PATH에 추가 후 새 터미널 열기
+> 3. **전체 경로**: `"%APPDATA%\npm\m2d.cmd" interactive`
+>
+> 📚 상세 가이드: [TroubleShooting.md](./TroubleShooting.md) → "Windows에서 'm2d' 인식 안됨" 참조
 
 ### 로컬 설치
 
