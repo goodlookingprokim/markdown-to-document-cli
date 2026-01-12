@@ -5,6 +5,42 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.13] - 2026-01-12
+
+### Fixed
+- **Critical: 비동기 파일 I/O로 전환**:
+  - `CoverService`: `fs.writeFileSync` → `fs.promises.writeFile`로 변경
+  - `index.ts`: 임시 마크다운 파일 쓰기/삭제를 비동기로 전환
+  - 이벤트 루프 블로킹 방지로 성능 개선
+
+- **Critical: 임시 파일 정리 로직 추가**:
+  - `CoverService.cleanupTempFiles()` 메서드 추가
+  - 변환 완료 후 생성된 커버 이미지 임시 파일 자동 정리
+  - 디스크 공간 누수 방지
+
+- **정규식 ReDoS 취약점 수정** (`markdownUtils.ts`):
+  - 하이라이트 변환 정규식을 non-greedy 패턴으로 변경
+  - `==([^=]+)==` → `==(.+?)==`
+
+- **Promise.all 에러 핸들링 개선** (`MarkdownPreprocessor.ts`):
+  - `Promise.all` → `Promise.allSettled`로 변경
+  - 개별 이미지 처리 실패 시에도 전체 변환이 중단되지 않도록 개선
+
+### Improved
+- **에러 핸들링 강화** (`dependencyChecker.ts`):
+  - catch 블록에 디버그 로깅 추가
+  - 디버깅 시 문제 원인 파악 용이
+
+- **코드 품질 개선**:
+  - 사용되지 않는 변수 제거 (`ContentValidator.ts`)
+  - 타입 정의에 명확한 JSDoc 주석 추가
+
+### Added
+- **검증 메시지 상수화** (`constants.ts`):
+  - `DEFAULT_MAX_IMAGE_SIZE` 상수 추가 (10MB)
+  - `VALIDATION_MESSAGES` 객체 추가 (42개 한국어 메시지)
+  - i18n 지원 및 유지보수성 향상
+
 ## [1.5.12] - 2026-01-12
 
 ### Improved
