@@ -15,6 +15,33 @@ export interface CoverData {
 }
 
 export class CoverService {
+    /** Track generated temporary files for cleanup */
+    private static generatedTempFiles: string[] = [];
+
+    /**
+     * Clean up all temporary cover files generated during the session
+     * Should be called after conversion is complete
+     */
+    static async cleanupTempFiles(): Promise<void> {
+        for (const filePath of this.generatedTempFiles) {
+            try {
+                if (fs.existsSync(filePath)) {
+                    await fs.promises.unlink(filePath);
+                    Logger.debug(`Cleaned up temp file: ${filePath}`);
+                }
+            } catch (error) {
+                Logger.warn(`Failed to clean up temp file: ${filePath}`, error);
+            }
+        }
+        this.generatedTempFiles = [];
+    }
+
+    /**
+     * Track a temporary file for later cleanup
+     */
+    private static trackTempFile(filePath: string): void {
+        this.generatedTempFiles.push(filePath);
+    }
     /**
      * Generate an SVG cover for EPUB
      */
@@ -77,7 +104,12 @@ export class CoverService {
 </svg>
         `.trim();
 
-        fs.writeFileSync(coverPath, svg, 'utf-8');
+        // Use async file write to avoid blocking the event loop
+        await fs.promises.writeFile(coverPath, svg, 'utf-8');
+
+        // Track temp file for cleanup after conversion completes
+        CoverService.trackTempFile(coverPath);
+
         Logger.info(`Generated EPUB cover (SVG): ${coverPath}`);
         return coverPath;
     }
@@ -90,6 +122,8 @@ export class CoverService {
         const theme = COVER_THEMES[data.themeId] || COVER_THEMES.apple;
 
         // Smart title line breaking for long titles
+        // Note: splitTitleIntoLines returns raw (unescaped) text lines
+        // Each line is then escaped via escapeXml() before HTML insertion to prevent XSS
         const titleLines = this.splitTitleIntoLines(data.title, 14);
         const titleFontSize = titleLines.length > 2 ? '36pt' : titleLines.length > 1 ? '42pt' : '48pt';
         const titleHtml = titleLines.map(line =>

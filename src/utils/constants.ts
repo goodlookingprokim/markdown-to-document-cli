@@ -376,6 +376,47 @@ export const CALLOUT_TYPES = [
 
 export const ATTACHMENT_FOLDERS = ['attachments', 'images', 'assets', 'media'];
 
+// ============ Validation Constants ============
+
+/** Default maximum image size: 10MB */
+export const DEFAULT_MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+
+/** Validation messages (Korean) */
+export const VALIDATION_MESSAGES = {
+    FRONTMATTER_MISSING: 'YAML frontmatter가 없습니다. 메타데이터를 추가하는 것을 권장합니다.',
+    FRONTMATTER_SUGGESTION: '문서 상단에 ---로 감싸진 YAML frontmatter를 추가하세요.',
+    YAML_SYNTAX_ERROR: 'YAML 구문 오류: 콜론(:)이 누락됨',
+    YAML_SYNTAX_SUGGESTION: 'key: value 형식을 확인하세요.',
+    DUPLICATE_H1: (title: string) => `중복된 H1 제목: "${title}"`,
+    H1_SUGGESTION: 'H1은 문서당 하나만 사용하는 것을 권장합니다.',
+    HEADING_LEVEL_GAP: (from: number, to: number) => `제목 레벨 갭: H${from} → H${to}`,
+    HEADING_SKIP_SUGGESTION: (level: number) => `H${level}을 건너뛰었습니다.`,
+    OBSIDIAN_LINK_FOUND: (link: string) => `Obsidian 링크 발견: "${link}"`,
+    OBSIDIAN_LINK_SUGGESTION: '자동으로 표준 마크다운 링크로 변환됩니다.',
+    EMPTY_LINK_URL: '빈 링크 URL',
+    EMPTY_LINK_SUGGESTION: '링크 URL을 입력하세요.',
+    EXTERNAL_LINK: (url: string) => `외부 링크: ${url}`,
+    EXTERNAL_LINK_SUGGESTION: '외부 링크는 변환 후에도 작동해야 합니다.',
+    IMAGE_ALT_MISSING: '이미지 alt 텍스트가 없습니다.',
+    IMAGE_ALT_SUGGESTION: '접근성을 위해 이미지에 설명을 추가하세요.',
+    UNSUPPORTED_IMAGE_FORMAT: (ext: string) => `지원하지 않는 이미지 형식: ${ext}`,
+    SUPPORTED_FORMATS_SUGGESTION: (formats: string[]) => `지원 형식: ${formats.join(', ')}`,
+    TABLE_COLUMN_MISMATCH: (expected: number, found: number) => `테이블 열 불일치: ${expected}개 예상, ${found}개 발견`,
+    TABLE_COLUMN_SUGGESTION: '모든 행의 열 수를 일치시키세요.',
+    UNCLOSED_CODE_BLOCK: '닫히지 않은 코드 블록',
+    UNCLOSED_CODE_SUGGESTION: '코드 블록을 ```로 닫으세요.',
+    UNCLOSED_INLINE_CODE: '닫히지 않은 인라인 코드',
+    UNCLOSED_INLINE_SUGGESTION: '인라인 코드를 `로 닫으세요.',
+    EMOJI_FOUND: (count: number) => `${count}개의 이모지 발견`,
+    EMOJI_SUGGESTION: '일부 형식에서 이모지가 올바르게 렌더링되지 않을 수 있습니다.',
+    ASCII_DIAGRAM_FOUND: 'ASCII 다이어그램 발견',
+    ASCII_DIAGRAM_SUGGESTION: '다이어그램은 이미지로 변환하는 것을 권장합니다.',
+    NO_H1: 'H1 제목이 없습니다.',
+    NO_H1_SUGGESTION: '문서에 H1 제목을 추가하세요.',
+    LONG_PARAGRAPH: (wordCount: number) => `긴 문단 발견 (${wordCount}단어)`,
+    LONG_PARAGRAPH_SUGGESTION: '가독성을 위해 문단을 나누는 것을 권장합니다.',
+} as const;
+
 export const DEFAULT_CONFIG = {
     format: 'epub' as const,
     typographyPreset: 'ebook' as const,

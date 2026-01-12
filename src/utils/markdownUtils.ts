@@ -153,7 +153,8 @@ export function convertObsidianImageSyntax(content: string): {
 
 export function convertHighlights(content: string): string {
     // Convert ==highlight== to <mark>highlight</mark>
-    return content.replace(/==([^=]+)==/g, '<mark>$1</mark>');
+    // Using non-greedy match (.+?) to prevent ReDoS with complex inputs
+    return content.replace(/==(.+?)==/g, '<mark>$1</mark>');
 }
 
 export function removeMediaEmbeds(content: string): string {

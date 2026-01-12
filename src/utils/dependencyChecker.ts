@@ -7,6 +7,7 @@
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import chalk from 'chalk';
+import { Logger } from './common.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -55,7 +56,8 @@ export class DependencyChecker {
                 available: true,
                 version: versionMatch ? versionMatch[1] : 'installed'
             };
-        } catch {
+        } catch (error) {
+            Logger.debug(`Command not available: ${command}`, error);
             return { available: false };
         }
     }
@@ -76,8 +78,9 @@ export class DependencyChecker {
                     return { available: true, version: versionMatch[1] };
                 }
                 return { available: true, version: 'installed' };
-            } catch {
+            } catch (error) {
                 // Continue to next python command
+                Logger.debug(`Python command ${pythonCmd} not available for ${packageName}`, error);
             }
         }
 
@@ -87,8 +90,9 @@ export class DependencyChecker {
             const { stdout } = await execFileAsync(cmd, ['--version'], { timeout: 5000 });
             const versionMatch = stdout.match(/(\d+\.\d+(?:\.\d+)?)/);
             return { available: true, version: versionMatch ? versionMatch[1] : 'installed' };
-        } catch {
+        } catch (error) {
             // Not available via direct command
+            Logger.debug(`Direct command ${packageName} not available`, error);
         }
 
         return { available: false };

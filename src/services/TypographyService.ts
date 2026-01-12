@@ -20,11 +20,19 @@ import {
   type PageMargins
 } from '../utils/cssBuilder.js';
 
+/**
+ * Typography preset identifier for service-level usage
+ * Note: This type is also defined in types/index.ts for general usage.
+ * Both definitions are identical and kept in sync intentionally.
+ */
 export type TypographyPresetId =
   | 'novel' | 'presentation' | 'review' | 'ebook'  // Basic
   | 'text_heavy' | 'table_heavy' | 'image_heavy' | 'balanced'  // Content-focused
   | 'report' | 'manual' | 'magazine';  // Document type
 
+/**
+ * Detailed typography settings for CSS generation
+ */
 export interface TypographySettings {
   fontSize: string;
   lineHeight: number;

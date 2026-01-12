@@ -64,16 +64,21 @@ export class MarkdownPreprocessor {
         const sourceDir = path.dirname(sourcePath);
         const searchDirs = ATTACHMENT_FOLDERS.map(folder => path.join(this.basePath, folder));
 
-        // Resolve Obsidian images
+        // Resolve Obsidian images using Promise.allSettled to handle individual failures gracefully
         const obsidianImagePromises = obsidianImages.map(imageName =>
             this.resolveImage(imageName, sourceDir, searchDirs)
         );
-        const obsidianResolvedImages = await Promise.all(obsidianImagePromises);
+        const obsidianResults = await Promise.allSettled(obsidianImagePromises);
 
-        for (const resolvedImage of obsidianResolvedImages) {
-            resolvedImages.push(resolvedImage);
-            if (!resolvedImage.found) {
-                warnings.push(`Image not found: ${resolvedImage.originalSyntax}`);
+        for (const result of obsidianResults) {
+            if (result.status === 'fulfilled') {
+                resolvedImages.push(result.value);
+                if (!result.value.found) {
+                    warnings.push(`Image not found: ${result.value.originalSyntax}`);
+                }
+            } else {
+                // Log rejected promise but continue processing
+                Logger.warn(`Failed to resolve image: ${result.reason}`);
             }
         }
 
@@ -89,11 +94,17 @@ export class MarkdownPreprocessor {
         }
 
         if (standardImagePromises.length > 0) {
-            const standardResolvedImages = await Promise.all(standardImagePromises);
-            for (const resolvedImage of standardResolvedImages) {
-                resolvedImages.push(resolvedImage);
-                if (!resolvedImage.found) {
-                    warnings.push(`Image not found: ${resolvedImage.originalSyntax}`);
+            // Use Promise.allSettled to handle individual failures gracefully
+            const standardResults = await Promise.allSettled(standardImagePromises);
+            for (const result of standardResults) {
+                if (result.status === 'fulfilled') {
+                    resolvedImages.push(result.value);
+                    if (!result.value.found) {
+                        warnings.push(`Image not found: ${result.value.originalSyntax}`);
+                    }
+                } else {
+                    // Log rejected promise but continue processing
+                    Logger.warn(`Failed to resolve standard image: ${result.reason}`);
                 }
             }
         }

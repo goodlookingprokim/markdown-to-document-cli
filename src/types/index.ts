@@ -103,11 +103,22 @@ export interface ResolvedImage {
     height?: number;
 }
 
+/**
+ * Typography preset identifier
+ * Note: This type is also defined in TypographyService.ts for service-level usage.
+ * Both definitions are identical and kept in sync intentionally.
+ */
 export type TypographyPresetId =
     | 'novel' | 'presentation' | 'review' | 'ebook'  // Basic
     | 'text_heavy' | 'table_heavy' | 'image_heavy' | 'balanced'  // Content-focused
     | 'report' | 'manual' | 'magazine';  // Document type
 
+/**
+ * Typography preset configuration for constants.ts
+ * Note: TypographyService.ts has a different TypographyPreset interface
+ * with more detailed settings (TypographySettings) for CSS generation.
+ * This simpler interface is used for the TYPOGRAPHY_PRESETS constant.
+ */
 export interface TypographyPreset {
     id: TypographyPresetId;
     name: string;

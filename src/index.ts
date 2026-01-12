@@ -5,6 +5,7 @@
 import { PandocService } from './services/PandocService.js';
 import { MarkdownPreprocessor } from './services/MarkdownPreprocessor.js';
 import { ContentValidator } from './services/ContentValidator.js';
+import { CoverService } from './services/CoverService.js';
 import type { ConversionOptions, ConversionResult } from './types/index.js';
 import { DEFAULT_CONFIG } from './utils/constants.js';
 import { ensureDirectory, sanitizeFilename, getTempDir } from './utils/fileUtils.js';
@@ -109,10 +110,10 @@ export class MarkdownToDocument {
                 { title: options.customTitle, author: options.customAuthor }
             );
 
-            // Step 4: Write temporary markdown file
+            // Step 4: Write temporary markdown file (async to avoid blocking)
             const tempDir = getTempDir();
             const tempMarkdownPath = path.join(tempDir, 'temp.md');
-            fs.writeFileSync(tempMarkdownPath, cleanMarkdown, 'utf-8');
+            await fs.promises.writeFile(tempMarkdownPath, cleanMarkdown, 'utf-8');
 
             // Debug: Log first 50 lines of generated markdown
             Logger.info('Generated temp.md (first 50 lines):\n' + cleanMarkdown.split('\n').slice(0, 50).join('\n'));
@@ -179,12 +180,15 @@ export class MarkdownToDocument {
                 }
             }
 
-            // Clean up temp file
+            // Clean up temp files (markdown and cover images)
             try {
-                fs.unlinkSync(tempMarkdownPath);
+                await fs.promises.unlink(tempMarkdownPath);
             } catch {
                 // Ignore cleanup errors
             }
+
+            // Clean up temporary cover files generated during conversion
+            await CoverService.cleanupTempFiles();
 
             Logger.info('Step 6/6: Finalize', {
                 success: errors.length === 0,
@@ -225,4 +229,5 @@ export * from './types/validators.js';
 export { PandocService } from './services/PandocService.js';
 export { MarkdownPreprocessor } from './services/MarkdownPreprocessor.js';
 export { ContentValidator } from './services/ContentValidator.js';
+export { CoverService } from './services/CoverService.js';
 export { DEFAULT_CONFIG } from './utils/constants.js';

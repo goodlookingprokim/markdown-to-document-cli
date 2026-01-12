@@ -5,6 +5,7 @@
 import type { ValidationReport, ValidationIssue } from '../types/index.js';
 import type { ValidationResult, ValidatorConfig } from '../types/validators.js';
 import { Logger } from '../utils/common.js';
+import { DEFAULT_MAX_IMAGE_SIZE, VALIDATION_MESSAGES } from '../utils/constants.js';
 
 export class ContentValidator {
     private config: ValidatorConfig;
@@ -14,7 +15,7 @@ export class ContentValidator {
             autoFix: config.autoFix ?? true,
             strictMode: config.strictMode ?? false,
             allowedImageFormats: config.allowedImageFormats ?? ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'],
-            maxImageSize: config.maxImageSize ?? 10 * 1024 * 1024, // 10MB
+            maxImageSize: config.maxImageSize ?? DEFAULT_MAX_IMAGE_SIZE,
             requireAltText: config.requireAltText ?? true,
             checkExternalLinks: config.checkExternalLinks ?? false,
         };
@@ -101,8 +102,8 @@ export class ContentValidator {
             issues.push({
                 type: 'warning',
                 category: 'frontmatter',
-                message: 'YAML frontmatter가 없습니다. 메타데이터를 추가하는 것을 권장합니다.',
-                suggestion: '문서 상단에 ---로 감싸진 YAML frontmatter를 추가하세요.',
+                message: VALIDATION_MESSAGES.FRONTMATTER_MISSING,
+                suggestion: VALIDATION_MESSAGES.FRONTMATTER_SUGGESTION,
             });
             return issues;
         }
@@ -121,9 +122,9 @@ export class ContentValidator {
                 issues.push({
                     type: 'warning',
                     category: 'frontmatter',
-                    message: `YAML 구문 오류: 콜론(:)이 누락됨`,
+                    message: VALIDATION_MESSAGES.YAML_SYNTAX_ERROR,
                     line: i + 1,
-                    suggestion: 'key: value 형식을 확인하세요.',
+                    suggestion: VALIDATION_MESSAGES.YAML_SYNTAX_SUGGESTION,
                 });
             }
         }
@@ -185,7 +186,6 @@ export class ContentValidator {
      */
     private validateLinks(content: string): ValidationIssue[] {
         const issues: ValidationIssue[] = [];
-        const lines = content.split('\n');
 
         // Check for Obsidian links [[link]]
         const obsidianLinkRegex = /\[\[([^\]]+)\]\]/g;
