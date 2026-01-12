@@ -467,7 +467,7 @@ pip install weasyprint
 ```powershell
 # MSYS2 설치 후 (https://www.msys2.org/)
 # MSYS2 UCRT64 터미널에서:
-pacman -S mingw-w64-ucrt-x86_64-pango
+pacman -S mingw-w64-ucrt-x86_64-gtk3
 
 # PATH에 C:\msys64\ucrt64\bin 추가 필요
 ```

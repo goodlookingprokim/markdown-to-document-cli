@@ -1364,8 +1364,8 @@ pip install weasyprint
 # 방법 1: MSYS2 사용 (권장)
 # 1. https://www.msys2.org/ 에서 MSYS2 설치
 # 2. MSYS2 UCRT64 터미널 열기
-# 3. GTK/Pango 라이브러리 설치:
-pacman -S mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo
+# 3. GTK3 전체 패키지 설치 (모든 의존성 포함):
+pacman -S mingw-w64-ucrt-x86_64-gtk3
 
 # 4. 시스템 PATH에 추가 (제어판 → 시스템 → 환경 변수):
 #    C:\msys64\ucrt64\bin
@@ -1461,8 +1461,8 @@ OSError: cannot load library 'libpango-1.0-0.dll': error 0x7e
 
 # 2. MSYS2 UCRT64 터미널 열기 (시작 메뉴에서 "MSYS2 UCRT64")
 
-# 3. GTK/Pango 라이브러리 설치
-pacman -S mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo
+# 3. GTK3 전체 패키지 설치 (모든 의존성 포함)
+pacman -S mingw-w64-ucrt-x86_64-gtk3
 
 # 4. 시스템 PATH에 C:\msys64\ucrt64\bin 추가
 #    - Win + R → sysdm.cpl → 고급 → 환경 변수

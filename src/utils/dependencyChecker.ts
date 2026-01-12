@@ -137,8 +137,17 @@ export class DependencyChecker {
                 description: 'PDF 생성 엔진 (추천) - 가장 쉽고 한글 지원 우수',
                 macOS: ['pip3 install weasyprint', '또는 pip install weasyprint'],
                 linux: ['pip3 install weasyprint', '또는 pip install weasyprint'],
-                windows: ['pip install weasyprint'],
-                notes: 'Python이 필요합니다: https://python.org'
+                windows: [
+                    'pip install weasyprint',
+                    '',
+                    '⚠️ Windows 필수: GTK 런타임 설치가 필요합니다!',
+                    '1. MSYS2 설치: https://www.msys2.org/',
+                    '2. MSYS2 UCRT64 터미널에서 실행:',
+                    '   pacman -S mingw-w64-ucrt-x86_64-gtk3',
+                    '3. 시스템 PATH에 추가: C:\\msys64\\ucrt64\\bin',
+                    '4. 새 터미널 열고 확인: weasyprint --version'
+                ],
+                notes: 'Python + GTK 런타임이 필요합니다'
             }
         });
 

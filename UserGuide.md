@@ -862,7 +862,7 @@ pip3 install weasyprint
 ```powershell
 # 1. MSYS2 설치: https://www.msys2.org/
 # 2. MSYS2 UCRT64 터미널에서:
-pacman -S mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo
+pacman -S mingw-w64-ucrt-x86_64-gtk3
 
 # 3. PATH에 C:\msys64\ucrt64\bin 추가
 ```

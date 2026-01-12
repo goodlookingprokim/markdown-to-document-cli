@@ -245,7 +245,22 @@ export class PandocService {
             // Provide helpful error messages for common issues
             let enhancedError = errorMessage;
 
-            if (errorMessage.includes('ETIMEDOUT') || errorMessage.includes('timeout')) {
+            if (errorMessage.includes('libgobject') || errorMessage.includes('libpango') || errorMessage.includes('libcairo') || errorMessage.includes('cannot load library')) {
+                // GTK runtime missing on Windows
+                enhancedError =
+                    'WeasyPrint GTK 런타임 오류!\n\n' +
+                    'WeasyPrint가 설치되어 있지만 GTK 라이브러리를 찾을 수 없습니다.\n\n' +
+                    '🔧 GTK 런타임 설치 방법:\n\n' +
+                    '  1. MSYS2 설치: https://www.msys2.org/\n\n' +
+                    '  2. MSYS2 UCRT64 터미널에서 실행:\n' +
+                    '     pacman -S mingw-w64-ucrt-x86_64-gtk3\n\n' +
+                    '  3. 시스템 PATH에 추가:\n' +
+                    '     C:\\msys64\\ucrt64\\bin\n\n' +
+                    '  4. 새 CMD/PowerShell 창 열기 (중요!)\n\n' +
+                    '  5. 확인: weasyprint --version\n\n' +
+                    '📖 자세한 가이드:\n' +
+                    '   https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows';
+            } else if (errorMessage.includes('ETIMEDOUT') || errorMessage.includes('timeout')) {
                 enhancedError =
                     'PDF 변환 시간 초과.\n' +
                     'Windows에서 MiKTeX를 사용하는 경우:\n' +
@@ -408,14 +423,18 @@ export class PandocService {
             if (platform === 'win32') {
                 throw new Error(
                     'PDF 엔진을 찾을 수 없습니다. Windows에서는 WeasyPrint 사용을 강력히 권장합니다.\n\n' +
-                    '🔥 WeasyPrint 설치 (권장 - Mac과 동일한 결과):\n' +
-                    '  1. Python 설치: https://www.python.org/downloads/\n' +
-                    '  2. PowerShell 실행: pip install weasyprint\n\n' +
-                    '⚠️ MiKTeX/LaTeX 사용 시 문제점:\n' +
-                    '  - HTML 태그가 그대로 노출됨\n' +
-                    '  - Mac과 다른 레이아웃 결과\n' +
-                    '  - 더 적은 페이지 수\n\n' +
-                    '설치 후 다시 시도하세요.'
+                    '🔥 WeasyPrint 설치 (3단계):\n\n' +
+                    '  📦 1단계: Python + WeasyPrint\n' +
+                    '     pip install weasyprint\n\n' +
+                    '  🔧 2단계: GTK 런타임 설치 (필수!)\n' +
+                    '     - MSYS2 설치: https://www.msys2.org/\n' +
+                    '     - MSYS2 UCRT64 터미널에서 실행:\n' +
+                    '       pacman -S mingw-w64-ucrt-x86_64-gtk3\n\n' +
+                    '  🔗 3단계: PATH 설정\n' +
+                    '     - 시스템 PATH에 추가: C:\\msys64\\ucrt64\\bin\n' +
+                    '     - 새 터미널 열기\n\n' +
+                    '  ✅ 확인: weasyprint --version\n\n' +
+                    '📖 자세한 가이드: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows'
                 );
             } else {
                 throw new Error(
