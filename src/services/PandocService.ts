@@ -341,12 +341,31 @@ export class PandocService {
      * Check if a PDF engine is available on the system
      */
     private async checkPdfEngineAvailable(engine: string): Promise<boolean> {
+        // Method 1: Direct execution (works if in PATH)
         try {
-            await execFileAsync(engine, ['--version'], { timeout: 3000 });
+            await execFileAsync(engine, ['--version'], { timeout: 5000 });
             return true;
         } catch {
-            return false;
+            // Continue to next method
         }
+
+        // Method 2: For WeasyPrint, try pip show (cross-platform reliable)
+        if (engine.includes('weasyprint')) {
+            const pythonCommands = process.platform === 'win32'
+                ? ['python', 'python3', 'py']
+                : ['python3', 'python'];
+
+            for (const pythonCmd of pythonCommands) {
+                try {
+                    await execFileAsync(pythonCmd, ['-m', 'pip', 'show', 'weasyprint'], { timeout: 10000 });
+                    return true;
+                } catch {
+                    // Continue to next python command
+                }
+            }
+        }
+
+        return false;
     }
 
     private async resolvePdfEngine(engine: 'pdflatex' | 'xelatex' | 'weasyprint' | 'auto'): Promise<{
@@ -581,7 +600,7 @@ export class PandocService {
             if (platform === 'win32') {
                 // Windows paths for WeasyPrint
                 const userProfile = process.env.USERPROFILE || 'C:\\Users\\Default';
-                const pythonVersions = ['Python312', 'Python311', 'Python310', 'Python39', 'Python38'];
+                const pythonVersions = ['Python314', 'Python313', 'Python312', 'Python311', 'Python310', 'Python39', 'Python38'];
 
                 locations = [
                     path.join(userProfile, 'AppData', 'Local', 'Programs', 'Python', 'Python312', 'Scripts', 'weasyprint.exe'),
