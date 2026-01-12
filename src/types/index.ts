@@ -139,6 +139,21 @@ export interface PandocInfo {
     error?: string;
 }
 
+/**
+ * WeasyPrint-specific quality options for PDF generation
+ * These settings help achieve consistent cross-platform PDF output
+ */
+export interface WeasyPrintOptions {
+    /** DPI for raster image resolution (default: 300 for print quality) */
+    dpi?: number;
+    /** JPEG quality 0-95 (default: 90) */
+    jpegQuality?: number;
+    /** Enable font hinting for better text rendering (default: true) */
+    hinting?: boolean;
+    /** Enable image optimization without quality loss (default: false) */
+    optimizeImages?: boolean;
+}
+
 export interface PreprocessResult {
     content: string;
     metadata: DocumentMetadata;

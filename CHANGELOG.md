@@ -5,6 +5,35 @@ All notable changes to Markdown to Document CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.16] - 2026-01-12
+
+### Added
+- **크로스 플랫폼 PDF 품질 최적화**:
+  - CSS 폰트 렌더링 최적화 (`text-rendering: optimizeLegibility`, `font-smoothing`)
+  - 고품질 이미지 렌더링 CSS (`image-rendering: crisp-edges`)
+  - Google Fonts 전체 weight 포함 (100~900)
+
+- **WeasyPrint 품질 옵션**:
+  - `WeasyPrintOptions` 인터페이스 추가 (`types/index.ts`)
+  - 기본값: DPI 300, JPEG 품질 90, 폰트 힌팅 활성화
+  - `--pdf-engine-opt` 옵션으로 WeasyPrint에 전달
+
+- **Noto 폰트 가용성 체크**:
+  - Windows에서 Noto Sans KR 미설치 시 경고 및 설치 가이드 표시
+  - `checkFontAvailability()` 메서드 추가
+
+### Fixed
+- **GTK 오류 메시지 수정**: UCRT64 → MINGW64 안내로 변경
+  - cffi 호환성 문제 해결을 위한 올바른 환경 안내
+  - error 0x7e 감지 조건 추가
+
+### Improved
+- **폰트 스택 확장**:
+  - 플랫폼별 시스템 폰트 폴백 추가 (`-apple-system`, `Segoe UI` 등)
+  - Monospace 폰트에 `Consolas`, `Monaco` 추가
+
+---
+
 ## [1.5.15] - 2026-01-12
 
 ### Fixed

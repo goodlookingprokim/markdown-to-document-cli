@@ -6,18 +6,55 @@
 // ============ Font Stacks ============
 
 export const FONT_STACKS = {
-    serif: '"Noto Serif KR", "Noto Serif CJK KR", "Source Han Serif KR", "Batang", "바탕", "AppleMyungjo", serif',
-    sansSerif: '"Noto Sans KR", "Noto Sans CJK KR", "Source Han Sans KR", "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif',
-    monospace: '"Noto Sans Mono KR", "Noto Sans Mono CJK KR", "D2Coding", "Source Code Pro", monospace',
+    serif: '"Noto Serif KR", "Noto Serif CJK KR", "Source Han Serif KR", "Batang", "바탕", "AppleMyungjo", Georgia, "Times New Roman", serif',
+    sansSerif: '"Noto Sans KR", "Noto Sans CJK KR", "Source Han Sans KR", "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    monospace: '"Noto Sans Mono", "Noto Sans Mono KR", "D2Coding", "Source Code Pro", Consolas, Monaco, monospace',
 } as const;
+
+// ============ Cross-Platform Rendering Optimization ============
+
+/**
+ * Generate font rendering optimization CSS for cross-platform consistency
+ * These properties improve text rendering quality, especially on Windows
+ */
+export function buildFontRenderingStyles(): string[] {
+    return [
+        '/* Cross-platform font rendering optimization */',
+        'html, body {',
+        '  text-rendering: optimizeLegibility;',
+        '  -webkit-font-smoothing: antialiased;',
+        '  -moz-osx-font-smoothing: grayscale;',
+        '  font-synthesis: none;',
+        '  text-size-adjust: 100%;',
+        '  -webkit-text-size-adjust: 100%;',
+        '}'
+    ];
+}
+
+/**
+ * Generate high-quality image rendering CSS for PDF
+ * Improves image quality across different platforms
+ */
+export function buildImageRenderingStyles(): string[] {
+    return [
+        '/* High-quality image rendering */',
+        'img {',
+        '  image-rendering: -webkit-optimize-contrast;',
+        '  image-rendering: crisp-edges;',
+        '  -ms-interpolation-mode: bicubic;',
+        '}'
+    ];
+}
 
 // ============ Common CSS Snippets ============
 
 /**
  * Generate Google Fonts import for PDF
+ * Includes all font weights for consistent cross-platform rendering
+ * Extended weights ensure proper font interpolation on Windows
  */
 export function buildFontImport(): string {
-    return `@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Noto+Serif+KR:wght@300;400;700&display=swap');`;
+    return `@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&family=Noto+Sans+Mono:wght@300;400;500;700&display=swap');`;
 }
 
 /**
@@ -279,6 +316,7 @@ export function buildParagraphStyles(
 
 /**
  * Build common element styles (images, tables, code, blockquotes)
+ * For PDF, also includes cross-platform rendering optimizations
  */
 export function buildCommonElementStyles(format: 'epub' | 'pdf' = 'epub'): string[] {
     const css: string[] = [
@@ -290,6 +328,11 @@ export function buildCommonElementStyles(format: 'epub' | 'pdf' = 'epub'): strin
 
     if (format === 'pdf') {
         css.push(buildPdfBreakRules());
+        // Add cross-platform rendering optimizations for PDF
+        css.push('');
+        css.push(...buildFontRenderingStyles());
+        css.push('');
+        css.push(...buildImageRenderingStyles());
     }
 
     css.push(...buildCodeStyles());

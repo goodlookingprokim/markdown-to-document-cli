@@ -429,5 +429,12 @@ export const DEFAULT_CONFIG = {
     generateCover: true,
     includeCopyright: false,
     paperSize: 'a4' as const,
-    pdfEngine: 'weasyprint' as const
+    pdfEngine: 'weasyprint' as const,
+    // WeasyPrint quality settings for cross-platform PDF consistency
+    weasyPrintOptions: {
+        dpi: 300,           // Print-quality resolution
+        jpegQuality: 90,    // High quality image compression
+        hinting: true,      // Better font rendering on Windows
+        optimizeImages: false,  // Preserve image quality
+    }
 };

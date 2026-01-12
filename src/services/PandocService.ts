@@ -7,7 +7,7 @@ import { promisify } from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import type { PandocInfo, ConversionOptions, TypographyPresetId } from '../types/index.js';
+import type { PandocInfo, ConversionOptions, TypographyPresetId, WeasyPrintOptions } from '../types/index.js';
 import { Logger } from '../utils/common.js';
 import { getTempDir } from '../utils/fileUtils.js';
 import { TypographyService } from './TypographyService.js';
@@ -61,6 +61,8 @@ export interface PdfConversionOptions {
     enableFontSubsetting?: boolean;
     content?: string;
     metadata?: Record<string, string>;
+    /** WeasyPrint-specific quality options for cross-platform consistency */
+    weasyPrintOptions?: WeasyPrintOptions;
 }
 
 export class PandocService {
@@ -245,17 +247,18 @@ export class PandocService {
             // Provide helpful error messages for common issues
             let enhancedError = errorMessage;
 
-            if (errorMessage.includes('libgobject') || errorMessage.includes('libpango') || errorMessage.includes('libcairo') || errorMessage.includes('cannot load library')) {
-                // GTK runtime missing on Windows
+            if (errorMessage.includes('libgobject') || errorMessage.includes('libpango') || errorMessage.includes('libcairo') || errorMessage.includes('cannot load library') || errorMessage.includes('0x7e')) {
+                // GTK runtime missing or cffi/UCRT64 incompatibility on Windows
                 enhancedError =
                     'WeasyPrint GTK 런타임 오류!\n\n' +
-                    'WeasyPrint가 설치되어 있지만 GTK 라이브러리를 찾을 수 없습니다.\n\n' +
-                    '🔧 GTK 런타임 설치 방법:\n\n' +
+                    'WeasyPrint가 설치되어 있지만 GTK 라이브러리를 찾을 수 없거나 호환되지 않습니다.\n\n' +
+                    '🔧 GTK 런타임 설치 방법 (MINGW64 사용 - 중요!):\n\n' +
                     '  1. MSYS2 설치: https://www.msys2.org/\n\n' +
-                    '  2. MSYS2 UCRT64 터미널에서 실행:\n' +
-                    '     pacman -S mingw-w64-ucrt-x86_64-gtk3\n\n' +
+                    '  2. MSYS2 MINGW64 터미널에서 실행 (UCRT64 아님!):\n' +
+                    '     pacman -S --needed mingw-w64-x86_64-gtk3\n\n' +
                     '  3. 시스템 PATH에 추가:\n' +
-                    '     C:\\msys64\\ucrt64\\bin\n\n' +
+                    '     C:\\msys64\\mingw64\\bin\n\n' +
+                    '  ⚠️  기존 UCRT64 PATH가 있다면 제거하세요 (cffi 호환성 문제)\n\n' +
                     '  4. 새 CMD/PowerShell 창 열기 (중요!)\n\n' +
                     '  5. 확인: weasyprint --version\n\n' +
                     '📖 자세한 가이드:\n' +
@@ -496,6 +499,29 @@ export class PandocService {
         const resolvedEngine = await this.resolvePdfEngine(requestedEngine);
         args.push(`--pdf-engine=${resolvedEngine.path}`);
 
+        // WeasyPrint-specific quality options for cross-platform consistency
+        if (resolvedEngine.engine === 'weasyprint') {
+            const wpOptions = options.weasyPrintOptions || {};
+
+            // High DPI for print quality (default 300 for professional output)
+            const dpi = wpOptions.dpi ?? 300;
+            args.push(`--pdf-engine-opt=--dpi=${dpi}`);
+
+            // JPEG quality (default 90 for good quality/size balance)
+            const jpegQuality = wpOptions.jpegQuality ?? 90;
+            args.push(`--pdf-engine-opt=--jpeg-quality=${jpegQuality}`);
+
+            // Font hinting for better text rendering (especially on Windows)
+            if (wpOptions.hinting !== false) {
+                args.push('--pdf-engine-opt=--hinting');
+            }
+
+            // Image optimization (disabled by default to preserve quality)
+            if (wpOptions.optimizeImages) {
+                args.push('--pdf-engine-opt=--optimize-images');
+            }
+        }
+
         // Metadata: Author
         if (options.author) {
             args.push('--metadata', `author=${options.author}`);
@@ -606,6 +632,40 @@ export class PandocService {
                 '/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc',
             ];
         }
+    }
+
+    /**
+     * Check if Noto fonts are available on the system
+     * Returns warning message if fonts are missing (especially important for Windows)
+     */
+    checkFontAvailability(): { hasNotoFonts: boolean; warning?: string } {
+        const platform = process.platform;
+
+        if (platform === 'win32') {
+            const windir = process.env.WINDIR || 'C:\\Windows';
+            const notoFontPaths = [
+                path.join(windir, 'Fonts', 'NotoSansKR-Regular.otf'),
+                path.join(windir, 'Fonts', 'NotoSansKR-Bold.otf'),
+            ];
+
+            const hasNotoFonts = notoFontPaths.some(p => fs.existsSync(p));
+
+            if (!hasNotoFonts) {
+                return {
+                    hasNotoFonts: false,
+                    warning:
+                        '\n⚠️  Noto Sans KR 폰트가 설치되어 있지 않습니다.\n' +
+                        '   Mac과 동일한 PDF 품질을 위해 Noto 폰트 설치를 권장합니다.\n\n' +
+                        '   설치 방법:\n' +
+                        '   1. https://fonts.google.com/noto/specimen/Noto+Sans+KR 방문\n' +
+                        '   2. "Download family" 클릭\n' +
+                        '   3. 압축 해제 후 .otf 파일들을 더블클릭하여 설치\n\n' +
+                        '   현재는 Malgun Gothic으로 대체됩니다.\n'
+                };
+            }
+        }
+
+        return { hasNotoFonts: true };
     }
 
     /**
