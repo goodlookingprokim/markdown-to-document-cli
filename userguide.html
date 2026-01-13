@@ -739,96 +739,31 @@ date: 2025-01-05
 <pre><code class="language-bash">m2d --help
 </code></pre>
 <hr>
-<h2>🔧 문제 해결</h2>
-<h3>PDF 변환 실패: &quot;xelatex not found&quot; 또는 &quot;PDF 엔진을 찾을 수 없습니다&quot;</h3>
-<p><strong>🤔 왜 이런 오류가 나올까요?</strong></p>
-<p>PDF를 만들려면 **&quot;PDF 제작 엔진&quot;**이 필요합니다. 마치 빵을 굽기 위해 오븐이 필요한 것처럼요!</p>
-<p>이 오류는 &quot;오븐이 없어서 빵을 구울 수 없어요&quot;라는 뜻입니다. 아래 방법 중 하나를 선택해서 해결하세요.</p>
-<h4>옵션 1: WeasyPrint 설치 (추천 ⭐)</h4>
-<p><strong>가장 쉽고 빠른 방법!</strong> 한글도 완벽하게 지원합니다.</p>
-<pre><code class="language-bash"># Python pip 사용
-pip install weasyprint
-
-# 또는 Python 3
-pip3 install weasyprint
-</code></pre>
-<p>💡 <strong>Python이 없다면?</strong> <a href="https://www.python.org/downloads/">python.org</a>에서 먼저 설치하세요.</p>
-<p>⚠️ <strong>Windows 사용자 필수</strong>: WeasyPrint는 GTK 런타임이 필요합니다!</p>
-<pre><code class="language-powershell"># 1. MSYS2 설치: https://www.msys2.org/
-# 2. MSYS2 UCRT64 터미널에서:
-pacman -S mingw-w64-ucrt-x86_64-gtk3
-
-# 3. PATH에 C:\msys64\ucrt64\bin 추가
-</code></pre>
-<p>자세한 내용: <a href="./TroubleShooting.md#%EB%AC%B8%EC%A0%9C-weasyprint-cannot-load-library-libgobject-%EC%98%A4%EB%A5%98-windows">TroubleShooting.md</a></p>
-<h4>옵션 2: XeLaTeX 설치 (한글 최적화)</h4>
-<p><strong>한글 폰트를 아름답게!</strong> 전문 출판 수준의 품질을 원한다면 이걸로!</p>
-<pre><code class="language-bash"># macOS (Homebrew)
-brew install --cask basictex
-# 설치 후 PATH 업데이트
-eval &quot;$(/usr/libexec/path_helper)&quot;
-
-# 또는 전체 TeX Live 설치
-brew install --cask mactex
-
-# Linux (Ubuntu/Debian)
-sudo apt-get install texlive-xetex texlive-fonts-recommended
-
-# Linux (Fedora)
-sudo dnf install texlive-xetex
-</code></pre>
-<p>⚠️ <strong>중요</strong>: 설치 후 터미널을 다시 시작하세요!</p>
-<h4>옵션 3: PDFLaTeX 설치</h4>
-<pre><code class="language-bash"># macOS
-brew install --cask basictex
-
-# Linux (Ubuntu/Debian)
-sudo apt-get install texlive-latex-base
-</code></pre>
-<h4>✓ 설치 확인하기</h4>
-<p>오븐이 제대로 설치되었는지 확인해 봅시다:</p>
-<pre><code class="language-bash"># WeasyPrint 확인
-weasyprint --version
-
-# XeLaTeX 확인
-xelatex --version
-
-# PDFLaTeX 확인
-pdflatex --version
-</code></pre>
-<p>버전 번호가 나오면 성공! 🎉</p>
-<h4>💡 프로 팁: 특정 엔진 지정하기</h4>
-<p>여러 개를 설치했다면, 원하는 엔진을 직접 선택할 수 있습니다:</p>
-<pre><code class="language-bash"># 자동 선택 (기본값 - 권장)
-m2d document.md --pdf-engine auto
-
-# WeasyPrint로 PDF 만들기
-m2d document.md --pdf-engine weasyprint
-
-# XeLaTeX로 PDF 만들기
-m2d document.md --pdf-engine xelatex
-
-# PDFLaTeX로 PDF 만들기
-m2d document.md --pdf-engine pdflatex
-</code></pre>
-<h3>Pandoc을 찾을 수 없음</h3>
-<pre><code class="language-bash"># Pandoc 설치 확인
-pandoc --version
-
-# 커스텀 경로 지정
-m2d document.md --pandoc-path /path/to/pandoc
-</code></pre>
-<p><strong>설치 방법</strong>:</p>
-<ul>
-<li>macOS: <code>brew install pandoc</code></li>
-<li>Windows: <code>choco install pandoc</code></li>
-<li>Linux: <code>sudo apt-get install pandoc</code></li>
-</ul>
-<h3>이미지를 찾을 수 없음</h3>
-<p>이미지 파일이 마크다운 파일과 동일한 디렉토리 또는 <code>images/</code>, <code>attachments/</code>, <code>assets/</code>, <code>media/</code> 폴더에 있는지 확인하세요.</p>
-<p><strong>지원하는 이미지 형식</strong>: PNG, JPG/JPEG, GIF, SVG, WebP</p>
-<h3>📚 더 많은 문제 해결</h3>
-<p>이미지 오류, 한글 깨짐, 검증 문제 등 다양한 상황에 대한 해결책은 <a href="./TroubleShooting.md">TroubleShooting.md</a>를 참고하세요.</p>
+<h2>문제 해결</h2>
+<p>문제가 발생하면 <a href="./TroubleShooting.md">TroubleShooting.md</a>를 참조하세요.</p>
+<h3>빠른 참조</h3>
+<table>
+<thead>
+<tr>
+<th>문제</th>
+<th>해결</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PDF 엔진 없음</td>
+<td><code>pip install weasyprint</code></td>
+</tr>
+<tr>
+<td>Pandoc 없음</td>
+<td>macOS: <code>brew install pandoc</code>, Windows: <code>choco install pandoc</code></td>
+</tr>
+<tr>
+<td>이미지 없음</td>
+<td><code>images/</code>, <code>attachments/</code>, <code>assets/</code>, <code>media/</code> 폴더 확인</td>
+</tr>
+</tbody>
+</table>
 <hr>
 <h2>다음 단계</h2>
 <ul>

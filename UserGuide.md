@@ -833,133 +833,17 @@ m2d --help
 
 ---
 
-## 🔧 문제 해결
+## 문제 해결
 
-### PDF 변환 실패: "xelatex not found" 또는 "PDF 엔진을 찾을 수 없습니다"
+문제가 발생하면 [TroubleShooting.md](./TroubleShooting.md)를 참조하세요.
 
-**🤔 왜 이런 오류가 나올까요?**
+### 빠른 참조
 
-PDF를 만들려면 **"PDF 제작 엔진"**이 필요합니다. 마치 빵을 굽기 위해 오븐이 필요한 것처럼요!
-
-이 오류는 "오븐이 없어서 빵을 구울 수 없어요"라는 뜻입니다. 아래 방법 중 하나를 선택해서 해결하세요.
-
-#### 옵션 1: WeasyPrint 설치 (추천 ⭐)
-
-**가장 쉽고 빠른 방법!** 한글도 완벽하게 지원합니다.
-
-```bash
-# Python pip 사용
-pip install weasyprint
-
-# 또는 Python 3
-pip3 install weasyprint
-```
-
-💡 **Python이 없다면?** [python.org](https://www.python.org/downloads/)에서 먼저 설치하세요.
-
-⚠️ **Windows 사용자 필수**: WeasyPrint는 GTK 런타임이 필요합니다!
-
-```powershell
-# 1. MSYS2 설치: https://www.msys2.org/
-# 2. MSYS2 UCRT64 터미널에서:
-pacman -S mingw-w64-ucrt-x86_64-gtk3
-
-# 3. PATH에 C:\msys64\ucrt64\bin 추가
-```
-
-자세한 내용: [TroubleShooting.md](./TroubleShooting.md#문제-weasyprint-cannot-load-library-libgobject-오류-windows)
-
-#### 옵션 2: XeLaTeX 설치 (한글 최적화)
-
-**한글 폰트를 아름답게!** 전문 출판 수준의 품질을 원한다면 이걸로!
-
-```bash
-# macOS (Homebrew)
-brew install --cask basictex
-# 설치 후 PATH 업데이트
-eval "$(/usr/libexec/path_helper)"
-
-# 또는 전체 TeX Live 설치
-brew install --cask mactex
-
-# Linux (Ubuntu/Debian)
-sudo apt-get install texlive-xetex texlive-fonts-recommended
-
-# Linux (Fedora)
-sudo dnf install texlive-xetex
-```
-
-⚠️ **중요**: 설치 후 터미널을 다시 시작하세요!
-
-#### 옵션 3: PDFLaTeX 설치
-
-```bash
-# macOS
-brew install --cask basictex
-
-# Linux (Ubuntu/Debian)
-sudo apt-get install texlive-latex-base
-```
-
-#### ✓ 설치 확인하기
-
-오븐이 제대로 설치되었는지 확인해 봅시다:
-
-```bash
-# WeasyPrint 확인
-weasyprint --version
-
-# XeLaTeX 확인
-xelatex --version
-
-# PDFLaTeX 확인
-pdflatex --version
-```
-
-버전 번호가 나오면 성공! 🎉
-
-#### 💡 프로 팁: 특정 엔진 지정하기
-
-여러 개를 설치했다면, 원하는 엔진을 직접 선택할 수 있습니다:
-
-```bash
-# 자동 선택 (기본값 - 권장)
-m2d document.md --pdf-engine auto
-
-# WeasyPrint로 PDF 만들기
-m2d document.md --pdf-engine weasyprint
-
-# XeLaTeX로 PDF 만들기
-m2d document.md --pdf-engine xelatex
-
-# PDFLaTeX로 PDF 만들기
-m2d document.md --pdf-engine pdflatex
-```
-
-### Pandoc을 찾을 수 없음
-
-```bash
-# Pandoc 설치 확인
-pandoc --version
-
-# 커스텀 경로 지정
-m2d document.md --pandoc-path /path/to/pandoc
-```
-
-**설치 방법**:
-- macOS: `brew install pandoc`
-- Windows: `choco install pandoc`
-- Linux: `sudo apt-get install pandoc`
-
-### 이미지를 찾을 수 없음
-
-이미지 파일이 마크다운 파일과 동일한 디렉토리 또는 `images/`, `attachments/`, `assets/`, `media/` 폴더에 있는지 확인하세요.
-
-**지원하는 이미지 형식**: PNG, JPG/JPEG, GIF, SVG, WebP
-
-### 📚 더 많은 문제 해결
-
-이미지 오류, 한글 깨짐, 검증 문제 등 다양한 상황에 대한 해결책은 [TroubleShooting.md](./TroubleShooting.md)를 참고하세요.
+| 문제 | 해결 |
+|------|------|
+| PDF 엔진 없음 | `pip install weasyprint` |
+| Pandoc 없음 | macOS: `brew install pandoc`, Windows: `choco install pandoc` |
+| 이미지 없음 | `images/`, `attachments/`, `assets/`, `media/` 폴더 확인 |
 
 ---
 

@@ -108,181 +108,45 @@
 <li><strong>임시 디렉토리 관리</strong>: 안전한 임시 파일 처리</li>
 <li><strong>버전 호환성</strong>: Pandoc 2.x 및 3.x 지원</li>
 </ul>
-<h2>🪟 Windows 완전 초보자 가이드</h2>
+<h2>Windows 사용자 가이드</h2>
+<p>Windows에서 처음 시작하시나요? 아래 가이드를 참조하세요.</p>
 <blockquote>
-<p><strong>🎯 목표</strong>: 컴퓨터에 아무것도 없는 상태에서 전자책을 만들 수 있는 환경 구축</p>
+<p><strong><a href="./WINDOWS_QUICKSTART.md">WINDOWS_QUICKSTART.md</a></strong> - Windows 완전 초보자를 위한 상세 설치 가이드</p>
 </blockquote>
-<h3>🍳 요리로 이해하기</h3>
+<h3>빠른 요약</h3>
 <table>
 <thead>
 <tr>
-<th>비유</th>
-<th>실제</th>
-<th>역할</th>
+<th>필요 도구</th>
+<th>용도</th>
+<th>설치 확인</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>🔥 가스레인지</td>
 <td><strong>Node.js</strong></td>
-<td>프로그램 실행 환경</td>
+<td>프로그램 실행</td>
+<td><code>node --version</code></td>
 </tr>
 <tr>
-<td>🍳 프라이팬</td>
 <td><strong>Pandoc</strong></td>
-<td>문서 변환 도구</td>
+<td>문서 변환</td>
+<td><code>pandoc --version</code></td>
 </tr>
 <tr>
-<td>🧑‍🍳 요리사</td>
-<td><strong>NpxMagicDoc</strong></td>
-<td>모든 것을 조합하는 셰프</td>
-</tr>
-<tr>
-<td>🖨️ 오븐</td>
 <td><strong>Python + WeasyPrint</strong></td>
-<td>PDF 만들 때만 필요</td>
+<td>PDF 생성 (선택)</td>
+<td><code>weasyprint --version</code></td>
 </tr>
 </tbody></table>
-<p><strong>💡 핵심</strong>: Node.js + Pandoc만 있으면 <strong>EPUB 변환 가능</strong>!<br>PDF도 원하면 Python + WeasyPrint 추가 설치</p>
-<h3>1️⃣ Node.js 설치 (가스레인지)</h3>
-<ol>
-<li><a href="https://nodejs.org/">nodejs.org</a> 방문</li>
-<li><strong>LTS 버전</strong> (왼쪽 초록 버튼) 다운로드</li>
-<li>설치 시 <strong>&quot;Automatically install the necessary tools&quot;</strong> 체크 ☑️</li>
-<li>설치 완료 후 <strong>컴퓨터 재시작</strong></li>
-</ol>
-<pre><code class="language-powershell"># 확인 (PowerShell에서)
-node --version   # v20.x.x 나오면 성공!
-</code></pre>
-<h3>2️⃣ Pandoc 설치 (프라이팬)</h3>
-<ol>
-<li><a href="https://pandoc.org/installing.html">pandoc.org/installing.html</a> 방문</li>
-<li>Windows 설치 파일 다운로드 (<code>.msi</code>)</li>
-<li>더블클릭해서 설치</li>
-</ol>
-<pre><code class="language-powershell"># 확인 (새 PowerShell 창에서)
-pandoc --version   # pandoc 3.x.x 나오면 성공!
-</code></pre>
-<h3>🎉 여기까지 하면 EPUB 변환 가능!</h3>
-<pre><code class="language-powershell">npx markdown-to-document-cli@latest interactive
-</code></pre>
-<h3>3️⃣ Python 설치 (PDF용 오븐)</h3>
-<blockquote>
-<p>⚠️ <strong>PDF 변환에 필요합니다!</strong> (EPUB만 필요하면 건너뛰세요)</p>
-</blockquote>
-<ol>
-<li><a href="https://www.python.org/downloads/">python.org/downloads</a> 방문</li>
-<li><strong>&quot;Download Python 3.x.x&quot;</strong> 클릭</li>
-<li><strong>⚠️ 매우 중요!</strong> 설치 시 <strong>&quot;Add python.exe to PATH&quot;</strong> 반드시 체크 ☑️</li>
-<li>&quot;Install Now&quot; 클릭</li>
-<li>컴퓨터 재시작</li>
-</ol>
-<pre><code class="language-powershell"># 확인
-python --version   # Python 3.x.x 나오면 성공!
-</code></pre>
-<h3>4️⃣ [필수] WeasyPrint 설치 (PDF 엔진)</h3>
-<blockquote>
-<p>⚠️ <strong>PDF 변환에 필수!</strong> v1.5.7부터 Windows에서 WeasyPrint 없이 PDF 변환 시 에러가 발생합니다.</p>
-</blockquote>
-<pre><code class="language-powershell">pip install weasyprint
-weasyprint --version   # 성공 확인
-</code></pre>
-<p><strong>왜 필수인가요?</strong></p>
-<ul>
-<li>WeasyPrint: Mac과 <strong>100% 동일한</strong> 고품질 PDF 생성</li>
-<li>LaTeX (MiKTeX): HTML 태그 노출, 레이아웃 깨짐 발생</li>
-<li>v1.5.7부터 Windows에서 LaTeX 자동 선택이 차단됩니다</li>
-</ul>
-<h4>🧯 Windows 설치 오류 (libgobject-2.0-0)</h4>
-<pre><code class="language-powershell"># 오류 메시지 예시
-WeasyPrint could not import some external libraries...
-OSError: cannot load library &#39;libgobject-2.0-0&#39;
-</code></pre>
-<table>
-<thead>
-<tr>
-<th>원인</th>
-<th>해결 방법</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>GTK/Pango DLL 미설치</td>
-<td>1) <a href="https://www.msys2.org/">MSYS2</a> 설치 <br> 2) MSYS2 UCRT64 터미널에서 <code>pacman -Syu</code> <br> 3) <code>pacman -S mingw-w64-ucrt-x86_64-gtk3 mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo</code></td>
-</tr>
-<tr>
-<td>PATH에 DLL 없음</td>
-<td><code>C:\msys64\ucrt64\bin</code> 경로를 <strong>시스템 PATH</strong>에 추가 후 PowerShell 재시작</td>
-</tr>
-</tbody></table>
-<pre><code class="language-powershell"># 설치 후 다시 확인
-weasyprint --version
-</code></pre>
-<h3>🚀 바로 사용하기</h3>
 <pre><code class="language-powershell"># EPUB 변환 (Node.js + Pandoc만 필요)
-npx markdown-to-document-cli@latest &quot;C:\Users\사용자\문서.md&quot; --format epub
+npx markdown-to-document-cli@latest &quot;문서.md&quot; --format epub
 
 # PDF 변환 (Python + WeasyPrint 필요)
-npx markdown-to-document-cli@latest &quot;C:\Users\사용자\문서.md&quot; --format pdf
+npx markdown-to-document-cli@latest &quot;문서.md&quot; --format pdf
 
 # 대화형 모드 (가장 쉬움!)
 npx markdown-to-document-cli@latest interactive
 </code></pre>
-<h3>💡 Windows 터미널 붙여넣기 팁</h3>
-<p><strong>Ctrl+V가 안 될 때:</strong></p>
-<table>
-<thead>
-<tr>
-<th>방법</th>
-<th>설명</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>마우스 오른쪽 클릭</strong></td>
-<td>가장 확실한 방법! 클릭만 하면 붙여넣기</td>
-</tr>
-<tr>
-<td><strong>Ctrl+Shift+V</strong></td>
-<td>일부 최신 터미널에서 작동</td>
-</tr>
-<tr>
-<td><strong>Windows Terminal 설치</strong></td>
-<td>Microsoft Store에서 설치, Ctrl+V 기본 지원</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>💡 CMD 창 제목 표시줄 우클릭 → 속성 → &quot;Ctrl 키 바로 가기 사용&quot; 체크하면 Ctrl+V 활성화!</p>
-</blockquote>
-<h3>❓ 문제 해결</h3>
-<table>
-<thead>
-<tr>
-<th>오류</th>
-<th>해결 방법</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>&#39;m2d&#39; 인식 안됨</code></td>
-<td><strong>npx 사용</strong>: <code>npx markdown-to-document-cli@latest interactive</code></td>
-</tr>
-<tr>
-<td><code>&#39;node&#39; 인식 안됨</code></td>
-<td>컴퓨터 재시작 후 새 PowerShell 열기</td>
-</tr>
-<tr>
-<td><code>&#39;python&#39; 인식 안됨</code></td>
-<td>Python 삭제 → 재설치 시 <strong>PATH 체크</strong></td>
-</tr>
-<tr>
-<td><code>&#39;pip&#39; 인식 안됨</code></td>
-<td>Python 재설치 필요</td>
-</tr>
-<tr>
-<td><code>Ctrl+V 안됨</code></td>
-<td>마우스 오른쪽 클릭으로 붙여넣기</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>📚 <strong>상세 가이드</strong>: <a href="./TroubleShooting.md">TroubleShooting.md</a>의 &quot;Windows 완전 초보자를 위한 설치 가이드&quot; 참조</p>
-</blockquote>
 <hr>
 <h2>📦 설치</h2>
 <h3>NPX로 바로 사용 (권장)</h3>
@@ -579,177 +443,65 @@ publisher: 출판사명
 <li><strong>CLI 프레임워크</strong>: Commander.js</li>
 <li><strong>PDF 엔진</strong>: WeasyPrint (선택사항)</li>
 </ul>
-<h2>🐛 문제 해결</h2>
-<h3>❌ PDF 변환 실패: &quot;xelatex not found&quot; 또는 &quot;PDF 엔진을 찾을 수 없습니다&quot;</h3>
-<p><strong>🤔 왜 이런 오류가 나올까요?</strong></p>
-<p>PDF를 만들려면 **&quot;PDF 제작 엔진&quot;**이 필요합니다. 마치 빵을 굽기 위해 오븐이 필요한 것처럼요!</p>
-<p>이 오류는 &quot;오븐이 없어서 빵을 구울 수 없어요&quot;라는 뜻입니다. 아래 방법 중 하나를 선택해서 해결하세요.</p>
-<h4>옵션 1: WeasyPrint 설치 (추천 ⭐)</h4>
-<p><strong>가장 쉽고 빠른 방법!</strong> 한글도 완벽하게 지원합니다.</p>
-<pre><code class="language-bash"># Python pip 사용
-pip install weasyprint
-
-# 또는 Python 3
-pip3 install weasyprint
-</code></pre>
-<p>💡 <strong>Python이 없다면?</strong> <a href="https://www.python.org/downloads/">python.org</a>에서 먼저 설치하세요.</p>
-<h4>옵션 2: XeLaTeX 설치 (한글 최적화)</h4>
-<p><strong>한글 폰트를 아름답게!</strong> 전문 출판 수준의 품질을 원한다면 이걸로!</p>
-<pre><code class="language-bash"># macOS (Homebrew)
-brew install --cask basictex
-# 설치 후 PATH 업데이트
-eval &quot;$(/usr/libexec/path_helper)&quot;
-
-# 또는 전체 TeX Live 설치
-brew install --cask mactex
-
-# Windows
-choco install miktex
-
-# Linux (Ubuntu/Debian)
-sudo apt-get install texlive-xetex texlive-fonts-recommended
-
-# Linux (Fedora)
-sudo dnf install texlive-xetex
-</code></pre>
-<p>⚠️ <strong>중요</strong>: 설치 후 터미널을 다시 시작하세요!<br>🪟 <strong>Windows</strong>: MiKTeX 설치 후 첫 실행 시 패키지 자동 설치를 허용하세요.</p>
-<h4>옵션 3: PDFLaTeX 설치</h4>
-<pre><code class="language-bash"># macOS
-brew install --cask basictex
-
-# Linux (Ubuntu/Debian)
-sudo apt-get install texlive-latex-base
-</code></pre>
-<h4>✓ 설치 확인하기</h4>
-<p>오븐이 제대로 설치되었는지 확인해 봅시다:</p>
-<pre><code class="language-bash"># WeasyPrint 확인
+<h2>문제 해결</h2>
+<h3>PDF 엔진 설치</h3>
+<p>PDF 변환에는 PDF 엔진이 필요합니다.</p>
+<table>
+<thead>
+<tr>
+<th>엔진</th>
+<th>설치 명령어</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>WeasyPrint</strong> (권장)</td>
+<td><code>pip install weasyprint</code></td>
+<td>가장 쉬움, 한글 완벽 지원</td>
+</tr>
+<tr>
+<td><strong>XeLaTeX</strong></td>
+<td>macOS: <code>brew install --cask basictex</code></td>
+<td>전문 출판 품질</td>
+</tr>
+<tr>
+<td><strong>PDFLaTeX</strong></td>
+<td>Linux: <code>sudo apt install texlive-latex-base</code></td>
+<td>기본 LaTeX</td>
+</tr>
+</tbody></table>
+<pre><code class="language-bash"># 설치 확인
 weasyprint --version
-
-# XeLaTeX 확인
 xelatex --version
-
-# PDFLaTeX 확인
-pdflatex --version
 </code></pre>
-<p>버전 번호가 나오면 성공! 🎉</p>
-<h4>💡 프로 팁: 특정 엔진 지정하기</h4>
-<p>여러 개를 설치했다면, 원하는 엔진을 직접 선택할 수 있습니다:</p>
-<pre><code class="language-bash"># 자동 선택 (기본값 - 권장)
-m2d document.md --pdf-engine auto
-
-# WeasyPrint로 PDF 만들기
-m2d document.md --pdf-engine weasyprint
-
-# XeLaTeX로 PDF 만들기
-m2d document.md --pdf-engine xelatex
-
-# PDFLaTeX로 PDF 만들기
-m2d document.md --pdf-engine pdflatex
-</code></pre>
-<hr>
-<h3>❌ 변환 실패: &quot;require is not defined&quot;</h3>
-<p><strong>증상</strong>:</p>
-<pre><code>✖ 변환 실패
-
-❌ 오류:
-   • require is not defined
-</code></pre>
-<p><strong>원인</strong>:</p>
-<ul>
-<li>v1.5.2 이하 버전의 ESM/CommonJS 호환성 문제</li>
-</ul>
-<p><strong>해결 방법</strong>:</p>
-<p>최신 버전(v1.5.3 이상)으로 업데이트하세요:</p>
-<pre><code class="language-bash"># 캐시 클리어 후 최신 버전 실행
-npx clear-npx-cache
-npx markdown-to-document-cli@latest interactive
-
-# 또는 전역 설치 업데이트
-npm uninstall -g markdown-to-document-cli
-npm install -g markdown-to-document-cli
-</code></pre>
-<p>자세한 내용은 <a href="./TroubleShooting.md#esm-%EB%AA%A8%EB%93%88-%EC%98%A4%EB%A5%98">TroubleShooting.md</a>를 참조하세요.</p>
-<hr>
-<h3>Pandoc을 찾을 수 없음</h3>
-<pre><code class="language-bash"># Pandoc 설치 확인
-pandoc --version
-
-# 커스텀 경로 지정
-m2d document.md --pandoc-path /path/to/pandoc
-</code></pre>
-<p><strong>설치 방법</strong>:</p>
-<ul>
-<li>macOS: <code>brew install pandoc</code></li>
-<li>Windows: <code>choco install pandoc</code></li>
-<li>Linux (Ubuntu/Debian): <code>sudo apt-get update &amp;&amp; sudo apt-get install pandoc</code></li>
-<li>Linux (Fedora/RHEL): <code>sudo dnf install pandoc</code></li>
-</ul>
-<hr>
-<h3>Windows PowerShell 실행 정책 오류</h3>
-<p><strong>증상</strong>: Windows PowerShell에서 <code>npx</code> 또는 <code>m2d</code> 실행 시 다음 오류 발생</p>
-<pre><code class="language-powershell">npx : File C:\Program Files\nodejs\npx.ps1 cannot be loaded because running scripts is disabled on this system.
-</code></pre>
-<p><strong>원인</strong>:</p>
-<ul>
-<li>Windows PowerShell의 기본 실행 정책이 스크립트 실행을 차단함</li>
-<li>보안 설정으로 인해 Node.js 스크립트 실행 불가</li>
-</ul>
-<p><strong>해결 방법</strong>:</p>
-<h4><strong>옵션 1: CMD 사용 (가장 빠름, 권장)</strong></h4>
-<p>PowerShell 대신 명령 프롬프트(CMD)를 사용하면 실행 정책 문제가 없습니다:</p>
-<pre><code class="language-cmd"># CMD(명령 프롬프트) 실행 후
-npx markdown-to-document-cli@latest interactive
-
-# 또는 전역 설치 후
-m2d interactive
-</code></pre>
-<h4><strong>옵션 2: 실행 정책 변경 (영구적 해결)</strong></h4>
-<p>PowerShell을 <strong>관리자 권한</strong>으로 실행한 후:</p>
-<pre><code class="language-powershell"># 현재 사용자에 대해 실행 정책 변경
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-
-# 확인 메시지가 나오면 &#39;Y&#39; 입력
-</code></pre>
-<p>그 다음 일반 PowerShell에서 다시 시도:</p>
-<pre><code class="language-powershell">npx markdown-to-document-cli@latest interactive
-</code></pre>
-<h4><strong>옵션 3: 일회성 우회 (임시 해결)</strong></h4>
-<p>관리자 권한 없이 현재 세션에서만 허용:</p>
-<pre><code class="language-powershell">Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-npx markdown-to-document-cli@latest interactive
-</code></pre>
-<p><strong>💡 권장</strong>: Windows 사용자는 **CMD(명령 프롬프트)**를 사용하는 것이 가장 간단합니다.</p>
-<hr>
-<h3>파일 경로 오류</h3>
-<p><strong>증상</strong>: &quot;파일을 찾을 수 없습니다&quot; 또는 경로에 백슬래시(<code>\</code>)가 포함됨</p>
-<p><strong>해결 방법</strong>:</p>
-<ol>
-<li><p><strong>드래그 앤 드롭 사용</strong> (가장 쉬움)</p>
-<ul>
-<li>파일을 터미널 창으로 드래그하세요</li>
-<li>경로가 자동으로 입력됩니다</li>
-</ul>
-</li>
-<li><p><strong>따옴표로 감싸기</strong></p>
-<pre><code class="language-bash">m2d &quot;/Users/username/My Documents/file.md&quot;
-</code></pre>
-</li>
-<li><p><strong>백슬래시 제거</strong></p>
-<pre><code class="language-bash"># ❌ 잘못된 예
-m2d /Users/username/My\ Documents/file.md
-
-# ✅ 올바른 예
-m2d &quot;/Users/username/My Documents/file.md&quot;
-</code></pre>
-</li>
-</ol>
-<p><strong>자동 수정 기능</strong>: CLI가 자동으로 경로를 정리하고 검증합니다.</p>
-<h3>이미지를 찾을 수 없음</h3>
-<p>이미지 파일이 마크다운 파일과 동일한 디렉토리 또는 <code>images/</code>, <code>attachments/</code>, <code>assets/</code>, <code>media/</code> 폴더에 있는지 확인하세요.</p>
-<p><strong>지원하는 이미지 형식</strong>: PNG, JPG/JPEG, GIF, SVG, WebP</p>
-<hr>
-<h3>📚 더 많은 문제 해결</h3>
-<p>이미지 오류, 한글 깨짐, 검증 문제 등 다양한 상황에 대한 해결책은 <a href="./TroubleShooting.md">전체 문제 해결 가이드</a>를 참고하세요.</p>
+<h3>흔한 오류</h3>
+<table>
+<thead>
+<tr>
+<th>오류</th>
+<th>해결 방법</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>m2d</code> 인식 안됨</td>
+<td><code>npx markdown-to-document-cli@latest</code> 사용</td>
+</tr>
+<tr>
+<td>Pandoc 없음</td>
+<td>macOS: <code>brew install pandoc</code>, Windows: <code>choco install pandoc</code></td>
+</tr>
+<tr>
+<td>PowerShell 정책 오류</td>
+<td>CMD 사용 또는 <code>Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</code></td>
+</tr>
+<tr>
+<td>파일 경로 오류</td>
+<td>파일을 터미널로 드래그 앤 드롭</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>상세 가이드</strong>: <a href="./TroubleShooting.md">TroubleShooting.md</a></p>
+</blockquote>
 <h2>📄 라이선스</h2>
 <p>MIT License - <a href="LICENSE">LICENSE</a> 파일 참조</p>
 <h2>🙏 감사의 말</h2>
