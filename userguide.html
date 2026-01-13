@@ -1,776 +1,618 @@
-<h1>UserGuide.md - 사용자 가이드</h1>
-<h2>시작하기</h2>
-<p>Markdown to Document CLI는 마크다운 문서를 전문 출판 수준의 EPUB/PDF로 변환하는 도구입니다. 이 가이드를 통해 기본 사용법부터 고급 기능까지 학습할 수 있습니다.</p>
-<h2>설치</h2>
-<h3>방법 1: NPX로 바로 사용 (추천)</h3>
-<p>설치 없이 바로 사용할 수 있습니다:</p>
-<pre><code class="language-bash">npx markdown-to-document-cli@latest document.md
-</code></pre>
-<h3>방법 2: 전역 설치</h3>
-<p>시스템 전체에서 사용하려면 전역 설치:</p>
-<pre><code class="language-bash">npm install -g markdown-to-document-cli
-</code></pre>
-<p>설치 후 어디서든 <code>m2d</code> 명령어로 사용:</p>
-<pre><code class="language-bash">m2d document.md
-</code></pre>
-<h3>방법 3: 프로젝트 로컬 설치</h3>
-<p>프로젝트에만 설치:</p>
-<pre><code class="language-bash">npm install markdown-to-document-cli
-</code></pre>
-<p><code>npx</code>로 실행:</p>
-<pre><code class="language-bash">npx markdown-to-document-cli@latest document.md
-</code></pre>
-<h2>필수 요구사항</h2>
-<h3>1. Node.js</h3>
-<p>Node.js 18.0 이상이 필요합니다:</p>
-<pre><code class="language-bash">node --version
-</code></pre>
-<h3>2. Pandoc</h3>
-<p>Pandoc 2.19 이상이 필요합니다:</p>
-<h4>macOS</h4>
-<pre><code class="language-bash">brew install pandoc
-</code></pre>
-<h4>Windows</h4>
-<pre><code class="language-bash">choco install pandoc
-</code></pre>
-<h4>Linux (Ubuntu/Debian)</h4>
-<pre><code class="language-bash">sudo apt-get update
-sudo apt-get install pandoc
-</code></pre>
-<h4>Linux (Fedora/RHEL)</h4>
-<pre><code class="language-bash">sudo dnf install pandoc
-</code></pre>
-<p>설치 확인:</p>
-<pre><code class="language-bash">pandoc --version
-</code></pre>
-<h3>3. WeasyPrint (선택사항, PDF 생성용)</h3>
-<pre><code class="language-bash">pip install weasyprint
-</code></pre>
-<h2>📁 파일 경로 입력 방법</h2>
-<h3>올바른 경로 입력 (권장)</h3>
-<p><strong>방법 1: 드래그 앤 드롭</strong> (가장 쉬움)</p>
-<ul>
-<li>파일을 터미널 창으로 드래그하면 경로가 자동으로 입력됩니다</li>
-<li>백슬래시나 따옴표 걱정 없이 사용 가능</li>
-</ul>
-<p><strong>방법 2: 절대 경로</strong></p>
-<pre><code class="language-bash">m2d /Users/username/documents/my-document.md
-</code></pre>
-<p><strong>방법 3: 상대 경로</strong></p>
-<pre><code class="language-bash">m2d ./docs/document.md
-m2d ../project/README.md
-</code></pre>
-<h3>⚠️ 피해야 할 경로 입력</h3>
-<pre><code class="language-bash"># ❌ 백슬래시 이스케이프가 포함된 경로
-m2d /Users/username/My\ Documents/file.md
+<!DOCTYPE html>
+<html lang="ko">
 
-# ✅ 대신 이렇게 (따옴표 사용 또는 드래그 앤 드롭)
-m2d &quot;/Users/username/My Documents/file.md&quot;
-</code></pre>
-<h3>자동 경로 정리 기능</h3>
-<p>CLI가 자동으로 다음을 처리합니다:</p>
-<ul>
-<li>✅ 백슬래시 이스케이프 자동 제거</li>
-<li>✅ 따옴표 자동 제거</li>
-<li>✅ 공백이 포함된 경로 자동 처리</li>
-<li>✅ 상대 경로를 절대 경로로 자동 변환</li>
-<li>✅ 파일 존재 여부 확인 및 친절한 오류 메시지</li>
-</ul>
-<hr>
-<h2>Interactive Mode (대화형 모드)</h2>
-<h3>실행 방법</h3>
-<pre><code class="language-bash">npx markdown-to-document-cli@latest interactive
-# 또는
-m2d i
-</code></pre>
-<h3>워크플로우</h3>
-<p>Interactive Mode는 <strong>간소화된 3단계 워크플로우</strong>로 구성됩니다:</p>
-<table>
-<thead>
-<tr>
-<th>Step</th>
-<th>내용</th>
-<th>설명</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Step 1</strong></td>
-<td>📄 파일 선택</td>
-<td>마크다운 파일 경로 입력</td>
-</tr>
-<tr>
-<td><strong>Step 2</strong></td>
-<td>🚀 모드 선택</td>
-<td>변환 모드 선택 + 자동 문서 분석</td>
-</tr>
-<tr>
-<td><strong>Step 3</strong></td>
-<td>⚡ 변환 실행</td>
-<td>자동 전처리 + 변환</td>
-</tr>
-</tbody></table>
-<h3>2가지 변환 모드</h3>
-<table>
-<thead>
-<tr>
-<th>모드</th>
-<th>설명</th>
-<th>사용 시기</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>⚡ 빠른 변환</strong></td>
-<td>출력 형식만 선택, 나머지 스마트 기본값</td>
-<td>대부분의 경우 (권장)</td>
-</tr>
-<tr>
-<td><strong>⚙️ 상세 설정</strong></td>
-<td>프리셋, 테마, 제목/저자 직접 선택</td>
-<td>세부 조정이 필요할 때</td>
-</tr>
-</tbody></table>
-<h3>스마트 기능</h3>
-<ul>
-<li><strong>자동 문서 분석</strong>: Obsidian 문법, 이미지/표/코드 블록 자동 감지</li>
-<li><strong>스마트 기본값</strong>: 분석 결과 기반 프리셋/테마 자동 추천</li>
-<li><strong>메타데이터 추출</strong>: frontmatter에서 title/author 자동 감지</li>
-<li><strong>자동 전처리</strong>: Obsidian 문법 감지 시 자동 최적화 적용</li>
-</ul>
-<h3>스마트 프리셋 추천</h3>
-<p>문서 분석 결과에 따라 최적의 Typography Preset을 자동으로 추천합니다:</p>
-<table>
-<thead>
-<tr>
-<th>문서 특성</th>
-<th>추천 프리셋</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>이미지 10개 초과</td>
-<td><code>image_heavy</code></td>
-</tr>
-<tr>
-<td>표 5개 초과</td>
-<td><code>table_heavy</code></td>
-</tr>
-<tr>
-<td>코드 블록 10개 초과</td>
-<td><code>manual</code></td>
-</tr>
-<tr>
-<td>단어 10,000개 초과</td>
-<td><code>text_heavy</code></td>
-</tr>
-<tr>
-<td>기본</td>
-<td><code>balanced</code></td>
-</tr>
-</tbody></table>
-<hr>
-<h2>타이포그래피 프리셋</h2>
-<h3>프리셋 개요</h3>
-<p>11가지 타이포그래피 프리셋을 제공하여 다양한 용도에 최적화된 출력을 생성합니다:</p>
-<h4>Basic 프리셋</h4>
-<table>
-<thead>
-<tr>
-<th>프리셋</th>
-<th>용도</th>
-<th>폰트 크기</th>
-<th>줄 간격</th>
-<th>정렬</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>소설</strong></td>
-<td>장편 소설, 에세이</td>
-<td>16pt</td>
-<td>1.8</td>
-<td>양쪽 정렬</td>
-</tr>
-<tr>
-<td><strong>발표</strong></td>
-<td>프레젠테이션, 강의</td>
-<td>18pt</td>
-<td>1.6</td>
-<td>왼쪽 정렬</td>
-</tr>
-<tr>
-<td><strong>리뷰</strong></td>
-<td>검토용 문서</td>
-<td>15pt</td>
-<td>1.7</td>
-<td>왼쪽 정렬</td>
-</tr>
-<tr>
-<td><strong>전자책</strong></td>
-<td>일반 전자책</td>
-<td>14pt</td>
-<td>1.6</td>
-<td>왼쪽 정렬</td>
-</tr>
-</tbody></table>
-<h3>소설 프리셋</h3>
-<p>장편 소설과 에세이에 최적화되어 있습니다:</p>
-<ul>
-<li><strong>세리프 폰트</strong>: Noto Serif CJK KR</li>
-<li><strong>들여쓰기</strong>: 첫 문단 2em</li>
-<li><strong>양쪽 정렬</strong>: 깔끔한 레이아웃</li>
-<li><strong>하이픈 처리</strong>: 단어 끊기 활성화</li>
-<li><strong>페이지 나누기</strong>: 제목에서 페이지 나눔 방지</li>
-</ul>
-<pre><code class="language-bash">m2d novel.md --typography novel
-</code></pre>
-<h3>발표 프리셋</h3>
-<p>프레젠테이션과 강의 자료에 적합합니다:</p>
-<ul>
-<li><strong>산세리프 폰트</strong>: Noto Sans CJK KR</li>
-<li><strong>큰 글씨</strong>: 18pt 기본 크기</li>
-<li><strong>넓은 여백</strong>: 30mm 상하 여백</li>
-<li><strong>제목 강조</strong>: H1-H2에 밑줄 추가</li>
-<li><strong>왼쪽 정렬</strong>: 가독성 향상</li>
-</ul>
-<pre><code class="language-bash">m2d presentation.md --typography presentation
-</code></pre>
-<h3>리뷰 프리셋</h3>
-<p>기술 문서와 검토용 자료에 적합합니다:</p>
-<ul>
-<li><strong>산세리프 폰트</strong>: Noto Sans CJK KR</li>
-<li><strong>코드 강조</strong>: 코드 블록 배경색</li>
-<li><strong>인용구 스타일</strong>: 왼쪽 테두리</li>
-<li><strong>촘촘한 레이아웃</strong>: 정보 밀도 높임</li>
-</ul>
-<pre><code class="language-bash">m2d review.md --typography review
-</code></pre>
-<h3>전자책 프리셋</h3>
-<p>일반 전자책 리더에 최적화되어 있습니다:</p>
-<ul>
-<li><strong>산세리프 폰트</strong>: Noto Sans CJK KR</li>
-<li><strong>균형잡힌 레이아웃</strong>: 14pt, 1.6 줄 간격</li>
-<li><strong>페이지 나누기</strong>: 최적화</li>
-<li><strong>이미지 캡션</strong>: 중앙 정렬, 이탤릭체</li>
-</ul>
-<pre><code class="language-bash">m2d ebook.md --typography ebook
-</code></pre>
-<h2>폰트 서브세팅</h2>
-<h3>개요</h3>
-<p>FontSubsetter는 문서에 실제 사용된 문자만 포함하여 폰트 크기를 최대 99% 감소시킵니다.</p>
-<h3>장점</h3>
-<ul>
-<li><strong>파일 크기 감소</strong>: 전체 폰트 대비 99% 크기 감소</li>
-<li><strong>빠른 로딩</strong>: 작은 파일 크기로 빠른 로딩</li>
-<li><strong>캐싱</strong>: 재사용을 위한 폰트 캐시</li>
-<li><strong>다양한 형식</strong>: WOFF2, TTF, OTF 지원</li>
-</ul>
-<h3>사용법</h3>
-<pre><code class="language-bash">m2d document.md --font-subsetting
-</code></pre>
-<h3>작동 방식</h3>
-<ol>
-<li>문서 내 모든 문자 추출</li>
-<li>사용된 문자만 포함하여 폰트 서브셋 생성</li>
-<li>WOFF2 형식으로 변환</li>
-<li>캐시에 저장하여 재사용</li>
-</ol>
-<h3>캐시 관리</h3>
-<p>캐시는 기본적으로 프로젝트 내 <code>.font-cache</code> 디렉토리에 저장됩니다.</p>
-<h2>고급 기능</h2>
-<h3>동적 CSS 생성</h3>
-<p>TypographyService는 타이포그래피 프리셋을 기반으로 동적으로 CSS를 생성합니다:</p>
-<ul>
-<li><strong>루트 스타일</strong>: 폰트 크기, 줄 간격</li>
-<li><strong>본문 스타일</strong>: 폰트 패밀리, 정렬, 하이픈</li>
-<li><strong>페이지 스타일</strong>: 여백, 크기 (PDF)</li>
-<li><strong>단락 스타일</strong>: 간격, 들여쓰기</li>
-<li><strong>제목 스타일</strong>: 크기, 여백, 폰트 두께</li>
-</ul>
-<h3>커스텀 CSS</h3>
-<p>자신만의 CSS를 추가할 수 있습니다:</p>
-<pre><code class="language-bash">m2d document.md --css custom.css
-</code></pre>
-<p>커스텀 CSS는 타이포그래피 프리셋 CSS 뒤에 적용됩니다.</p>
-<h3>한국어 폰트 지원</h3>
-<p>기본 한국어 폰트 스택:</p>
-<ul>
-<li><strong>세리프</strong>: Noto Serif CJK KR, Noto Serif KR, Batang, 바탕</li>
-<li><strong>산세리프</strong>: Noto Sans CJK KR, Noto Sans KR, Malgun Gothic, 맑은 고딕</li>
-<li><strong>모노스페이스</strong>: Noto Sans Mono CJK KR, D2Coding</li>
-</ul>
-<h2>기본 사용법</h2>
-<h3>첫 번째 변환</h3>
-<pre><code class="language-bash">m2d my-document.md
-</code></pre>
-<p>이 명령은:</p>
-<ol>
-<li><code>my-document.md</code> 파일을 읽습니다</li>
-<li>콘텐츠를 검증하고 자동 수정합니다</li>
-<li>타이포그래피 프리셋 CSS를 생성합니다</li>
-<li>EPUB + PDF 파일을 생성합니다 (<code>my-document.epub</code>, <code>my-document.pdf</code>)</li>
-</ol>
-<h3>PDF 변환</h3>
-<pre><code class="language-bash">m2d my-document.md --format pdf
-</code></pre>
-<h3>EPUB + PDF 동시 변환</h3>
-<pre><code class="language-bash">m2d my-document.md --format both
-</code></pre>
-<h2>옵션 상세</h2>
-<h3>출력 형식 (<code>-f, --format</code>)</h3>
-<pre><code class="language-bash">m2d document.md --format epub    # EPUB만
-m2d document.md --format pdf     # PDF만
-m2d document.md --format both    # 둘 다
-</code></pre>
-<h3>출력 디렉토리 (<code>-o, --output</code>)</h3>
-<pre><code class="language-bash">m2d document.md --output ./dist
-</code></pre>
-<h3>타이포그래피 프리셋 (<code>-t, --typography</code>)</h3>
-<pre><code class="language-bash">m2d document.md --typography auto          # 자동 추천 (기본값)
-m2d document.md --typography novel         # 소설
-m2d document.md --typography presentation  # 발표
-m2d document.md --typography review        # 리뷰
-m2d document.md --typography ebook         # 전자책
-</code></pre>
-<h3>표지 테마 (<code>-c, --cover</code>)</h3>
-<p>자동으로 전문적인 책 표지를 생성합니다:</p>
-<pre><code class="language-bash">m2d document.md --cover apple            # Apple 스타일 (깔끔함)
-m2d document.md --cover modern_gradient  # 현대적인 그라데이션
-m2d document.md --cover dark_tech        # 어두운 테크 스타일
-m2d document.md --cover nature           # 자연 친화적 디자인
-</code></pre>
-<ul>
-<li><strong>EPUB</strong>: 고품질 SVG 이미지가 표지로 삽입됩니다.</li>
-<li><strong>PDF</strong>: 문서의 가장 첫 페이지에 전면 HTML 표지가 생성됩니다.</li>
-</ul>
-<p>사용 가능한 테마 목록:</p>
-<pre><code class="language-bash">m2d list-themes
-</code></pre>
-<h3>검증 옵션</h3>
-<pre><code class="language-bash"># 검증 건너뛰기
-m2d document.md --no-validate
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NpxMagicDoc | 작가를 위한 완벽 마법서</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;800&family=Plus+Jakarta+Sans:wght@400;600;800&family=Noto+Sans+KR:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #000000;
+            --accent-lime: #c3ff00;
+            --accent-pink: #ff90e8;
+            --accent-blue: #05acff;
+            --accent-yellow: #ffda2d;
+            --border: 4px solid #000;
+            --shadow: 12px 12px 0px #000;
+        }
 
-# 자동 수정 비활성화
-m2d document.md --no-auto-fix
-</code></pre>
-<h3>목차 옵션</h3>
-<pre><code class="language-bash"># 목차 깊이 설정
-m2d document.md --toc-depth 3
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-# 목차 비활성화
-m2d document.md --no-toc
-</code></pre>
-<h3>PDF 옵션</h3>
-<pre><code class="language-bash"># PDF 엔진 선택
-m2d document.md --format pdf --pdf-engine auto
-m2d document.md --format pdf --pdf-engine weasyprint
-m2d document.md --format pdf --pdf-engine pdflatex
-m2d document.md --format pdf --pdf-engine xelatex
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
+            line-height: 1.8;
+            padding: 0;
+        }
 
-# 용지 크기
-m2d document.md --format pdf --paper-size a4
-m2d document.md --format pdf --paper-size letter
-</code></pre>
-<h3>고급 옵션</h3>
-<pre><code class="language-bash"># 폰트 서브세팅 (파일 크기 감소)
-m2d document.md --font-subsetting
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
 
-# 커스텀 CSS
-m2d document.md --css ./custom.css
+        /* Sophisticated Neo Brutalism Header */
+        header {
+            margin-bottom: 150px;
+            text-align: left;
+        }
 
-# 커스텀 Pandoc 경로
-m2d document.md --pandoc-path /usr/local/bin/pandoc
+        .nav-badge {
+            display: inline-block;
+            background: var(--fg);
+            color: #fff;
+            padding: 8px 20px;
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 6px 6px 0px var(--accent-lime);
+        }
 
-# 상세 로그
-m2d document.md --verbose
-</code></pre>
-<h2>인터랙티브 모드</h2>
-<p>인터랙티브 모드는 사용자 친화적인 프롬프트를 통해 변환 옵션을 선택할 수 있습니다:</p>
-<pre><code class="language-bash">m2d interactive
-# 또는
-m2d i
-</code></pre>
-<h3>기능</h3>
-<ul>
-<li>✅ <strong>따옴표 자동 제거</strong>: 파일 경로의 따옴표를 자동으로 제거하여 복사-붙여넣기 편의성 향상</li>
-<li>🎨 <strong>색상 코딩된 프롬프트</strong>: 각 질문에 이모지와 색상으로 시각적 개선</li>
-<li>📊 <strong>개선된 스피너</strong>: 변환 진행 상황을 더 명확하게 표시</li>
-<li>📦 <strong>더 나은 출력 포맷팅</strong>: 결과를 구분선으로 구분하여 가독성 향상</li>
-<li>📖 <strong>책 제목/저자명 직접 입력</strong>: 자동 감지된 메타데이터 대신 직접 입력 가능</li>
-</ul>
-<h3>사용 예시</h3>
-<p>단계별 질문에 답하면 됩니다:</p>
-<pre><code>────────────────────────────────────────────────────────────
-  Markdown to Document - Interactive Mode
-────────────────────────────────────────────────────────────
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(4rem, 18vw, 9rem);
+            font-weight: 800;
+            line-height: 0.75;
+            letter-spacing: -6px;
+            margin-bottom: 50px;
+        }
 
-? 📄 Input markdown file path: ./my-document.md
-? 📖 책 제목 (Enter=자동): My Custom Title
-? ✍️  저자 (Enter=자동): John Doe
-? 📤 Output format: � Both EPUB and PDF
-? 🎨 Typography preset: Balanced - 균형 레이아웃
-? 🖼️  Cover theme (optional): None
-? 🔍 Enable content validation? Yes
-? 🔧 Enable auto-fix for detected issues? Yes
-? 📁 Output directory (leave empty for same as input): ./output
+        .intro-text {
+            font-size: 1.8rem;
+            font-weight: 600;
+            max-width: 850px;
+            line-height: 1.3;
+            background: var(--accent-yellow);
+            padding: 30px;
+            border: var(--border);
+            box-shadow: 8px 8px 0px #000;
+            transform: rotate(-1deg);
+        }
 
-────────────────────────────────────────────────────────────
+        /* Section Styling */
+        section {
+            margin-bottom: 180px;
+        }
 
-⚙️  Initializing...
-✅ Initialized successfully
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3rem, 10vw, 5rem);
+            margin-bottom: 80px;
+            position: relative;
+            display: inline-block;
+            line-height: 1;
+        }
 
-🔄 Converting document...
-✅ Conversion completed!
+        .section-title::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 110%;
+            height: 35%;
+            background: var(--accent-lime);
+            z-index: -1;
+            transform: rotate(-2deg) translateX(-5%);
+        }
 
-────────────────────────────────────────────────────────────
+        /* Feynman Story Box */
+        .feynman-card {
+            background: #fff;
+            border: var(--border);
+            box-shadow: var(--shadow);
+            padding: 60px;
+            margin: 60px 0;
+            position: relative;
+        }
 
-📦 Output Files:
+        .feynman-card::before {
+            content: "CONCEPT STORY";
+            position: absolute;
+            top: -20px;
+            left: 40px;
+            background: var(--accent-pink);
+            padding: 6px 20px;
+            border: var(--border);
+            font-weight: 800;
+            font-size: 1rem;
+        }
 
-  📖 EPUB:  ./output/My Custom Title.epub
+        /* Detailed Steps */
+        .step-block {
+            background: #fff;
+            border: var(--border);
+            padding: 50px;
+            margin-bottom: 60px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-────────────────────────────────────────────────────────────
+        .step-block:hover {
+            transform: translate(-8px, -8px);
+            box-shadow: 20px 20px 0px #000;
+        }
 
-🎉 Conversion successful!
-</code></pre>
-<h3>팁</h3>
-<ul>
-<li>파일 경로를 복사할 때 따옴표가 포함되어도 자동으로 처리됩니다</li>
-<li>터미널에서 파일을 드래그 앤 드롭하여 경로를 입력할 수 있습니다</li>
-<li>책 제목과 저자명을 직접 입력하면 자동 감지된 값을 대체합니다</li>
-<li>빈 값으로 두면 자동 감지된 메타데이터를 사용합니다</li>
-<li>모든 질문에 기본값이 제공되므로 Enter 키만 눌러도 됩니다</li>
-</ul>
-<h2>YAML Frontmatter</h2>
-<p>문서 상단에 메타데이터를 추가할 수 있습니다:</p>
-<pre><code class="language-yaml">---
-title: 문서 제목
-subtitle: 부제목
-author: 저자명
-language: ko
-date: 2025-01-05
-description: 문서 설명
-isbn: 978-0-1234-5678-9
-publisher: 출판사명
----
+        .step-num {
+            position: absolute;
+            top: -40px;
+            right: -20px;
+            font-size: 8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            color: transparent;
+            -webkit-text-stroke: 3px #000;
+            opacity: 0.15;
+            z-index: 0;
+        }
 
-# 문서 내용
-</code></pre>
-<h3>필드 설명</h3>
-<table>
-<thead>
-<tr>
-<th>필드</th>
-<th>설명</th>
-<th>필수 여부</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>title</code></td>
-<td>문서 제목</td>
-<td>아니오 (파일명 사용)</td>
-</tr>
-<tr>
-<td><code>subtitle</code></td>
-<td>부제목</td>
-<td>아니오</td>
-</tr>
-<tr>
-<td><code>author</code></td>
-<td>저자명</td>
-<td>아니오</td>
-</tr>
-<tr>
-<td><code>language</code></td>
-<td>언어 코드</td>
-<td>아니오 (기본값: ko)</td>
-</tr>
-<tr>
-<td><code>date</code></td>
-<td>날짜</td>
-<td>아니오 (오늘 날짜 사용)</td>
-</tr>
-<tr>
-<td><code>description</code></td>
-<td>설명</td>
-<td>아니오</td>
-</tr>
-<tr>
-<td><code>isbn</code></td>
-<td>ISBN</td>
-<td>아니오</td>
-</tr>
-<tr>
-<td><code>publisher</code></td>
-<td>출판사</td>
-<td>아니오</td>
-</tr>
-</tbody></table>
-<h2>타이포그래피 프리셋 상세</h2>
-<h3>소설 (Novel)</h3>
-<p><strong>사용 사례</strong>: 장편 소설, 에세이, 문학 작품</p>
-<p><strong>특징</strong>:</p>
-<ul>
-<li>폰트 크기: 16pt</li>
-<li>줄 간격: 1.8</li>
-<li>정렬: 양쪽 정렬</li>
-<li>들여쓰기: 있음</li>
-<li>폰트: Noto Serif CJK KR (명조체)</li>
-</ul>
-<p><strong>예시</strong>:</p>
-<pre><code class="language-bash">m2d novel.md --typography novel
-</code></pre>
-<h3>발표 (Presentation)</h3>
-<p><strong>사용 사례</strong>: 프레젠테이션, 강의 자료, 슬라이드</p>
-<p><strong>특징</strong>:</p>
-<ul>
-<li>폰트 크기: 18pt</li>
-<li>줄 간격: 1.6</li>
-<li>정렬: 왼쪽 정렬</li>
-<li>여백: 넓음</li>
-<li>폰트: Noto Sans CJK KR (고딕체)</li>
-</ul>
-<p><strong>예시</strong>:</p>
-<pre><code class="language-bash">m2d slides.md --typography presentation
-</code></pre>
-<h3>리뷰 (Review)</h3>
-<p><strong>사용 사례</strong>: 검토용 문서, 기술 문서, 보고서</p>
-<p><strong>특징</strong>:</p>
-<ul>
-<li>폰트 크기: 11pt</li>
-<li>줄 간격: 1.4</li>
-<li>정렬: 왼쪽 정렬</li>
-<li>레이아웃: 촘촘함</li>
-<li>폰트: Noto Sans CJK KR (고딕체)</li>
-</ul>
-<p><strong>예시</strong>:</p>
-<pre><code class="language-bash">m2d review.md --typography review
-</code></pre>
-<h3>전자책 (Ebook)</h3>
-<p><strong>사용 사례</strong>: 일반 전자책, 가이드북, 매뉴얼</p>
-<p><strong>특징</strong>:</p>
-<ul>
-<li>폰트 크기: 14pt</li>
-<li>줄 간격: 1.6</li>
-<li>정렬: 양쪽 정렬</li>
-<li>레이아웃: 균형잡힘</li>
-<li>폰트: Noto Sans CJK KR (고딕체)</li>
-</ul>
-<p><strong>예시</strong>:</p>
-<pre><code class="language-bash">m2d ebook.md --typography ebook
-</code></pre>
-<h2>검증 기능</h2>
-<h3>자동 검증</h3>
-<p>기본적으로 8개 검증 모듈이 자동으로 실행됩니다:</p>
-<ol>
-<li><strong>Frontmatter 검증</strong>: YAML 구문 오류</li>
-<li><strong>제목 검증</strong>: H1 중복, 레벨 갭</li>
-<li><strong>링크 검증</strong>: Obsidian 링크, 빈 URL</li>
-<li><strong>이미지 검증</strong>: alt 텍스트, 파일 형식</li>
-<li><strong>표 검증</strong>: 열 일관성</li>
-<li><strong>구문 검증</strong>: 닫히지 않은 코드 블록</li>
-<li><strong>특수문자 검증</strong>: 이모지, ASCII 다이어그램</li>
-<li><strong>접근성 검증</strong>: H1 존재, 긴 문단</li>
-</ol>
-<h3>자동 수정</h3>
-<p>기본적으로 자동 수정이 활성화됩니다:</p>
-<ul>
-<li>Obsidian 링크 → 표준 마크다운 링크</li>
-<li>닫히지 않은 코드 블록 자동 닫기</li>
-</ul>
-<h3>검증 리포트</h3>
-<p>변환 완료 후 검증 리포트가 표시됩니다:</p>
-<pre><code>📊 Validation Report:
-  ✅ Fixed: 5 issues
-  ⚠️  Warnings: 2
-  ❌ Errors: 0
-</code></pre>
-<h2>이미지 처리</h2>
-<h3>이미지 경로</h3>
-<p>이미지는 다음 위치에서 자동으로 검색됩니다:</p>
-<ol>
-<li>마크다운 파일과 동일한 디렉토리</li>
-<li><code>images/</code> 폴더</li>
-<li><code>attachments/</code> 폴더</li>
-<li><code>assets/</code> 폴더</li>
-<li><code>media/</code> 폴더</li>
-</ol>
-<h3>이미지 형식</h3>
-<p>지원하는 형식:</p>
-<ul>
-<li>PNG</li>
-<li>JPG/JPEG</li>
-<li>GIF</li>
-<li>SVG</li>
-<li>WebP</li>
-</ul>
-<h3>이미지 참조</h3>
-<pre><code class="language-markdown">&lt;!-- 표준 마크다운 --&gt;
-![이미지 설명](./images/photo.png)
+        /* Modern Code Design */
+        .code-wrap {
+            position: relative;
+            margin: 40px 0;
+            z-index: 1;
+        }
 
-&lt;!-- Obsidian 문법 (자동 변환됨) --&gt;
-![[photo.png]]
-![[photo.png|이미지 설명]]
-</code></pre>
-<h2>프로그래밍 방식 사용</h2>
-<p>Node.js 코드에서 직접 사용할 수 있습니다:</p>
-<pre><code class="language-javascript">import { MarkdownToDocument } from &#39;markdown-to-document-cli&#39;;
+        .code-box {
+            background: #000;
+            color: #00ff41;
+            padding: 40px;
+            border: var(--border);
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            font-size: 1.2rem;
+            box-shadow: 10px 10px 0px var(--accent-pink);
+        }
 
-const converter = new MarkdownToDocument();
+        .copy-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-pink);
+            border: 3px solid #000;
+            padding: 10px 20px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #000;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.1s;
+        }
 
-// 초기화
-const initResult = await converter.initialize();
-if (!initResult.success) {
-  console.error(initResult.error);
-  process.exit(1);
-}
+        .copy-btn:active {
+            transform: translate(3px, 3px);
+            box-shadow: 0px 0px 0px #000;
+        }
 
-// 변환
-const result = await converter.convert({
-  inputPath: &#39;./document.md&#39;,
-  outputPath: &#39;./output&#39;,
-  format: &#39;both&#39;,
-  typographyPreset: &#39;balanced&#39;,
-  validateContent: true,
-  autoFix: true,
-});
+        /* Comparison Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 50px;
+            margin: 60px 0;
+        }
 
-if (result.success) {
-  console.log(&#39;변환 성공!&#39;, result.epubPath);
-} else {
-  console.error(&#39;변환 실패:&#39;, result.errors);
-}
-</code></pre>
-<h2>실전 예제</h2>
-<h3>예제 1: 소설 EPUB 변환</h3>
-<pre><code class="language-bash">m2d my-novel.md \
-  --format epub \
-  --typography novel \
-  --output ./books
-</code></pre>
-<h3>예제 2: 발표용 PDF</h3>
-<pre><code class="language-bash">m2d presentation.md \
-  --format pdf \
-  --typography presentation \
-  --pdf-engine weasyprint \
-  --paper-size a4
-</code></pre>
-<h3>예제 3: 기술 문서 (EPUB + PDF)</h3>
-<pre><code class="language-bash">m2d technical-doc.md \
-  --format both \
-  --typography review \
-  --output ./docs \
-  --toc-depth 3
-</code></pre>
-<h3>예제 4: 검증 없이 빠르게 변환</h3>
-<pre><code class="language-bash">m2d quick-document.md \
-  --format epub \
-  --no-validate \
-  --no-auto-fix
-</code></pre>
-<h3>예제 5: 커스텀 CSS 적용</h3>
-<pre><code class="language-bash">m2d styled-doc.md \
-  --format epub \
-  --css ./custom-styles.css
-</code></pre>
-<h2>팁과 모범 사례</h2>
-<h3>1. 파일 명명</h3>
-<p>의미 있는 파일명 사용:</p>
-<pre><code class="language-bash"># 좋은 예
-m2d 2025-01-05-technical-guide.md
+        .grid-card {
+            border: var(--border);
+            padding: 50px;
+            background: #fff;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
 
-# 피해야 할 예
-m2d doc.md
-</code></pre>
-<h3>2. 디렉토리 구조</h3>
-<pre><code>project/
-├── documents/
-│   ├── chapter1.md
-│   ├── chapter2.md
-│   └── images/
-│       ├── diagram1.png
-│       └── diagram2.png
-├── output/
-└── custom.css
-</code></pre>
-<h3>3. YAML Frontmatter 사용</h3>
-<p>항상 frontmatter 추가:</p>
-<pre><code class="language-yaml">---
-title: 명확한 제목
-author: 저자명
-date: 2025-01-05
----
-</code></pre>
-<h3>4. 이미지 alt 텍스트</h3>
-<p>항상 alt 텍스트 추가:</p>
-<pre><code class="language-markdown">![시스템 아키텍처 다이어그램](./architecture.png)
-</code></pre>
-<h3>5. 제목 구조</h3>
-<p>계층적 제목 사용:</p>
-<pre><code class="language-markdown"># H1 (문서당 하나만)
+        .grid-card h4 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-bottom: 4px solid #000;
+            display: inline-block;
+        }
 
-## H2
+        /* UI Elements */
+        .highlight {
+            background: var(--accent-lime);
+            font-weight: 800;
+            padding: 0 8px;
+        }
 
-### H3
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: var(--fg);
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
 
-#### H4
-</code></pre>
-<h2>유틸리티 명령어</h2>
-<h3>프리셋 목록</h3>
-<pre><code class="language-bash">m2d list-presets
-</code></pre>
-<h3>테마 목록</h3>
-<pre><code class="language-bash">m2d list-themes
-</code></pre>
-<h3>의존성 확인 (권장)</h3>
-<p>변환을 시작하기 전에 필요한 도구들이 모두 설치되어 있는지 확인하세요:</p>
-<pre><code class="language-bash">m2d check
-</code></pre>
-<p><strong>자동으로 확인하는 항목</strong>:</p>
-<ul>
-<li>✅ Node.js (필수)</li>
-<li>✅ Pandoc (필수)</li>
-<li>✅ PDF 엔진: WeasyPrint, XeLaTeX, PDFLaTeX 중 최소 1개</li>
-<li>⚪ Python (WeasyPrint 사용 시 필요)</li>
-</ul>
-<p><strong>설치되지 않은 도구가 있으면</strong>:</p>
-<ul>
-<li>플랫폼별(macOS, Linux, Windows) 맞춤 설치 명령어 제공</li>
-<li>복사해서 바로 사용할 수 있는 명령어</li>
-<li>각 도구의 역할 설명</li>
-</ul>
-<h2>도움말</h2>
-<pre><code class="language-bash">m2d --help
-</code></pre>
-<hr>
-<h2>문제 해결</h2>
-<p>문제가 발생하면 <a href="./TroubleShooting.md">TroubleShooting.md</a>를 참조하세요.</p>
-<h3>빠른 참조</h3>
-<table>
-<thead>
-<tr>
-<th>문제</th>
-<th>해결</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>PDF 엔진 없음</td>
-<td><code>pip install weasyprint</code></td>
-</tr>
-<tr>
-<td>Pandoc 없음</td>
-<td>macOS: <code>brew install pandoc</code>, Windows: <code>choco install pandoc</code></td>
-</tr>
-<tr>
-<td>이미지 없음</td>
-<td><code>images/</code>, <code>attachments/</code>, <code>assets/</code>, <code>media/</code> 폴더 확인</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2>다음 단계</h2>
-<ul>
-<li><a href="TroubleShooting.md">TroubleShooting.md</a> - 문제 해결 가이드</li>
-<li><a href="Project.md">Project.md</a> - 프로젝트 문서</li>
-<li><a href="CHANGELOG.md">CHANGELOG.md</a> - 변경 로그</li>
-<li><a href="https://github.com/goodlookingprokim/markdown-to-document-cli">GitHub Repository</a> - 소스 코드</li>
-</ul>
-<hr>
-<p><strong>마지막 업데이트</strong>: 2026-01-06 (v1.2.7)</p>
+        .check-list {
+            list-style: none;
+            margin: 30px 0;
+        }
+
+        .check-list li {
+            margin-bottom: 15px;
+            padding-left: 40px;
+            position: relative;
+            font-weight: 600;
+        }
+
+        .check-list li::before {
+            content: "✔";
+            position: absolute;
+            left: 0;
+            background: var(--accent-lime);
+            width: 25px;
+            height: 25px;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        footer {
+            border-top: var(--border);
+            padding: 120px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 60px;
+        }
+
+        .footer-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 4.5rem;
+                letter-spacing: -3px;
+            }
+
+            .section-title {
+                font-size: 3rem;
+            }
+
+            .container {
+                padding: 60px 20px;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .feynman-card {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="nav-badge">MASTER GUIDE v1.5.17</div>
+            <h1>WRITE ONCE.<br>BECOME AN AUTHOR.</h1>
+            <p class="intro-text">마크다운을 출판용 전자책으로 바꾸는 여정은 어렵지 않습니다. 셰프가 주방을 차리듯, 당신만의 완벽한 출판 환경을 구축해 보세요.</p>
+        </header>
+
+        <!-- CONCEPT: THE KITCHEN ANALOGY -->
+        <section id="concept">
+            <h2 class="section-title">0. 마법의 원리</h2>
+            <div class="feynman-card">
+                <h3>기술을 '요리'로 이해하기</h3>
+                <p>
+                    많은 사람들이 "코딩은 어렵다"고 하지만, 사실 요리와 똑같습니다. <br><br>
+                    1. <strong>마크다운 파일</strong>: 당신이 정성껏 준비한 <span class="highlight">최고급 식재료</span>입니다.<br>
+                    2. <strong>Node.js</strong>: 요리를 할 수 있게 불을 피우고 가스를 공급하는 <span class="highlight">주방
+                        시스템</span>입니다.<br>
+                    3. <strong>Pandoc</strong>: 재료를 썰고, 익히고, 플레이팅하는 <span class="highlight">만능 조리 기구</span>입니다.<br><br>
+                    NpxMagicDoc은 이 모든 것을 총괄하여, 클릭 한 번에 당신의 재료를 <span class="highlight">5성급 호텔 요리(전자책)</span>로 변환해주는 수석
+                    셰프입니다.
+                </p>
+            </div>
+        </section>
+
+        <!-- STEP 1: PREPARATION -->
+        <section id="preparation">
+            <h2 class="section-title">1. 주방 기초 공사</h2>
+            <p>전문적인 출판을 위해 컴퓨터에 딱 두 가지만 설치해 주세요. 이 과정은 한 번만 하면 됩니다.</p>
+
+            <div class="step-block">
+                <span class="step-num">01</span>
+                <span class="badge">REQUIRED ENGINE</span>
+                <h3>Node.js 설치</h3>
+                <p>NpxMagicDoc이 살아 움직이는 토대입니다. 공식 사이트(<a href="https://nodejs.org" target="_blank">nodejs.org</a>)에서
+                    <strong>LTS(추천) 버전</strong>을 다운로드하여 설치하세요. 설치 후 아래 명령어로 잘 설치되었는지 확인해 봅니다.
+                </p>
+                <div class="code-wrap">
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                    <div class="code-box">
+                        <pre>node --version # v18.0.0 이상이면 합격!</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-num">02</span>
+                <span class="badge">CONVERSION ENGINE</span>
+                <h3>Pandoc 설치</h3>
+                <p>문서를 재조립하는 실제 엔진입니다. 운영체제에 따라 아래 명령어를 복사하여 터미널에 붙여넣으세요.</p>
+                <div class="grid-2" style="margin-bottom: 20px;">
+                    <div class="grid-card" style="background: var(--accent-blue); color: #fff;">
+                        <h4>macOS</h4>
+                        <p>터미널(Terminal)을 열고 입력:</p>
+                        <div class="code-wrap">
+                            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                            <div class="code-box">
+                                <pre>brew install pandoc</pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid-card" style="background: var(--accent-yellow);">
+                        <h4>Windows</h4>
+                        <p>명령 프롬프트(CMD)를 열고 입력:</p>
+                        <div class="code-wrap">
+                            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                            <div class="code-box">
+                                <pre>winget install --id JohnMacFarlane.Pandoc</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="grid-card" style="background: var(--accent-pink); color: #000;">
+                        <h4>Linux (Ubuntu/Debian)</h4>
+                        <p>터미널을 열고 입력:</p>
+                        <div class="code-wrap">
+                            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                            <div class="code-box">
+                                <pre>sudo apt-get update && sudo apt-get install pandoc</pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid-card" style="background: var(--accent-lime); color: #000;">
+                        <h4>Linux (Fedora/RHEL)</h4>
+                        <p>터미널을 열고 입력:</p>
+                        <div class="code-wrap">
+                            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                            <div class="code-box">
+                                <pre>sudo dnf install pandoc</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 2: ACCESS METHODS -->
+        <section id="access">
+            <h2 class="section-title">2. 셰프를 부르는 두 가지 주문</h2>
+            <p>프로그램을 실행하는 방법은 크게 두 가지입니다. 당신의 성향에 맞는 방식을 골라보세요.</p>
+
+            <div class="grid-2">
+                <div class="grid-card">
+                    <span class="badge" style="background: var(--accent-pink); color: #000;">방법 A: NPX (즉시 소환)</span>
+                    <p>컴퓨터에 도구를 영구적으로 남기지 않고, 필요할 때만 구름(클라우드)에서 불러와서 씁니다.</p>
+                    <ul class="check-list">
+                        <li>컴퓨터 용량 절약</li>
+                        <li>항상 최신 버전 자동 사용</li>
+                        <li>초보자에게 <strong>강력 추천</strong></li>
+                    </ul>
+                    <div class="code-wrap">
+                        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                        <div class="code-box">
+                            <pre>npx markdown-to-document-cli interactive</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-card">
+                    <span class="badge">방법 B: NPM Global (내 도구로 등록)</span>
+                    <p>도구를 내 컴퓨터 가방에 영구적으로 넣고 다닙니다. 한 번 설치하면 인터넷 없이도 주문을 내릴 수 있습니다.</p>
+                    <ul class="check-list">
+                        <li>인터넷 연결 없이 즉시 실행</li>
+                        <li>명령어 단축 가능 (m2d)</li>
+                        <li>자주 사용하는 헤비 유저용</li>
+                    </ul>
+                    <div class="code-wrap">
+                        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                        <div class="code-box">
+                            <pre>npm install -g markdown-to-document-cli
+# 이제 아래처럼 짧게 부르세요!
+m2d interactive</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: MASTER WORKFLOW -->
+        <section id="workflow">
+            <h2 class="section-title">3. 변환 마스터 여정</h2>
+            <p>셰프와 대화하며 책을 완성하는 가장 쉽고 세련된 과정입니다.</p>
+
+            <div class="step-block">
+                <span class="step-num">01</span>
+                <h3>원고 전달하기</h3>
+                <p>변환할 마크다운 파일(.md)의 경로를 입력하세요.</p>
+
+                <div
+                    style="background: #f0f8ff; padding: 20px; border-radius: 8px; margin-top: 15px; border-left: 4px solid var(--accent-blue);">
+                    <h4 style="margin-bottom: 10px;">💡 경로 입력 꿀팁</h4>
+                    <p style="margin-bottom: 10px;"><strong>가장 쉬운 방법:</strong> 파일을 터미널 창으로 <span class="highlight">드래그 앤
+                            드롭</span>하면 경로가 마법처럼 자동 입력됩니다!</p>
+
+                    <p style="margin: 15px 0 10px 0;"><strong>⚠️ 이런 경로는 피하세요:</strong></p>
+                    <div class="code-box" style="background: #ffebee; border-left: 3px solid #f44336;">
+                        <pre style="color: #c62828;"># ❌ 백슬래시가 포함된 경로
+/Users/username/My\ Documents/file.md</pre>
+                    </div>
+
+                    <p style="margin: 15px 0 10px 0;"><strong>✅ 이렇게 입력하세요:</strong></p>
+                    <div class="code-box" style="background: #e8f5e9; border-left: 3px solid #4caf50;">
+                        <pre style="color: #2e7d32;"># 방법 1: 드래그 앤 드롭 (추천!)
+# 방법 2: 따옴표로 감싸기
+"/Users/username/My Documents/file.md"</pre>
+                    </div>
+
+                    <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                        <strong>자동 수정 기능:</strong> 백슬래시, 따옴표, 공백 등이 포함된 경로도 자동으로 정리됩니다!
+                    </p>
+                </div>
+            </div>
+
+            <div class="step-block" style="background: var(--accent-lime);">
+                <span class="step-num">02</span>
+                <h3>셰프의 추천 확인</h3>
+                <p>마법사가 당신의 원고를 순식간에 읽고 분석합니다. "이미지가 많으니 이 스타일을 쓰세요!"라고 추천해 주면, <strong>⚡ 빠른 변환</strong>을 눌러 즉시 작업을 끝내거나
+                    <strong>⚙️ 상세 설정</strong>에서 15가지 표지와 11가지 스타일을 직접 고를 수 있습니다.
+                </p>
+            </div>
+
+            <div class="step-block">
+                <span class="step-num">03</span>
+                <h3>책 출고 완료</h3>
+                <p>잠시만 기다리면 원고와 같은 폴더에 <span class="highlight">.epub</span>(태블릿/폰용) 또는 <span
+                        class="highlight">.pdf</span>(출력/PC용) 파일이 생성됩니다. 당신의 첫 번째 책이 탄생한 순간입니다!</p>
+            </div>
+        </section>
+
+        <!-- STEP 4: PRO TIPS -->
+        <section id="tips">
+            <h2 class="section-title">4. 프로 작가를 위한 팁</h2>
+            <p>결과물을 더 완벽하게 만드는 작가들의 비밀 도구입니다.</p>
+
+            <div class="grid-2">
+                <div class="grid-card">
+                    <h4>Frontmatter 활용</h4>
+                    <p>원고 맨 위에 아래 내용을 적어두면 마법사가 제목과 저자를 자동으로 인식합니다.</p>
+                    <div class="code-box" style="box-shadow: 4px 4px 0px #000; font-size: 0.9rem; color: #fff;">
+                        <pre>---
+title: "나의 멋진 책"
+author: "이름"
+coverTheme: "apple"
+---</pre>
+                    </div>
+                </div>
+                <div class="grid-card">
+                    <h4>Obsidian 사용자라면?</h4>
+                    <p>옵시디언의 <code>![[이미지]]</code>나 <code>[[내부링크]]</code> 문법도 걱정 마세요. 셰프가 변환 과정에서 표준 마크다운으로 <span
+                            class="highlight">자동 교정</span>해 드립니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESOURCES SECTION -->
+        <section
+            style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); padding: 60px 40px; border: var(--border); box-shadow: var(--shadow); margin-bottom: 100px;">
+            <h2 class="section-title" style="margin-bottom: 40px; font-size: 3.5rem;">📚 더 알아보기</h2>
+
+            <div class="grid-2" style="gap: 30px;">
+                <div
+                    style="background: #fff; padding: 40px; border: var(--border); box-shadow: 8px 8px 0px #000; border-radius: 12px;">
+                    <h3 style="font-size: 1.8rem; margin-bottom: 20px; font-family: 'Space Grotesk', sans-serif;">📖 완전
+                        사용자 가이드</h3>
+                    <p style="margin-bottom: 25px; line-height: 1.8; color: #333;">
+                        타이포그래피 프리셋, 표지 테마, 고급 옵션 등 모든 기능을 상세하게 설명합니다.
+                        초보자부터 전문가까지 필요한 모든 정보가 담겨 있습니다.
+                    </p>
+                    <ul style="margin-bottom: 25px; padding-left: 20px; line-height: 2;">
+                        <li>11가지 타이포그래피 프리셋 상세 설명</li>
+                        <li>15가지 표지 테마 가이드</li>
+                        <li>Interactive Mode 완벽 활용법</li>
+                        <li>고급 옵션 및 커스터마이징</li>
+                    </ul>
+                    <a href="https://github.com/goodlookingprokim/markdown-to-document-cli/blob/main/UserGuide.md"
+                        target="_blank"
+                        style="display: inline-block; background: var(--accent-blue); color: #000; padding: 15px 30px; font-weight: 800; text-decoration: none; border: 3px solid #000; box-shadow: 6px 6px 0px #000; font-family: 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: 1px;">
+                        사용자 가이드 보기 →
+                    </a>
+                </div>
+
+                <div
+                    style="background: #fff; padding: 40px; border: var(--border); box-shadow: 8px 8px 0px #000; border-radius: 12px;">
+                    <h3 style="font-size: 1.8rem; margin-bottom: 20px; font-family: 'Space Grotesk', sans-serif;">🔧 문제
+                        해결 가이드</h3>
+                    <p style="margin-bottom: 25px; line-height: 1.8; color: #333;">
+                        PDF 엔진 오류, 이미지 문제, 한글 깨짐 등 자주 발생하는 문제와 해결 방법을
+                        단계별로 안내합니다.
+                    </p>
+                    <ul style="margin-bottom: 25px; padding-left: 20px; line-height: 2;">
+                        <li>PDF 엔진 설치 및 설정</li>
+                        <li>파일 경로 오류 해결</li>
+                        <li>이미지 및 폰트 문제</li>
+                        <li>검증 오류 수정 방법</li>
+                    </ul>
+                    <a href="https://github.com/goodlookingprokim/markdown-to-document-cli/blob/main/TroubleShooting.md"
+                        target="_blank"
+                        style="display: inline-block; background: var(--accent-pink); color: #000; padding: 15px 30px; font-weight: 800; text-decoration: none; border: 3px solid #000; box-shadow: 6px 6px 0px #000; font-family: 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: 1px;">
+                        문제 해결 가이드 보기 →
+                    </a>
+                </div>
+            </div>
+
+            <div
+                style="margin-top: 40px; padding: 30px; background: rgba(255, 255, 255, 0.7); border: 3px solid #000; border-radius: 12px; text-align: center;">
+                <p style="font-size: 1.1rem; margin-bottom: 15px;">
+                    💡 <strong>빠른 도움말이 필요하신가요?</strong>
+                </p>
+                <p style="color: #666; margin-bottom: 20px;">
+                    터미널에서 언제든지 도움말을 확인할 수 있습니다
+                </p>
+                <div class="code-box" style="max-width: 400px; margin: 0 auto; background: #000;">
+                    <pre style="color: var(--accent-lime);">m2d --help
+m2d check
+m2d list-presets</pre>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-brand">NpxMagicDoc</div>
+            <div style="text-align: right;">
+                <p>Designed for Writers, Engineered for Excellence.</p>
+                <p style="font-weight: 800; margin-top: 10px;">v1.5.17 | BY GOODLOOKINGPROKIM</p>
+                <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: flex-end;">
+                    <a href="developer.html" class="nav-badge"
+                        style="cursor: pointer; text-decoration: none; border: 3px solid #000; box-shadow: 4px 4px 0px var(--accent-blue); background: var(--accent-blue); color: #000;">DEVELOPER
+                        GUIDE</a>
+                    <a href="https://github.com/goodlookingprokim/markdown-to-document-cli" class="nav-badge"
+                        style="cursor: pointer; text-decoration: none; border: 3px solid #000; box-shadow: 4px 4px 0px var(--accent-pink);">GITHUB
+                        REPO</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function copyCode(btn) {
+            const pre = btn.nextElementSibling.querySelector('pre');
+            const code = pre.innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "COPIED!";
+                btn.style.backgroundColor = "var(--accent-lime)";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = "var(--accent-pink)";
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
